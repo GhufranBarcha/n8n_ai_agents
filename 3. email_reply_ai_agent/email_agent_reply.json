@@ -1,0 +1,332 @@
+{
+  "name": "email_agent_reply",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -600,
+        -260
+      ],
+      "id": "4338d7f3-9323-420e-aeef-c40a5ac4eb81",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        120
+      ],
+      "id": "9c61c5d8-421a-4bcc-8297-18d96713f4e1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "e5zfr95A5FyDbdis",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please make sure to not output any text except the body\n\nI want to reply to a personalized email. Write a reply email accordingly:\n\n    If the sender’s identity is unknown, start the reply without using \"Dear.\"\n\n    Acknowledge that I have received the email and will update them soon.\n\n    If it seems like an offer, decline politely.\n\n    If it seems like an advertisement, politely reject it and say I’m not interested.\n\n    If it is an order opportunity, respond by saying that I will think about it and update them soon.\n\nMy name is Ghufran Ahmed Barcha.\n\nI only want the email body — no additional text and no subject line.\n\nThe main email content is:\n{{ $json.snippet }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        60,
+        -260
+      ],
+      "id": "0890d886-acc6-4b91-9a63-566458a758a5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail Mail Details').item.json.From.match(/<(.+)>/) ? $('Gmail Mail Details').item.json.From.match(/<(.+)>/)[1] : $('Gmail Mail Details').item.json.From }}\n",
+        "subject": "Reply to your mail",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        436,
+        -260
+      ],
+      "id": "9b52a311-f6ca-4a02-a38a-65ebec97f194",
+      "name": "Gmail2",
+      "webhookId": "5843d95d-5bbf-43bd-9b27-373226e39897",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zkay8TnWuMUzb1G2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appU7obdskZFsOX53",
+          "mode": "list",
+          "cachedResultName": "tesing_n8n",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9xRxWo6r6S7HTA",
+          "mode": "list",
+          "cachedResultName": "email_table",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tbl9xRxWo6r6S7HTA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sender Name": "={{ $('Gmail AII Mails').item.json.to.value[0].name }}",
+            "From Email": "={{ $('Gmail Mail Details').item.json.From }}",
+            "Email body": "={{ $('Gmail AII Mails').item.json.text }}",
+            "Email Reply": "={{ $('AI Agent').item.json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "From Email",
+              "displayName": "From Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email body",
+              "displayName": "Email body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Reply",
+              "displayName": "Email Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        -260
+      ],
+      "id": "04c53f4d-be98-48dc-9e7a-8283644cbdff",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "oMDJ3Eeptpn7T0cf",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -380,
+        -260
+      ],
+      "id": "d1040695-9bd6-413a-bc3b-87ac654d32ba",
+      "name": "Gmail AII Mails",
+      "webhookId": "0684f357-d699-4e1c-b91e-25e26c32e467",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zkay8TnWuMUzb1G2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.threadId }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        -260
+      ],
+      "id": "3c6db209-1287-4c1c-808c-6ada59a0d698",
+      "name": "Gmail Mail Details",
+      "webhookId": "0541edab-0873-4951-873e-4add8036c171",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zkay8TnWuMUzb1G2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Gmail AII Mails').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        876,
+        -260
+      ],
+      "id": "c0e4b540-7143-4925-a8b9-b477a698b322",
+      "name": "Gmail",
+      "webhookId": "feecac75-7b1b-46c9-9e54-98ef00048ae1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zkay8TnWuMUzb1G2",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail AII Mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail AII Mails": {
+      "main": [
+        [
+          {
+            "node": "Gmail Mail Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Mail Details": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "db94b26b-742a-44a9-b32f-641f3d415493",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c3cc1df1e131540372bb2ccef4a623fa751f1881ad7621acc07cc7adaf384a9"
+  },
+  "id": "v3yavOXwSVNzTuYW",
+  "tags": []
+}
