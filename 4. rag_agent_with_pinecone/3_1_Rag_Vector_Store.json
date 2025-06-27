@@ -1,0 +1,232 @@
+{
+  "name": "3.1_Rag_Vector_Store",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFile",
+        "fileToWatch": {
+          "__rl": true,
+          "value": "1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ",
+          "mode": "list",
+          "cachedResultName": "Understanding_Climate_Change.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ/view?usp=drivesdk"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -400
+      ],
+      "id": "e49de031-f24d-44b0-a6e4-5d6c32ed8369",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "k8L8ptNzDrq2vKkP",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ",
+          "mode": "list",
+          "cachedResultName": "Understanding_Climate_Change.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -680,
+        -400
+      ],
+      "id": "cedc9caf-826e-4b71-aebe-49caaa8a6cee",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "k8L8ptNzDrq2vKkP",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "ai-agent-rag",
+          "mode": "list",
+          "cachedResultName": "ai-agent-rag"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -444,
+        -400
+      ],
+      "id": "2adb4881-9025-487c-a61e-24fffec2e5bf",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ZrrAuha1kGcQrsmf",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        -180
+      ],
+      "id": "b8fbf4fa-fe5b-4df8-8681-13afd60af1a0",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "oFM0JTAot8ZgzZXJ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file-name",
+                "value": "={{ $('Google Drive').item.json.name }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -200
+      ],
+      "id": "5cb13f5c-0e91-4acd-9fb3-6f7552985dc6",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -252,
+        20
+      ],
+      "id": "f04351a4-3d88-4fe5-b0f2-0817f6cefd68",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "content": "## Creating the Vector Database\n\n1. First node is the google drive trigger which will trigger when the file is updated.\n2. Then we will download that pdf file, then chunk data using recursive text chunking.\n3. Will create the embedding using openai embedding v3 small. Then store that embedding in pinecone.\n",
+        "width": 680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -840,
+        -600
+      ],
+      "typeVersion": 1,
+      "id": "7969c2e9-dc12-4cc7-9658-b1dd94a0be39",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b98c727-2f9f-4205-a067-add8dd49147a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
+  },
+  "id": "doIpwKxljFUi974s",
+  "tags": []
+}
