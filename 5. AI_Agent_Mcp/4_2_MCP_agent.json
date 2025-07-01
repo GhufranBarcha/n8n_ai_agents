@@ -1,0 +1,153 @@
+{
+  "name": "4.2 MCP agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -520,
+        -200
+      ],
+      "id": "205525fd-67d9-4548-b6b5-0722f13c7025",
+      "name": "When chat message received",
+      "webhookId": "51abaf0c-b106-43ae-bfd1-919e46eef1ad"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -180,
+        -220
+      ],
+      "id": "b1f82837-d152-4294-8bf7-b5f6ae92e1be",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -360,
+        0
+      ],
+      "id": "fd9740ef-12ca-4087-a0d1-2cdce1e99930",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oFM0JTAot8ZgzZXJ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        100
+      ],
+      "id": "395f62c8-387c-4970-905c-9f256985631d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://0.0.0.0:5678/mcp/mcp-tool/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -20
+      ],
+      "id": "015218cd-6c30-4752-baec-a446ca4c37aa",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent with MCP Integration",
+        "height": 560,
+        "width": 1420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -300
+      ],
+      "typeVersion": 1,
+      "id": "f3d96b81-1436-4191-97e7-a563ca4334d1",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "50edbfc1-5613-474b-81cc-fa5fd88a6b44",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
+  },
+  "id": "MGBA7pZ65yJVplwt",
+  "tags": []
+}

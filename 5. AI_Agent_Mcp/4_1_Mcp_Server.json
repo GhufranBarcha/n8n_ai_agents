@@ -1,0 +1,146 @@
+{
+  "name": "4.1 Mcp Server",
+  "nodes": [
+    {
+      "parameters": {
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTubeTool",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -40
+      ],
+      "id": "879402e6-19de-4e95-9643-0e2862f0f917",
+      "name": "YouTube",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "IvD2uYjhKOJFkFSK",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "mcp-tool"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        -400
+      ],
+      "id": "b7de9efc-90ca-4438-ba72-2cc745c1b6d2",
+      "name": "MCP Server Trigger",
+      "webhookId": "b1986358-5a6d-45d0-b204-076f4322a8c1"
+    },
+    {
+      "parameters": {
+        "content": "## MCP Server for Youtube api and gmail api",
+        "height": 620,
+        "width": 880
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -540,
+        -520
+      ],
+      "typeVersion": 1,
+      "id": "712543a4-c41c-404f-8c44-525b9147ee20",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        -40
+      ],
+      "id": "cd5593f2-e9dc-48fd-bd92-9b0ad121f19d",
+      "name": "Gmail Get Message",
+      "webhookId": "5f926c61-9064-4a09-9dc1-3c8c8664e303",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LghNDhrfxvHw1sWh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        60,
+        -40
+      ],
+      "id": "e7a235ca-3bd2-47a7-984d-fc3b1a37bf57",
+      "name": "Gmail Send Mail",
+      "webhookId": "e453cd04-a126-4bd2-b693-2f86407c512f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LghNDhrfxvHw1sWh",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "YouTube": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Get Message": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Send Mail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "499a9087-6dfa-44b4-b142-4e7ca1c13272",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
+  },
+  "id": "Wn04CzkmEam3Wyo3",
+  "tags": []
+}
