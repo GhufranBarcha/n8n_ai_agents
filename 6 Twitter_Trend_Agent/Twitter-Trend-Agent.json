@@ -1,0 +1,304 @@
+{
+  "name": "Twitter-Trend-Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.twitterapi.io/twitter/tweet/advanced_search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "queryType",
+              "value": "Top"
+            },
+            {
+              "name": "query",
+              "value": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "52c16d8218fa4781b8b41d9d308c87a3"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "paginationMode": "responseContainsNextURL",
+              "nextURL": "=https://api.twitterapi.io/twitter/tweet/advanced_search?cursor={{ $response.body.next_cursor }}",
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ $response.body.has_next_page === false }}",
+              "limitPagesFetched": true,
+              "maxRequests": 3
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        60
+      ],
+      "id": "6c39dd34-bd6d-438d-b9fa-d1d38f4e15d8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -280,
+        60
+      ],
+      "id": "3c76a671-3ef6-43bd-8cd1-27101e568937",
+      "name": "When chat message received",
+      "webhookId": "77938e78-fbd3-47e9-bf62-36afe7347e60"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize an empty array to collect all tweets\nlet allTweets = [];\n\n// Loop through each input item\nfor (let item of $input.all()) {\nif (item.json.tweets && Array.isArray(item.json.tweets)) {\nallTweets = allTweets.concat(item.json.tweets);\n}\n}\n\n// Function to format the date in a more human-readable way\nfunction formatDate(dateString) {\nif (!dateString) return '';\n\ntry {\nconst date = new Date(dateString);\nreturn date.toLocaleString('en-US', {\nyear: 'numeric',\nmonth: 'long',\nday: 'numeric',\nhour: '2-digit',\nminute: '2-digit'\n});\n} catch (error) {\nconsole.log(\"Error formatting date:\", error);\nreturn dateString;\n}\n}\n\n// Remove duplicates by tweet ID\nconst seen = new Set();\nconst uniqueTweets = [];\n\nfor (const tweet of allTweets) {\nconst id = [tweet.id]\nif (!seen.has(id)) {\nseen.add(id);\nuniqueTweets.push(tweet);\n}\n}\n\n// Format the cleaned-up tweets\nconst formattedTweets = uniqueTweets.map(tweet => ({\njson: {\ntweetId: [tweet.id] || '',\nurl: tweet.url || '',\ncontent: tweet.text || '',\nlikeCount: tweet.likeCount || 0,\nretweetCount: tweet.retweetCount || 0,\nreplyCount: tweet.replyCount || 0,\nquoteCount: tweet.quoteCount || 0,\nviewCount: tweet.viewCount || 0,\nbookmarkCount: tweet.bookmarkCount || 0,\ncreatedAt: formatDate(tweet.createdAt)\n}\n}));\n\n// Output all tweets as separate items\nreturn formattedTweets;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        60
+      ],
+      "id": "87e5bf87-bb82-43e2-8fba-8231d6cd24e5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appU7obdskZFsOX53",
+          "mode": "list",
+          "cachedResultName": "tesing_n8n",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqLpoQEf3IXAqdF",
+          "mode": "list",
+          "cachedResultName": "twitter-trends-agent",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblqLpoQEf3IXAqdF"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tweet ID": "={{ $json.tweetId[0] }}",
+            "Content": "={{ $json.content }}",
+            "URL": "={{ $json.url }}",
+            "Likes": "={{ $json.likeCount }}",
+            "Retweets": "={{ $json.retweetCount }}",
+            "Quotes": "={{ $json.quoteCount }}",
+            "Views": "={{ $json.viewCount }}",
+            "Bookmark Count": "={{ $json.bookmarkCount }}",
+            "Date": "={{ $json.createdAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tweet ID",
+              "displayName": "Tweet ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Retweets",
+              "displayName": "Retweets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Quotes",
+              "displayName": "Quotes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bookmark Count",
+              "displayName": "Bookmark Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        60
+      ],
+      "id": "71cda687-2f29-4cf1-bd7b-03a865923b92",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FnG6rmMlWB6PcH3d",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🐦 Twitter Trends Agent (n8n)\n\n#### Fetches top tweets based on user input, cleans the data, removes duplicates, and stores results in Airtable.\n\n---\n## 🔄 Flow\n\n1. **Trigger** – Starts on chat message via LangChain.\n2. **HTTP Request** – Queries TwitterAPI.io with the input.\n3. **Code Node** – Merges & deduplicates tweets, formats date.\n4. **Airtable** – Saves tweet ID, content, URL, likes, views, etc.\n\n---",
+        "height": 640,
+        "width": 1560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -260
+      ],
+      "typeVersion": 1,
+      "id": "d72deef4-e4ff-4276-9c67-0eb50dc643eb",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ce1c93f1-33cb-403f-a753-6de96a54e7e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
+  },
+  "id": "i46HRE9NTqgavWKo",
+  "tags": []
+}
