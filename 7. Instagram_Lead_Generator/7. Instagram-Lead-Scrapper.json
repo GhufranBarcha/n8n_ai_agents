@@ -1,0 +1,291 @@
+{
+  "name": "7. Instagram-Lead-Scrapper",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Instragram Leads Scrapper",
+        "formDescription": "Type the lead you want to scrape",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Which lead you are looking for?",
+              "placeholder": "Dentist",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location of Lead ?",
+              "placeholder": "Lahore",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        -80
+      ],
+      "id": "3b37e172-12ae-4959-ac43-93515f2296dd",
+      "name": "Lead Topic",
+      "webhookId": "c8a5b127-41a4-49f1-8d27-4100d59a6483"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        260,
+        -80
+      ],
+      "id": "cd6b11e0-07bd-454e-bce5-1b9ec3ba2723",
+      "name": "Wait",
+      "webhookId": "c5df35b2-571d-417b-973e-b85e7bbad9ed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst output = [];\n\nitems.forEach(item => {\n  const data = item.json;\n\n  const organicResults = data.organicResults || [];\n\n  organicResults.forEach(result => {\n    output.push({\n      json: {\n        title: result.title || null,\n        url: result.url || null,\n        displayedUrl: result.displayedUrl || null,\n        description: result.description || null,\n        followers: result.followersAmount || null,    // For profile pages\n        likes: result.likes || null,                  // For reels\n        reelLength: result.reelLength || null,\n        lastUpdated: result.lastUpdated || null,\n        channelName: result.channelName || null,\n        position: result.position || null,\n        type: result.type || null,\n        date: result.date || null,\n        emphasizedKeywords: result.emphasizedKeywords || []\n      }\n    });\n  });\n});\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -80
+      ],
+      "id": "e81c8ef9-8c4a-4cec-a908-5ca589d6fc7a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"focusOnPaidAds\": false,\n    \"forceExactMatch\": false,\n    \"includeIcons\": false,\n    \"includeUnfilteredResults\": false,\n    \"maxPagesPerQuery\": 1,\n    \"mobileResults\": false,\n    \"queries\": \"site:instagram.com + {{ $json['Which lead you are looking for?'] }}  {{ $json['Location of Lead ?'] }}\",\n    \"resultsPerPage\": 100,\n    \"saveHtml\": false,\n    \"saveHtmlToKeyValueStore\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -80
+      ],
+      "id": "9bd74166-b93e-475e-8ae7-3dca0f8025b4",
+      "name": "Search on google"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appU7obdskZFsOX53",
+          "mode": "list",
+          "cachedResultName": "tesing_n8n",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblERSUOG2cZjT4R3",
+          "mode": "list",
+          "cachedResultName": "Instragram-lead-generators",
+          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblERSUOG2cZjT4R3"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Channel Name": "={{ $json.channelName }}",
+            "URL": "={{ $json.url }}",
+            "Displayed URL": "={{ $json.displayedUrl }}",
+            "Description": "={{ $json.description }}",
+            "Followers": "={{ $json.followers }}",
+            "Likes": "={{ $json.likes }}",
+            "Type": "={{ $json.type }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Channel Name",
+              "displayName": "Channel Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Displayed URL",
+              "displayName": "Displayed URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Followers",
+              "displayName": "Followers",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Emphasized Keywords",
+              "displayName": "Emphasized Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        -80
+      ],
+      "id": "b2f9ff45-d3b5-4434-91dc-d140d9ededcc",
+      "name": "Lead Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FnG6rmMlWB6PcH3d",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 📸 Instagram Leads Scraper – n8n Workflow\n\nThis n8n workflow automates Instagram lead generation \n",
+        "height": 340,
+        "width": 1180
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        -220
+      ],
+      "typeVersion": 1,
+      "id": "05af44d5-c758-4971-afb4-e4723b338a37",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Lead Topic": {
+      "main": [
+        [
+          {
+            "node": "Search on google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Lead Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search on google": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2585f921-53ad-4b67-8635-b6f65ef9d8a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
+  },
+  "id": "HsCdkN57mzPUWQm7",
+  "tags": []
+}
