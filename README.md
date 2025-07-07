@@ -69,9 +69,9 @@ A sophisticated AI agent system using the Model Context Protocol (MCP) that inte
 - Chat-based interface for interacting with external APIs
 - Demonstrates advanced AI agent architectures with external tool access
 
+![MCP Agent Workflow](https://github.com/GhufranBarcha/n8n_ai_agents/blob/main/5.%20AI_Agent_Mcp/mcp_agent.png)
 ![MCP Server Workflow](https://github.com/GhufranBarcha/n8n_ai_agents/blob/main/5.%20AI_Agent_Mcp/mcp_server.png)
 
-![MCP Agent Workflow](https://github.com/GhufranBarcha/n8n_ai_agents/blob/main/5.%20AI_Agent_Mcp/mcp_agent.png)
 
 ---
 
