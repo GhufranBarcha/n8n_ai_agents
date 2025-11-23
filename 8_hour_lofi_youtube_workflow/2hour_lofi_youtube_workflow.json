@@ -1,0 +1,3020 @@
+{
+  "name": "scroll of dreams ffmpeg fal.ai v2",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customMode",
+              "value": "false"
+            },
+            {
+              "name": "instrumental",
+              "value": "false"
+            },
+            {
+              "name": "model",
+              "value": "V5"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.suno_music_prompt }}"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://localhost:5679"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        -848
+      ],
+      "id": "ff50a51a-c9a9-45a6-9d87-406ac1ce2822",
+      "name": "SunoMusicGen",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -832,
+        -640
+      ],
+      "id": "fa7e7810-6a6d-415c-bf1a-eac9310c0146",
+      "name": "Wait",
+      "webhookId": "697fdd29-6b88-4a70-b823-9cb0c11b59c5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "245d543f-f9ff-4e4a-949d-0dc59314703d",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        -640
+      ],
+      "id": "a180fb5b-7d42-4f7e-a0f1-987dda1f213b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n \"video_title\": \"Title of the Video\",\n  \"suno_music_prompt\": \"suno music prompt\",\n  \"nano_banana_thumbnail_prompt\": \"image prompt\",\n  \"video_description\": \"video description \",\n  \"hashtags\": \"#JapaneseMusicCreator #SamuraiCinema #OnnaBugeisha #TaikoDrums #CinematicElectronic #REBLX #PhotorealisticArt #DarkAmbient #JapaneseCulture #TraditionalArt #MeditativeMusic #WarriorSpirit #SwordAndHonor #ArtisticFusion #EpicJapanese #FocusMusic #WorkoutMotivation #CinematicProduction #MusicComposer #VisualArt\"\n}\n\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1392,
+        -256
+      ],
+      "id": "4dbacccf-106d-4299-b955-44ece3e91c28",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/song{{ $itemIndex }}.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -672
+      ],
+      "id": "16c9a40d-635d-4a90-bb4c-afe78c246ea2",
+      "name": "Write_Song"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming JSON data\nconst data = $json.data?.response?.sunoData || [];\n\n// Extract all song audio URLs\nconst songUris = data.map(item => ({\n  title: item.title,\n  audioUrl: item.audioUrl,\n  sourceAudioUrl: item.sourceAudioUrl,\n  imageUrl: item.imageUrl,\n}));\n\n// Return as items for next node\nreturn songUris.map(uri => ({ json: uri }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -816
+      ],
+      "id": "d644c178-fd15-41c8-8b37-674a1b521dc3",
+      "name": "Combine-SongURI"
+    },
+    {
+      "parameters": {
+        "command": "ffmpeg -y \\\n-f concat -safe 0 \\\n-i <(printf \"file '%s'\\n\" /tmp/song0.mp3 /tmp/song1.mp3) \\\n-c copy /tmp/final_song_combined.mp3"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -880
+      ],
+      "id": "87dbb8aa-218f-4bf3-800a-172e8ccd0a62",
+      "name": "combine-audio"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/tmp/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        1936
+      ],
+      "id": "5bf81cb3-1a28-4fde-b645-28e17b2f0cb8",
+      "name": "ReadMusicVideo",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "Uploading Youtube Video",
+        "height": 272,
+        "width": 704
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2192,
+        1920
+      ],
+      "typeVersion": 1,
+      "id": "a1e83707-c2f4-4a89-942e-4b57d04863f1",
+      "name": "Sticky Note1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Idea: Generate Idea Your Self",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=SYSTEM PROMPT: BEGIN\nYou are \"The Scroll Master,\" an AI content strategist for the YouTube channel \"Scroll of Dreams.\"\n\nYour sole purpose is to help me generate all the necessary assets for a new YouTube video based on a simple \"Video Concept\" I provide.\n\nCHANNEL IDENTITY (Your Core Knowledge)\nChannel Name: Scroll of Dreams\n\nNiche: Zen Fantasy Ambient Music\n\nCore Theme: \"The Living Scroll.\" Each video is a journey into a living, breathing East Asian ink wash painting.\n\nVibe: Mystical, serene, peaceful, meditative, magical, and ethereal. Designed for sleep, study, meditation, and relaxation.\n\nVisual Style: Traditional Chinese (Guohua) or Japanese (Sumi-e) ink wash painting. The scenes are vast, misty, and often monochrome (black, grey, white) with occasional, single soft color accents (e.g., a red-roofed pagoda, a soft orange lantern).\n\nMusic Style: Peaceful, slow-tempo ambient music. Must feature traditional East Asian instruments (e.g., Guzheng, Koto, Bamboo Flute/Shakuhachi, Erhu) mixed with ethereal pads, temple bells, and subtle nature sounds (wind, water, rain). No drums or jarring melodies.\n\nYOUR TASK\nI will give you a simple Video Concept (e.g., \"A snowy mountain temple,\" \"A koi pond in the mist\").\n\nYou must respond with a complete content package in the following structured format:\n\n### 1. Video Title ### 2. Suno Music Prompt ### 3. Nano Banana Thumbnail Prompt ### 4. Video Description\n\nCORE EXAMPLES (Your Guide)\nThese are the successful \"Scrolls\" we have already created. Use these as your absolute benchmark for style, tone, and quality.\n\nCONCEPT: A Mystic Mountain\n\n1. Video Title: The Mystic Mountain Peak | 3 Hours of Zen Fantasy Music for Deep Meditation\n\n2. Suno Music Prompt: \"Peaceful zen ambient music, mystical and serene. Features bamboo flute (Shakuhachi), distant temple bells, and ethereal pads. Slow, spacious, and airy. For meditation and sleep.\"\n\n3. Nano Banana Thumbnail Prompt: \"A majestic mountain peak in the style of a traditional Chinese ink wash painting. Swirling mist at the base. A small, ancient pine tree clings to the rocks. Serene, vast, and peaceful. Grey, white, and black tones.\"\n\n4. Video Description:\n\nThe Mystic Mountain Peak\n\nStep into the scroll.\n\nFind your sanctuary on a mystical mountain peak, where the only sounds are the wind and the whispers of a distant flute. Let this zen fantasy soundscape guide you to a place of deep peace.\n\nOur music is crafted to help you find tranquility, whether you are seeking deep sleep, a focused mind for study, or a moment of quiet meditation.\n\nThank you for visiting the Scroll of Dreams.\n---\n🎵 Perfect for:\n• Deep Sleep & Insomnia\n• Meditation & Zen\n• Study & Focus\n• Stress & Anxiety Relief\n• Reading & Journaling\n---\n#ZenFantasy #SleepMusic #MedToitationMusic #AmbientMusic #BambooFlute #ScrollOfDreams\nCONCEPT: A Misty River\n\n1. Video Title: The River of Whispers | Relaxing Guzheng Music for Sleep & Stress Relief\n\n2. Suno Music Prompt: \"Calming zen fantasy music. Features a soft, melodic Guzheng (Chinese zither) and gentle water sounds. Peaceful and dreamy. Flowing, no sudden changes. For deep sleep and relaxation.\"\n\n3. Nano Banana Thumbnail Prompt: \"A serene, wide river in a valley, painted in an ink wash style. A small wooden boat drifts on the water. Misty mountains in the background. Soft, grey, and blue tones. Dreamy and calm.\"\n\n4. Video Description:\n\nThe River of Whispers\n\nStep into the scroll.\n\nFind your sanctuary on a gently flowing river, where the mist hangs low over the water and the world feels miles away. Let the soothing, dream-like notes of the Guzheng guide your boat as you drift into a state of deep calm.\n\nOur music is crafted to help you find tranquility, whether you are seeking deep sleep, relief from stress, or a moment of quiet meditation.\n\nThank you for visiting the Scroll of Dreams.\n---\n🎵 Perfect for:\n• Deep Sleep & Insomnia\n• Stress & Anxiety Relief\n• Meditation & Zen\n• Relaxation\n• Reading & Journaling\n• Calming the Mind\n---\n#ZenFantasy #SleepMusic #Guzheng #RelaxingMusic #AmbientMusic #ScrollOfDreams\nCONCEPT: A Hidden Pagoda\n\n1. Video Title: Scroll of the Hidden Pagoda | 3 Hour Koto Music for Study & Focus\n\n2. Suno Music Prompt: \"Focusing zen ambient music. Features a gentle Koto (Japanese zither) and soft rain sounds. Calm, steady, and peaceful. No vocals. For study, focus, and reading.\"\n\n3. Nano Banana Thumbnail Prompt: \"A multi-tiered pagoda half-hidden by mist on a mountainside. One glowing lantern (soft red or gold). In the style of a traditional ink wash painting. Mysterious and peaceful.\"\n\n4. Video Description:\n\nScroll of the Hidden Pagoda\n\nStep into the scroll.\n\nJourney to a hidden pagoda, shrouded in mist on a quiet mountainside. The gentle sound of rain and the serene melody of the Koto create a perfect sanctuary for your mind.\n\nLet this peaceful atmosphere clear your thoughts, helping you to focus on your studies, work, or reading.\n...\n[Description continues in the same style]\n...\n#ZenFantasy #StudyMusic #Koto #AmbientMusic #FocusMusic #ScrollOfDreams\nCONCEPT: A Bamboo Forest\n\n1. Video Title: The Ethereal Bamboo Forest | Bamboo Flute Music for Stress Relief & Meditation\n\n2. Suno Music Prompt: \"Peaceful bamboo forest ambience. Features a solo bamboo flute, soft wind sounds through leaves, and gentle pads. Meditative and calming. For stress relief and zen.\"\n\n3. Nano Banana Thumbnail Prompt: \"A dense bamboo forest in the mist, in the style of a Japanese sumi-e painting. A narrow stone path winds through it. Ethereal, green-grey tones. Serene and quiet.\"\n\n4. Video Description:\n\nThe Ethereal Bamboo Forest\n\nStep into the scroll.\n\nLose yourself in an endless bamboo forest, where the wind whispers through the leaves and a lone flute plays a meditative tune. This is a place of profound quiet and stillness.\n\nAllow the calming sounds to melt away your stress, guiding you into a state of peaceful, zen-like meditation.\n...\n[Description continues in the same style]\n...\n#ZenFantasy #MeditationMusic #BambooFlute #AmbientMusic #StressRelief #ScrollOfDreams\nRULES OF GENERATION\nBe Consistent: The vibe MUST always be peaceful, zen, and mystical.\n\nMusic Prompts: Always specify the traditional instruments. Always specify \"slow,\" \"ambient,\" \"peaceful.\"\n\nVisual Prompts: Always specify \"ink wash painting style\" (or Sumi-e / Guohua). Always feature mist, and serene landscapes. NEVER include people, hands, or complex \"meta\" elements. The prompt should describe the scene inside the painting.\n\nDescriptions: Always start with the poetic title and \"Step into the scroll.\"\n\nHashtags: Always include #ZenFantasy, #SleepMusic, #AmbientMusic, #ScrollOfDreams, and the primary instrument (e.g., #Guzheng).\n\nYou are now primed. Acknowledge your role and generate your video Concept If not given.\n\n\nIMPORTANT:\nMake sure the idea for video to be unquie and image prompt design unique everytime following the theme,\nSYSTEM PROMPT: END"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1648,
+        -464
+      ],
+      "id": "f910c793-8f24-4c86-b216-298a90e9eee2",
+      "name": "Prompt Generator"
+    },
+    {
+      "parameters": {
+        "content": "## Prompt Generator",
+        "height": 656,
+        "width": 656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1728,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "6a718844-3d7d-4543-b35c-2b60ed904bf4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sourceAudioUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -192,
+        -672
+      ],
+      "id": "0f80f8d3-e34e-45f0-b87b-ae0c93de3eab",
+      "name": "DownloadSongs"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/generate/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || '97d9919e25b24865bc5498ed9f0ca970'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -992,
+        -640
+      ],
+      "id": "7199760f-69da-499e-a9c3-8fa1c21dbea0",
+      "name": "GetTaskId",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status&uploadType=resumable",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Upload-Content-Type",
+              "value": "video/webm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "RAW/JSON",
+        "body": "={\n  \"snippet\": {\n    \"title\": \"{{ $('Merge').item.json.output.song_title }}\",\n    \"description\": \"{{ $('Merge').item.json.output.song_description }} \\n\\n {{ $('Merge').item.json.output.hashtags }}\",\n    \"categoryId\": \"24\",\n    \"defaultLanguage\": \"en\",\n    \"defaultAudioLanguage\": \"en\"\n  },\n  \"status\": {\n    \"privacyStatus\": \"public\",\n    \"license\": \"youtube\",\n    \"embeddable\": true,\n    \"publicStatsViewable\": true,\n    \"madeForKids\": false\n  }\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "ab1c240f-d3ac-4185-ba2d-d4e2a2c305b1",
+      "name": "Post-Video-Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -2224,
+        1936
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "KgmdpWQaMWXavU30",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $node[\"Post-Video-Info\"].json.headers.location }} ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "2ace3702-1e16-45b0-953d-b9193df99bb3",
+      "name": "Upload Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1776,
+        2032
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "KgmdpWQaMWXavU30",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "command": "rm -f final_song_video.mp4 /tmp/song*.mp3 /tmp/final_song_combined.mp3 /tmp/final_song_video_highq.mp4 /tmp/thumbnail.png /tmp/final_song_video.mp4&& echo \"🧹 All temporary files removed successfully.\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        2032
+      ],
+      "id": "b3da4c56-815c-4b82-8ee9-88989ff274d2",
+      "name": "DeleteFiles",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Generate Suno.ai Songs",
+        "height": 544,
+        "width": 752,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1072,
+        -928
+      ],
+      "typeVersion": 1,
+      "id": "6a5b164c-51bc-4acc-bda1-82c03168d8d6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Combine and Save songs",
+        "height": 336,
+        "width": 1104,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -928
+      ],
+      "typeVersion": 1,
+      "id": "b1f28835-2b78-43f9-b7b7-901c259c52da",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Combine Audio and Video",
+        "height": 352,
+        "width": 736
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1072,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "ca3ea178-3084-412b-bc74-9edaaf3ef140",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "description": "Always use this tool. Use it to think through complex ideas or problems. Try to create a unique title each time based on the theme and style of the prompt and should not be same as system prompt title example. Also think on improving the realistic ness of the thumbnail prompt\nThis tool does not retrieve new information or modify the database — it simply appends your thoughts to the log. Use it whenever complex reasoning or memory caching is needed."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -1520,
+        -256
+      ],
+      "id": "daff0798-bfa2-4eff-8b10-25a5c92417f7",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/thumbnail.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        112
+      ],
+      "id": "604d8ed1-243e-4d32-a7b4-647434590a99",
+      "name": "write_image1"
+    },
+    {
+      "parameters": {
+        "content": "## Generate background Image",
+        "height": 336,
+        "width": 1600,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -864,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "70344ac7-38aa-424e-8466-fa918588f6f6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        128
+      ],
+      "id": "ed5f5462-fa45-498e-9682-24a1ef120a85",
+      "name": "Wait2",
+      "webhookId": "e9f967cd-32f4-4567-9a8f-342b430815b4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        128
+      ],
+      "id": "4c550095-bf7f-40fb-b3cb-f79686a3b008",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"bytedance/seedream-v4-edit\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n  \"prompt\": {{ JSON.stringify($json.output.nano_banana_thumbnail_prompt) }},\n  \"image_urls\": [ \"http://res.cloudinary.com/dbyidrv9d/image/upload/v1762608370/vmyxkiqt32lv1w4gljiv.png\"\n  ],\n  \"image_size\": \"landscape_16_9\",\n  \"image_resolution\": \"2K\",\n  \"max_images\": 1\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1280,
+        144
+      ],
+      "id": "7214a851-daf1-4147-8aa2-aebef4ce5880",
+      "name": "GenerateImage1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || '528533f9a67f20e3f3b3e69af880e141'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        128
+      ],
+      "id": "7abfc3b1-e7b7-44e6-b76a-47479078a443",
+      "name": "GetImageURL1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        112
+      ],
+      "id": "a175ea7f-951d-4cc6-a9b0-064eb51459d1",
+      "name": "DownloadImg1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "21866722-8487-4136-a6a2-640fcdb2bba2",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        -848
+      ],
+      "id": "700ef42a-a216-4c68-9c01-077d8d1d0df9",
+      "name": "tokencheck"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -816
+      ],
+      "id": "e5475740-2adc-4f22-8844-a95eaa6c7e7c",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        400
+      ],
+      "id": "1fe5b332-0c14-4617-8511-7afd0f2084b0",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2096,
+        -576
+      ],
+      "id": "37f8f51b-d9e1-48e9-a335-be03e34d7741",
+      "name": "Telegram Trigger",
+      "webhookId": "f321ef95-7b8e-43d3-ba20-c61780df640e",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "=8212614033",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        -816
+      ],
+      "id": "4e35b489-5ebd-474b-bbc3-9605b72f54f5",
+      "name": "SendAudio",
+      "webhookId": "ce23d477-4cc2-4d50-a364-7941b80468a5",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "=Task complete - Uploaded to youtube\nhttps://www.youtube.com/watch?v={{ $('Upload Video').item.json.id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1328,
+        2032
+      ],
+      "id": "87ae6317-294f-434d-b7cc-f6cebca98aae",
+      "name": "SendAudio3",
+      "webhookId": "0e7fc04a-5f59-4c88-ae43-2740b4c3c27b",
+      "credentials": {
+        "telegramApi": {
+          "id": "gbK2cMuSveVUoApR",
+          "name": "YTMusicVideo_bot"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Task Started",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1872,
+        -480
+      ],
+      "id": "38061283-eb3e-4b74-9a9c-dfa8d4b990c8",
+      "name": "SendAudio4",
+      "webhookId": "0e663d22-8ef6-448c-898e-f5f818fb5510",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Issue in image api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1104,
+        400
+      ],
+      "id": "412b7cff-1b11-48a4-94bb-f98d705ff794",
+      "name": "SendAudio5",
+      "webhookId": "8fb9bc98-38e8-4d60-a4e4-889554122603",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "=8212614033",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -32
+      ],
+      "id": "2682209d-d9e8-4a37-a718-3987bd23f5c2",
+      "name": "SendImage",
+      "webhookId": "aafc73be-72f9-4452-9eab-bfd8c10bf2ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Issue in song api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        -832
+      ],
+      "id": "6d6fd982-2594-421a-82e1-73b9bacb4572",
+      "name": "AudioError",
+      "webhookId": "33a9e906-21b5-4094-937c-ec30c84cf67c",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Video Generation Complete",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1776,
+        1840
+      ],
+      "id": "dd224d6f-1c8e-4e13-8f29-7f82f13f357c",
+      "name": "MusicVideo1",
+      "webhookId": "6e80940e-fc55-48cb-8fb5-40ad898bd74a",
+      "credentials": {
+        "telegramApi": {
+          "id": "gbK2cMuSveVUoApR",
+          "name": "YTMusicVideo_bot"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/thumbnail.png",
+        "options": {
+          "dataPropertyName": "imgdata"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        96
+      ],
+      "id": "f149b35c-a44a-4480-8a61-159a4da447db",
+      "name": "readImage"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/tmp/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -144
+      ],
+      "id": "b506de81-7638-47b8-9b3a-03a5044d8e85",
+      "name": "write_video"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        -240
+      ],
+      "id": "f800a6e2-f7c2-4cc1-8f87-1d2db46188d4",
+      "name": "MergeData"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c6912a02-d40b-497d-8fa7-104f91aa019b",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1104,
+        144
+      ],
+      "id": "3663f80d-c2b8-4f39-9cd8-ae7c5e235102",
+      "name": "tokencheck1"
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "=llm worked: This step is Ok",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1312,
+        -1040
+      ],
+      "id": "8bc5c7ad-025f-4824-91ec-e3ccb3de949b",
+      "name": "SendLLM",
+      "webhookId": "7d224c53-5ed7-4bc8-ad3a-d852049d3fe4",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Video Creation Started - Server is running",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        944,
+        -432
+      ],
+      "id": "d9e34a2d-9825-4804-a1f3-253538e1cf78",
+      "name": "SendMsg",
+      "webhookId": "fc859d9d-0a78-4c35-9825-e5eff2d70634",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key c5f07d65-c2cc-45c1-b592-c981c74ac41a:6b39e7fc8c6db9c37d9267b263f6e927"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"video_urls\": [\n    \"https://www.dropbox.com/scl/fi/y7lwfzt6wmbejvnln4nq8/test.mp4?rlkey=rmlz2a89x8fbla1u10cffk6g7&st=b88xvbln&dl=1\",\n    \"https://www.dropbox.com/scl/fi/y7lwfzt6wmbejvnln4nq8/test.mp4?rlkey=rmlz2a89x8fbla1u10cffk6g7&st=b88xvbln&dl=1\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2224,
+        1600
+      ],
+      "id": "d9fc89cb-70db-4025-ba9d-a03d6f0a27ad",
+      "name": "MergeVideo",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/ffmpeg-api/requests/{{ $json.request_id }}/status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key c5f07d65-c2cc-45c1-b592-c981c74ac41a:6b39e7fc8c6db9c37d9267b263f6e927"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2000,
+        1600
+      ],
+      "id": "bd67483e-195d-4081-b631-37813427d33f",
+      "name": "checkStatus",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/ffmpeg-api/requests/{{ $json.request_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key c5f07d65-c2cc-45c1-b592-c981c74ac41a:6b39e7fc8c6db9c37d9267b263f6e927"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1552,
+        1600
+      ],
+      "id": "7a56b5fc-991a-46d3-a0f3-242b45241c27",
+      "name": "HTTP Request4",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8920fcca-009b-44e3-b499-d5c9d116c19a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "in_progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b0df9ed2-26cd-4412-b71a-a1bb2403f7d0",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "COMPLETED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d6d9fe09-d480-4585-8815-579058fa8b90",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "FAILED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1776,
+        1584
+      ],
+      "id": "0c4a5f11-56b6-4d2e-a0e3-3e53864e8d41",
+      "name": "Switch1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=123121",
+        "tableName": "scroll_of_dreams",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1648,
+        -256
+      ],
+      "id": "de00b8d5-a08f-46a3-ae53-96622c054ec7",
+      "name": "ChatMemory",
+      "credentials": {
+        "postgres": {
+          "id": "v2Kw5KxiHKaBrn5a",
+          "name": "aiven-youtube-automation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -48
+      ],
+      "id": "dc956e41-abe1-47dc-96c0-af37ebe127ee",
+      "name": "ChatModel",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5ZjVaknhU1JYomHm",
+          "name": "ai-learning"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/final_song_combined.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -864
+      ],
+      "id": "6b0a2175-f81b-46c2-a36d-ee4e5e2b0d02",
+      "name": "ReadAudio"
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Video Created - Server Completed",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        -336
+      ],
+      "id": "a88b8ac6-2ee2-4ae3-a7e1-fb5b5f60422f",
+      "name": "SendMsg1",
+      "webhookId": "6fc826c4-b71e-4503-9c13-dd3ef8303930",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Get row(s)').item.json.title }}",
+        "regionCode": "PK",
+        "categoryId": "10",
+        "options": {
+          "description": "={{ $('Get row(s)').item.json.description }}",
+          "license": "creativeCommon",
+          "notifySubscribers": true,
+          "privacyStatus": "public",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Get row(s)').item.json.hashtags }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        -240
+      ],
+      "id": "ebbdc6f0-28dd-4351-b40c-9b0fae749576",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "ZISjCxROl9LeGGrX",
+          "name": "scroll_of_dreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Qsq1CcfnARr5ZcCC-jwMls1XqcMNYRflyoa7OMM-bAg",
+          "mode": "list",
+          "cachedResultName": "Parent Porch - Master Content Bank",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qsq1CcfnARr5ZcCC-jwMls1XqcMNYRflyoa7OMM-bAg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 187611896,
+          "mode": "list",
+          "cachedResultName": "Youtube Uploads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qsq1CcfnARr5ZcCC-jwMls1XqcMNYRflyoa7OMM-bAg/edit#gid=187611896"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "youtube video title": "={{ $('Update youtube sheet').item.json['youtube video title'] }}",
+            "youtube video url": "={{ $('Get post').item.json.publicUrl }}"
+          },
+          "matchingColumns": [
+            "youtube video title"
+          ],
+          "schema": [
+            {
+              "id": "reddit title",
+              "displayName": "reddit title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video url",
+              "displayName": "video url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube video title",
+              "displayName": "youtube video title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "youtube video description",
+              "displayName": "youtube video description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail prompt",
+              "displayName": "thumbnail prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail url",
+              "displayName": "thumbnail url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube video url",
+              "displayName": "youtube video url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1424,
+        1360
+      ],
+      "id": "e0f587cf-f569-4ff0-86cc-4c96b6680d3a",
+      "name": "UpdateYoutubeSheet",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "videoId",
+              "value": "={{ $('Upload a video').item.json.uploadId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3616,
+        -176
+      ],
+      "id": "ab88e98b-0441-4992-a4d6-991d0d7dd51a",
+      "name": "Thumbnail-Uploader",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "ZISjCxROl9LeGGrX",
+          "name": "scroll_of_dreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "update",
+        "videoId": "={{ $('Get post').item.json.publicUrl.match(/(?:v=|youtu\\.be\\/)([a-zA-Z0-9_-]{11})/)[1] }}",
+        "title": "={{ $json.optimized_title }}",
+        "regionCode": "US",
+        "categoryId": "22",
+        "updateFields": {
+          "description": "={{ $json.optimized_description }}",
+          "tags": "={{ $json.tagsCsv }}"
+        }
+      },
+      "id": "8deb9371-99e8-4075-8d6d-6be1958a523d",
+      "name": "Update description + tags",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        -1424,
+        1168
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "KgmdpWQaMWXavU30",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b9388705-ca88-445e-8b2f-36afce0a14b0",
+              "name": "optimized_title",
+              "value": "={{ $('YoutubeAgent').item.json.output.youtube_title }}",
+              "type": "string"
+            },
+            {
+              "id": "22084673-81bd-4859-8f19-54bc0245dd64",
+              "name": "=optimized_description",
+              "value": "={{ $('YoutubeAgent').item.json.output.youtube_description }}",
+              "type": "string"
+            },
+            {
+              "id": "d9217e12-2d25-475d-83dd-15e3110d0cd7",
+              "name": "seo_keywords",
+              "value": "={{ JSON.parse($json.output).seo_keywords.map(k => '#' + k.replace(/\\s+/g, '')).join(' ') }}\n",
+              "type": "string"
+            },
+            {
+              "id": "3c1cfcde-9875-49f7-bee9-3237e08dbd33",
+              "name": "Video Tags",
+              "value": "={{ $json.output.tags }}",
+              "type": "string"
+            },
+            {
+              "id": "fa5c6af2-cf2d-4c26-96f9-a9391679e203",
+              "name": "thumbnail_instructions",
+              "value": "={{ $('ThumbnailAgent1').item.json.output.thumbail_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1872,
+        1168
+      ],
+      "id": "0dde892f-63f6-4ca6-8560-a9d1e334df38",
+      "name": "Extract Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sanitize + format YouTube tags for n8n YouTube node\n// - Produces BOTH: tagsArray (array) and tagsCsv (comma-separated string)\n// - Bind the YouTube node's \"Tags\" field to {{$json.tagsCsv}}\n\ntry {\n  const item = $json;\n\n  const toArr = (v) => {\n    if (Array.isArray(v)) return v;\n    if (typeof v !== 'string') return [];\n    // Split on commas, newlines, or '#'\n    return v.split(/[,#\\n]/g).map(s => s.trim()).filter(Boolean);\n  };\n\n  const candidates = [\n    ...toArr(item.tags),\n    ...toArr(item['Video Tags']),\n    ...toArr(item.seo_keywords),\n  ];\n\n  const cleanOne = (t) => {\n    // strip emoji/pictographs\n    let s = t.replace(/[\\p{Extended_Pictographic}\\u{2600}-\\u{27BF}]/gu, '');\n    // keep letters/numbers/spaces/&/+/ - /'\n    s = s.replace(/[^\\p{L}\\p{N}\\s&+\\-']/gu, '');\n    // collapse spaces\n    s = s.replace(/\\s+/g, ' ').trim();\n    return s;\n  };\n\n  // normalize, dedupe (case-insensitive), per-tag length 2–30 chars\n  const seen = new Set();\n  const normalized = [];\n  for (const raw of candidates) {\n    const c = cleanOne(raw);\n    if (!c || c.length < 2 || c.length > 30) continue;\n    const key = c.toLowerCase();\n    if (seen.has(key)) continue;\n    seen.add(key);\n    normalized.push(c);\n  }\n\n  // total budget (~500 incl commas); be safe at 450; also cap count\n  const finalTags = [];\n  let used = 0;\n  for (const tag of normalized) {\n    const addLen = (finalTags.length ? 2 : 0) + tag.length; // ', ' between tags\n    if (used + addLen > 450) break;\n    finalTags.push(tag);\n    used += addLen;\n    if (finalTags.length >= 25) break;\n  }\n\n  const tagsArray = finalTags;\n  const tagsCsv = finalTags.join(', '); // <- use this in the YouTube node\n\n  return [{ json: { ...item, tagsArray, tagsCsv } }];\n} catch (e) {\n  return [{\n    json: { ...$json, tagsArray: [], tagsCsv: '', tagSanitizerError: e?.message || 'unknown_error' }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        1168
+      ],
+      "id": "3749f603-a7ff-405e-b75a-756456221d27",
+      "name": "Format Tags",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: {{ $('Update youtube sheet').item.json['youtube video title'] }}\n\nStory:\n{{ $('Get Rows').item.json.ai_generated_story }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a YouTube Tag Generation Agent.  \nYour task is to generate a concise, SEO-optimized list of hashtags and keyword tags for a YouTube video.  \n\nYou will be given the video **Title** and **Story**.  \nUse them to understand the video’s topic, mood, and audience intent.  \nThen, generate tags that will help the video rank better on YouTube search and attract viewers interested in similar content.\n\nGuidelines:\n- Always include 8–15 relevant tags.  \n- Prioritize topic, emotion, and niche relevance.  \n- Include both **broad** (e.g., #truestories) and **specific** (e.g., #redditrelationshipstory) tags.  \n- Do **not** repeat words unnecessarily.  \n- Output only valid YouTube hashtags (no spaces, no punctuation).  \n- Maintain consistent lowercase styling.  \n- Avoid generic or banned tags like #shorts, #subscribe, #viral unless truly relevant.  \n- Focus on engagement and discoverability.  \n- Make sure the tags are less then 500 characters\nOutput format (JSON only):\n{\n  \"tags\": \"#tag1 #tag2 #tag3 #tag4 #tag5 ...\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -2224,
+        1168
+      ],
+      "id": "851b234b-bbe7-41d1-aca7-3853fb26be8b",
+      "name": "TagsAgent",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1200,
+        1264
+      ],
+      "id": "fac2d292-e465-47e2-a73c-a83d4a4d8d9a",
+      "name": "Merge1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        -256
+      ],
+      "id": "5523a3e5-a6ee-4bf2-b3dd-48eaf672c406",
+      "name": "Wait3",
+      "webhookId": "7304050e-814f-4af0-b7a7-63ef68686459"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3184,
+        -256
+      ],
+      "id": "589b09d1-409f-4699-bf61-1f13b083acd1",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || '528533f9a67f20e3f3b3e69af880e141'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3024,
+        -320
+      ],
+      "id": "9111369b-8ac5-4ea5-9578-e5db82ab1f44",
+      "name": "GetImageURL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3424,
+        -272
+      ],
+      "id": "96a994ad-6da5-4237-9cd8-6a4039dc06a4",
+      "name": "DownloadImg"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        16
+      ],
+      "id": "07aeef57-8206-40da-bb2f-a1763d134448",
+      "name": "Stop and Error3"
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "Issue in image api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2528,
+        16
+      ],
+      "id": "aaafd9f5-d570-49d3-9baf-da75ded2bcfe",
+      "name": "SendAudio6",
+      "webhookId": "b64cb552-9db4-4d9f-a563-afc130068d0a",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "=8212614033",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3552,
+        -448
+      ],
+      "id": "634e07dc-b4a8-4153-9e6b-55dfdc28f83b",
+      "name": "SendImage1",
+      "webhookId": "28a8674c-0812-4664-805b-4f2503c39fbf",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c6912a02-d40b-497d-8fa7-104f91aa019b",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        -240
+      ],
+      "id": "46f033cf-97d3-4d4c-a77a-eefc6accc6e6",
+      "name": "tokencheck2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"bytedance/seedream-v4-edit\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n  \"prompt\": {{ JSON.stringify($json.thumbnail_prompt) }},\n  \"image_urls\": [ \"{{ $json.reference_img }}\"\n  ],\n  \"image_size\": \"landscape_16_9\",\n  \"image_resolution\": \"2K\",\n  \"max_images\": 1\n}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        -240
+      ],
+      "id": "3c6f5094-5724-491d-8a88-33123266b920",
+      "name": "Generatethumbnail",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Y7SSRi6Fdu9vshkb",
+          "name": "dg-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40f8538a-1cc0-446f-9abc-8b438a13fafe",
+              "name": "thumbnail_prompt",
+              "value": "=Create a YouTube thumbnail using my provided image. Add the title ‘{{ $('Get row(s)').item.json.title }}’ in the center. The title should be in a **bold, traditional ink brush-stroke font, deep black or dark grey in color**, as if painted directly onto the scroll. Ensure the elegant, dark-bristled ink brush and the \"living painting\" theme are prominently featured, maintaining the tranquil ink wash mountain aesthetic.",
+              "type": "string"
+            },
+            {
+              "id": "e7aa25be-045b-4254-a2f5-e9e29f778e52",
+              "name": "reference_img",
+              "value": "={{ $('Get row(s)').item.json.reference_img }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        -240
+      ],
+      "id": "07c7be29-b3dd-420e-96cf-508726d6e952",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "command": "rm -f final_song_video.mp4 /tmp/song*.mp3 /tmp/final_song_combined.mp3 /tmp/final_song_video_highq.mp4 /tmp/thumbnail.png /tmp/final_song_video.mp4&& echo \"🧹 All temporary files removed successfully.\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        3904,
+        -320
+      ],
+      "id": "49e699f6-a060-4e6c-827d-c99938f1a940",
+      "name": "DeleteFiles1"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -240
+      ],
+      "id": "a4435267-73c8-4060-833a-9bffca1a9416",
+      "name": "Readfile"
+    },
+    {
+      "parameters": {
+        "chatId": "=8212614033",
+        "text": "=Thumbnail Update\nTask complete: Uploaded to youtube\nhttps://www.youtube.com/watch?v={{ $('Upload a video').item.json.uploadId }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3760,
+        -320
+      ],
+      "id": "3b61db63-848f-4ae8-bde8-2319a9176eef",
+      "name": "SendMessage",
+      "webhookId": "066b093d-acae-465e-a1ef-df3cee024852",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZXcE4VOX0ej2krQ",
+          "name": "scrollofDreams"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "BXBrYkZ7oGEimhqY",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "/projects/VMe9nlZVf6VvLBdu/datatables/BXBrYkZ7oGEimhqY"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.output.video_title }}",
+            "thumbnail_prompt": "={{ $json.output.nano_banana_thumbnail_prompt }}",
+            "description": "={{ $json.output.video_description }}",
+            "hashtags": "={{ $json.output.hashtags }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reference_img",
+              "displayName": "reference_img",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -464
+      ],
+      "id": "148bbcca-fdd6-47b5-be54-53a920d1a369",
+      "name": "Upsert row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "BXBrYkZ7oGEimhqY",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "/projects/VMe9nlZVf6VvLBdu/datatables/BXBrYkZ7oGEimhqY"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reference_img": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "reference_img",
+              "displayName": "reference_img",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        128,
+        112
+      ],
+      "id": "08e4bd4d-57b4-4df1-8fe1-368a54d71871",
+      "name": "UpdateImgLink"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "BXBrYkZ7oGEimhqY",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "/projects/VMe9nlZVf6VvLBdu/datatables/BXBrYkZ7oGEimhqY"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -240
+      ],
+      "id": "822b2cc1-9e7f-464c-948b-7ea3f8401c8f",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/ubuntu/scrollsOfDream/",
+        "options": {
+          "fileName": "audio.mp3"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -864
+      ],
+      "id": "dd583672-2ff8-47a7-8666-fbb71ef74fbf",
+      "name": "upload_audio",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "1ZqkMrDAQTPUT8ga",
+          "name": "SSH-Oracle-fastapi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "binaryPropertyName": "imgdata",
+        "path": "/home/ubuntu/scrollsOfDream",
+        "options": {
+          "fileName": "image.png"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        512,
+        96
+      ],
+      "id": "15171749-9203-41e7-a059-ba76b78da2ea",
+      "name": "upload_img",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "1ZqkMrDAQTPUT8ga",
+          "name": "SSH-Oracle-fastapi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "ffmpeg -y -loop 1 -i /home/ubuntu/scrollsOfDream/image.png -i /home/ubuntu/scrollsOfDream/audio.mp3 -c:v libx264 -tune stillimage -preset slow -crf 18 -c:a aac -b:a 320k -shortest -vf \"scale=-2:1440,fps=30\" /tmp/base_video.mp4 && ffmpeg -y -f concat -safe 0 -i <(for i in $(seq 1 15); do echo \"file '/tmp/base_video.mp4'\"; done) -c copy /home/ubuntu/scrollsOfDream/output_video.mp4\n"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        -240
+      ],
+      "id": "0d3d5ec7-527e-4721-8f7c-2261257ebcc9",
+      "name": "CreateVideo",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "1ZqkMrDAQTPUT8ga",
+          "name": "SSH-Oracle-fastapi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "operation": "download",
+        "path": "/home/ubuntu/scrollsOfDream/output_video.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        -240
+      ],
+      "id": "6aa47038-2584-4ab0-9f1c-05a4525cf159",
+      "name": "DownloadVideo",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "1ZqkMrDAQTPUT8ga",
+          "name": "SSH-Oracle-fastapi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2096,
+        -368
+      ],
+      "id": "0fb905bb-ded8-4f81-ba56-8d9e9816dbdf",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## Upload to youtube",
+        "width": 816,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1872,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "0682ceb5-50a7-44a8-8033-178a9f80328d",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Update Thumbnail",
+        "height": 304,
+        "width": 1312,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2816,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "925c3cd7-3cf0-4892-baad-abd9f67fb466",
+      "name": "Sticky Note7"
+    }
+  ],
+  "pinData": {
+    "MergeVideo": [
+      {
+        "json": {
+          "status": "IN_QUEUE",
+          "request_id": "ada9ff36-38f8-4c54-a9da-a9d90c135b71",
+          "response_url": "https://queue.fal.run/fal-ai/ffmpeg-api/requests/ada9ff36-38f8-4c54-a9da-a9d90c135b71",
+          "status_url": "https://queue.fal.run/fal-ai/ffmpeg-api/requests/ada9ff36-38f8-4c54-a9da-a9d90c135b71/status",
+          "cancel_url": "https://queue.fal.run/fal-ai/ffmpeg-api/requests/ada9ff36-38f8-4c54-a9da-a9d90c135b71/cancel",
+          "logs": null,
+          "metrics": {},
+          "queue_position": 1
+        }
+      }
+    ],
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 88036939,
+          "message": {
+            "message_id": 149,
+            "from": {
+              "id": 8212614033,
+              "is_bot": false,
+              "first_name": "Ghufran",
+              "last_name": "Barcha",
+              "username": "ghufranbarcha",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 8212614033,
+              "first_name": "Ghufran",
+              "last_name": "Barcha",
+              "username": "ghufranbarcha",
+              "type": "private"
+            },
+            "date": 1763061092,
+            "text": "Sure"
+          }
+        }
+      }
+    ],
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-11-14T23:00:11.026+05:00",
+          "Readable date": "November 14th 2025, 11:00:11 pm",
+          "Readable time": "11:00:11 pm",
+          "Day of week": "Friday",
+          "Year": "2025",
+          "Month": "November",
+          "Day of month": "14",
+          "Hour": "23",
+          "Minute": "00",
+          "Second": "11",
+          "Timezone": "Asia/Karachi (UTC+05:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "SunoMusicGen": {
+      "main": [
+        [
+          {
+            "node": "tokencheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Combine-SongURI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write_Song": {
+      "main": [
+        [
+          {
+            "node": "combine-audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine-SongURI": {
+      "main": [
+        [
+          {
+            "node": "DownloadSongs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "combine-audio": {
+      "main": [
+        [
+          {
+            "node": "ReadAudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReadMusicVideo": {
+      "main": [
+        [
+          {
+            "node": "Upload Video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MusicVideo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Generator": {
+      "main": [
+        [
+          {
+            "node": "GenerateImage1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendLLM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SunoMusicGen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadSongs": {
+      "main": [
+        [
+          {
+            "node": "Write_Song",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendAudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetTaskId": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Video-Info": {
+      "main": [
+        [
+          {
+            "node": "ReadMusicVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video": {
+      "main": [
+        [
+          {
+            "node": "DeleteFiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeleteFiles": {
+      "main": [
+        [
+          {
+            "node": "SendAudio3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_image1": {
+      "main": [
+        [
+          {
+            "node": "UpdateImgLink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "DownloadImg1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateImage1": {
+      "main": [
+        [
+          {
+            "node": "tokencheck1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImg1": {
+      "main": [
+        [
+          {
+            "node": "write_image1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AudioError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "SendAudio4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio4": {
+      "main": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio5": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AudioError": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "readImage": {
+      "main": [
+        [
+          {
+            "node": "upload_img",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_video": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeData": {
+      "main": [
+        [
+          {
+            "node": "CreateVideo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendMsg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck1": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendAudio5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeVideo": {
+      "main": [
+        [
+          {
+            "node": "checkStatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkStatus": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "checkStatus",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "ChatMemory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatModel": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReadAudio": {
+      "main": [
+        [
+          {
+            "node": "upload_audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateYoutubeSheet": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Thumbnail-Uploader": {
+      "main": [
+        [
+          {
+            "node": "SendMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update description + tags": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract Fields": {
+      "main": [
+        [
+          {
+            "node": "Format Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Tags": {
+      "main": [
+        [
+          {
+            "node": "Update description + tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TagsAgent": {
+      "main": [
+        [
+          {
+            "node": "Extract Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "DownloadImg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImg": {
+      "main": [
+        [
+          {
+            "node": "SendImage1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Thumbnail-Uploader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio6": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck2": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendAudio6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generatethumbnail": {
+      "main": [
+        [
+          {
+            "node": "tokencheck2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Generatethumbnail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Readfile": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendMessage": {
+      "main": [
+        [
+          {
+            "node": "DeleteFiles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateImgLink": {
+      "main": [
+        [
+          {
+            "node": "readImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Readfile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_audio": {
+      "main": [
+        [
+          {
+            "node": "MergeData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_img": {
+      "main": [
+        [
+          {
+            "node": "MergeData",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "CreateVideo": {
+      "main": [
+        [
+          {
+            "node": "DownloadVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadVideo": {
+      "main": [
+        [
+          {
+            "node": "write_video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendMsg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendMsg1": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "SendAudio4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "9DS7h5zXHLHUbAfm",
+    "timezone": "Asia/Karachi",
+    "saveDataSuccessExecution": "none"
+  },
+  "versionId": "c2b2e710-8a36-4cb1-91a2-2d28a901123b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fb1c52eab7e45eecd3eaa6d754017c5cc4bd234212d229acb1e17aeec8ef83e"
+  },
+  "id": "mEaUQ8VoaPBEhEap",
+  "tags": []
+}
