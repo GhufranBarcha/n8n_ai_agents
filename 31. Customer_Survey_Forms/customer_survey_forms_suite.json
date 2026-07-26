@@ -1,0 +1,1026 @@
+{
+  "name": "Customer Survey Forms Suite",
+  "nodes": [
+    {
+      "id": "exitFormTrigger",
+      "name": "Form Trigger - Exit Intent",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1260,
+        -540
+      ],
+      "parameters": {
+        "path": "customer-survey-forms-form-trigger-exit-intent",
+        "formTitle": "Hartspan Feedback",
+        "formDescription": "Before you go — complete this quick survey for 10% off.",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "What's your primary reason for not purchasing today?",
+              "placeholder": "Tell us in your own words",
+              "requiredField": true
+            },
+            {
+              "fieldType": "email",
+              "fieldLabel": "What is your email address?",
+              "placeholder": "you@example.com",
+              "requiredField": true
+            }
+          ]
+        }
+      },
+      "webhookId": "c3335d24-323b-5f28-aebc-c682ac3d8f46"
+    },
+    {
+      "id": "exitSetPayload",
+      "name": "Set - Exit Intent Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        -540
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "surveySlug",
+              "value": "exit-intent",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "name": "pathTaken",
+              "value": "={{ [\"reason\",\"email\",\"thank-you\"] }}",
+              "type": "array"
+            },
+            {
+              "name": "answers",
+              "value": "={{ { \"reason\": $json[\"What's your primary reason for not purchasing today?\"], \"email\": $json[\"What is your email address?\"] } }}",
+              "type": "object"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "exitThankYou",
+      "name": "Form - Exit Intent Thank You",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -540
+      ],
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Thank you!",
+        "completionMessage": "We really appreciate your feedback! Use code YOURCODE10 for 10% off your order."
+      }
+    },
+    {
+      "id": "returningFormTrigger",
+      "name": "Form Trigger - Returning Customer",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1260,
+        -60
+      ],
+      "parameters": {
+        "path": "customer-survey-forms-form-trigger-returning-customer",
+        "formTitle": "Hartspan Follow-Up",
+        "formDescription": "Welcome back — your repeat orders help us refine what matters most.",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "Welcome back! Can you tell us why you decided to come back to shop with us again?",
+              "placeholder": "Share what brought you back",
+              "requiredField": true
+            },
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "Do you have any questions for us or feedback about Khelp?",
+              "placeholder": "Optional",
+              "requiredField": false
+            }
+          ]
+        }
+      },
+      "webhookId": "1896c659-5e35-5a90-a203-5208d3fb3d0d"
+    },
+    {
+      "id": "returningSetPayload",
+      "name": "Set - Returning Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        -60
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "surveySlug",
+              "value": "returning-customer",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "name": "pathTaken",
+              "value": "={{ [\"why-returned\",\"extra-feedback\",\"thank-you\"] }}",
+              "type": "array"
+            },
+            {
+              "name": "answers",
+              "value": "={{ { \"why-returned\": $json[\"Welcome back! Can you tell us why you decided to come back to shop with us again?\"], \"extra-feedback\": $json[\"Do you have any questions for us or feedback about Khelp?\"] } }}",
+              "type": "object"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "returningThankYou",
+      "name": "Form - Returning Thank You",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -60
+      ],
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Thank you!",
+        "completionMessage": "We appreciate your feedback and genuinely value you as a customer <3"
+      }
+    },
+    {
+      "id": "newFormTrigger",
+      "name": "Form Trigger - New Customer",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1260,
+        540
+      ],
+      "parameters": {
+        "path": "customer-survey-forms-form-trigger-new-customer",
+        "formTitle": "Hartspan First Order",
+        "formDescription": "Help us understand your path to purchase.",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "dropdown",
+              "fieldLabel": "How did you hear about us?",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Friend"
+                  },
+                  {
+                    "option": "Doctor"
+                  },
+                  {
+                    "option": "Facebook"
+                  },
+                  {
+                    "option": "Instagram"
+                  },
+                  {
+                    "option": "TikTok"
+                  },
+                  {
+                    "option": "Google"
+                  },
+                  {
+                    "option": "Other? Write it in!"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldType": "text",
+              "fieldLabel": "If you selected 'Other? Write it in!', tell us more",
+              "placeholder": "Write your answer",
+              "requiredField": false
+            }
+          ]
+        }
+      },
+      "webhookId": "f1ba0e49-cf5f-5f69-8d3c-0ea3d0a3c97d"
+    },
+    {
+      "id": "ifAttributionOther",
+      "name": "IF - Attribution Is Other",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1020,
+        540
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Other? Write it in!"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ifOtherTextProvided",
+      "name": "IF - Other Text Provided",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -760,
+        420
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ ($json[\"If you selected 'Other? Write it in!', tell us more\"] || \"\").trim() }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "rightValue": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "formOtherRequiredError",
+      "name": "Form - Other Text Required",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        520
+      ],
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "This cannot be left blank.",
+        "completionMessage": "You selected 'Other? Write it in!'. Please go back and provide details."
+      }
+    },
+    {
+      "id": "switchAttributionRoute",
+      "name": "Switch - Attribution Route",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -760,
+        720
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Friend"
+                  },
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Google"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Skip Purchase Reason"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Doctor"
+                  },
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Facebook"
+                  },
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Instagram"
+                  },
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "TikTok"
+                  },
+                  {
+                    "leftValue": "={{ $json[\"How did you hear about us?\"] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Other? Write it in!"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Include Purchase Reason"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "formPurchaseReason",
+      "name": "Form - Purchase Reason",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        860
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "What made you want to purchase?",
+              "placeholder": "Tell us what drove your decision",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "What made you want to purchase?"
+        }
+      }
+    },
+    {
+      "id": "formOtherSolutionsFromSkip",
+      "name": "Form - Other Solutions (Skip Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        620
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "What other reflux solutions have you tried or are you currently using?",
+              "placeholder": "Share what you've tried before",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "What other reflux solutions have you tried or are you currently using?"
+        }
+      }
+    },
+    {
+      "id": "formOtherSolutionsFromPurchase",
+      "name": "Form - Other Solutions (Purchase Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        860
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "What other reflux solutions have you tried or are you currently using?",
+              "placeholder": "Share what you've tried before",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "What other reflux solutions have you tried or are you currently using?"
+        }
+      }
+    },
+    {
+      "id": "formFirstHeardSkip",
+      "name": "Form - First Heard (Skip Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        20,
+        620
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "dropdown",
+              "fieldLabel": "When did you first hear about Khelp?",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Today"
+                  },
+                  {
+                    "option": "Within the last 1-2 weeks"
+                  },
+                  {
+                    "option": "Many weeks or months ago"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "When did you first hear about Khelp?"
+        }
+      }
+    },
+    {
+      "id": "formFirstHeardPurchase",
+      "name": "Form - First Heard (Purchase Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        20,
+        860
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "dropdown",
+              "fieldLabel": "When did you first hear about Khelp?",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Today"
+                  },
+                  {
+                    "option": "Within the last 1-2 weeks"
+                  },
+                  {
+                    "option": "Many weeks or months ago"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "When did you first hear about Khelp?"
+        }
+      }
+    },
+    {
+      "id": "formFrictionSkip",
+      "name": "Form - Friction (Skip Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        280,
+        620
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "Did anything almost stop you from purchasing?",
+              "placeholder": "Optional",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Did anything almost stop you from purchasing?"
+        }
+      }
+    },
+    {
+      "id": "formFrictionPurchase",
+      "name": "Form - Friction (Purchase Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        280,
+        860
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "Did anything almost stop you from purchasing?",
+              "placeholder": "Optional",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Did anything almost stop you from purchasing?"
+        }
+      }
+    },
+    {
+      "id": "formMedicationSkip",
+      "name": "Form - Medication (Skip Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        560,
+        620
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "checkbox",
+              "fieldLabel": "Are you currently taking any PPIs or other acid-blocking medications?",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "limitSelection": "range",
+              "minSelections": 1
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Are you currently taking any PPIs or other acid-blocking medications?"
+        }
+      }
+    },
+    {
+      "id": "formMedicationPurchase",
+      "name": "Form - Medication (Purchase Path)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        560,
+        860
+      ],
+      "parameters": {
+        "operation": "page",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "checkbox",
+              "fieldLabel": "Are you currently taking any PPIs or other acid-blocking medications?",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "limitSelection": "range",
+              "minSelections": 1
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Are you currently taking any PPIs or other acid-blocking medications?"
+        }
+      }
+    },
+    {
+      "id": "setNewPayloadSkip",
+      "name": "Set - New Customer Payload (Skip)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        840,
+        620
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "surveySlug",
+              "value": "new-customer",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "name": "pathTaken",
+              "value": "={{ [\"attribution\",\"other-solutions\",\"first-heard\",\"friction\",\"medication\",\"thank-you\"] }}",
+              "type": "array"
+            },
+            {
+              "name": "answers",
+              "value": "={{ { \"attribution\": $json[\"How did you hear about us?\"], \"attribution__otherText\": $json[\"If you selected 'Other? Write it in!', tell us more\"], \"other-solutions\": $json[\"What other reflux solutions have you tried or are you currently using?\"], \"first-heard\": $json[\"When did you first hear about Khelp?\"], \"friction\": $json[\"Did anything almost stop you from purchasing?\"], \"medication\": $json[\"Are you currently taking any PPIs or other acid-blocking medications?\"] } }}",
+              "type": "object"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "setNewPayloadPurchase",
+      "name": "Set - New Customer Payload (Purchase)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        840,
+        860
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "surveySlug",
+              "value": "new-customer",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "name": "pathTaken",
+              "value": "={{ [\"attribution\",\"purchase-reason\",\"other-solutions\",\"first-heard\",\"friction\",\"medication\",\"thank-you\"] }}",
+              "type": "array"
+            },
+            {
+              "name": "answers",
+              "value": "={{ { \"attribution\": $json[\"How did you hear about us?\"], \"attribution__otherText\": $json[\"If you selected 'Other? Write it in!', tell us more\"], \"purchase-reason\": $json[\"What made you want to purchase?\"], \"other-solutions\": $json[\"What other reflux solutions have you tried or are you currently using?\"], \"first-heard\": $json[\"When did you first hear about Khelp?\"], \"friction\": $json[\"Did anything almost stop you from purchasing?\"], \"medication\": $json[\"Are you currently taking any PPIs or other acid-blocking medications?\"] } }}",
+              "type": "object"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "newThankYouSkip",
+      "name": "Form - New Customer Thank You (Skip)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        620
+      ],
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Thank you!",
+        "completionMessage": "We really appreciate your feedback :)"
+      }
+    },
+    {
+      "id": "newThankYouPurchase",
+      "name": "Form - New Customer Thank You (Purchase)",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        860
+      ],
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Thank you!",
+        "completionMessage": "We really appreciate your feedback :)"
+      }
+    }
+  ],
+  "connections": {
+    "Form Trigger - Exit Intent": {
+      "main": [
+        [
+          {
+            "node": "Set - Exit Intent Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Exit Intent Payload": {
+      "main": [
+        [
+          {
+            "node": "Form - Exit Intent Thank You",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Trigger - Returning Customer": {
+      "main": [
+        [
+          {
+            "node": "Set - Returning Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Returning Payload": {
+      "main": [
+        [
+          {
+            "node": "Form - Returning Thank You",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Trigger - New Customer": {
+      "main": [
+        [
+          {
+            "node": "IF - Attribution Is Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Attribution Is Other": {
+      "main": [
+        [
+          {
+            "node": "IF - Other Text Provided",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch - Attribution Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Other Text Provided": {
+      "main": [
+        [
+          {
+            "node": "Switch - Attribution Route",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form - Other Text Required",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Attribution Route": {
+      "main": [
+        [
+          {
+            "node": "Form - Other Solutions (Skip Path)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form - Purchase Reason",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Purchase Reason": {
+      "main": [
+        [
+          {
+            "node": "Form - Other Solutions (Purchase Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Other Solutions (Skip Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - First Heard (Skip Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Other Solutions (Purchase Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - First Heard (Purchase Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - First Heard (Skip Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - Friction (Skip Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - First Heard (Purchase Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - Friction (Purchase Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Friction (Skip Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - Medication (Skip Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Friction (Purchase Path)": {
+      "main": [
+        [
+          {
+            "node": "Form - Medication (Purchase Path)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Medication (Skip Path)": {
+      "main": [
+        [
+          {
+            "node": "Set - New Customer Payload (Skip)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Medication (Purchase Path)": {
+      "main": [
+        [
+          {
+            "node": "Set - New Customer Payload (Purchase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - New Customer Payload (Skip)": {
+      "main": [
+        [
+          {
+            "node": "Form - New Customer Thank You (Skip)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - New Customer Payload (Purchase)": {
+      "main": [
+        [
+          {
+            "node": "Form - New Customer Thank You (Purchase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

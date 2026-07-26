@@ -1,0 +1,619 @@
+{
+  "name": "FFmpegAPI GIF to MP4",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/file",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Basic {{ $vars.FFMPEG_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"file_name\": \"{{ $item(\"0\").$node[\"Attach file\"].json[\"file\"][\"filename\"] }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        464
+      ],
+      "id": "570d5648-608f-4542-8ce9-70e7ef3727be",
+      "name": "Get Upload URL"
+    },
+    {
+      "parameters": {
+        "method": "={{ $('Get Upload URL').item.json.upload.method }}",
+        "url": "={{ $('Get Upload URL').item.json.upload.url }}",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "file",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -192,
+        400
+      ],
+      "id": "3da33f1c-e0f8-451d-9be3-acb2e5dd8576",
+      "name": "Upload File"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -416,
+        400
+      ],
+      "id": "f18e022e-77ac-4012-847e-e7ee512e4093",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/ffmpeg/process",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Basic {{ $vars.FFMPEG_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task\": {\n    \"inputs\": [{ \"file_path\": \"{{ $('Get Upload URL').item.json.file.file_path }}\" }],\n    \"outputs\": [\n      { \"file\": \"output.mp4\" }\n    ]\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        400
+      ],
+      "id": "bb1fe6af-143a-492e-99e1-43f492492fdf",
+      "name": "Process File",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Convert GIF",
+        "formDescription": "Upload a GIF to convert into MP4 using FFmpegAPI",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "file",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".gif",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "buttonLabel": "Convert",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "=Done"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -864,
+        400
+      ],
+      "id": "505e2ff2-7384-40b4-980e-25995cd09906",
+      "name": "Attach file",
+      "webhookId": "a83cbdac-055b-5fd8-946d-5ce4c74fe21e",
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Done!",
+        "completionMessage": "=Please download the file:\n[Download]({{ $json.body.result[0].download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        400
+      ],
+      "id": "b8dde8df-4737-4a56-b1de-845bdc3ee458",
+      "name": "Download URL",
+      "webhookId": "f97bfcfd-101d-5cb5-9036-ca5a92024b61"
+    },
+    {
+      "parameters": {
+        "content": "## Step 1\nCreate an account on [FFmpegAPI](https://ffmpeg-api.com/) and copy your API Key from the dashboard.\n\nGo to the **Variables** section from the left sidebar of this page. and use **FFMPEG_API_KEY** name to store that key you copied.",
+        "height": 240,
+        "width": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -16
+      ],
+      "id": "1dd63ead-d3a6-4d9e-a8b3-98b310d5e80c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Step 2\nClick the 'Execute workflow' button at the bottom. A pop-up window will open where you can select a GIF file from your PC. \n\nOnce you click convert, the workflow will:\na. get an upload file path\nb. upload that gif\nc. convert that to mp4\n\nYou'll get the final download URL when it's done.",
+        "height": 256,
+        "width": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "595d92db-a378-4187-92bf-06bbcc9cdd0c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Intro\n\nThis is an example workflow that demos the [FFmpegAPI](https://ffmpeg-api.com/) for file conversion. It only shows GIF to MP4 conversion, but you're free to modify it for your use case.",
+        "height": 240,
+        "width": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        -16
+      ],
+      "id": "59553a3f-914c-4b2a-bedd-ff0ae7d4a0a9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $json.upload.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        112,
+        704
+      ],
+      "id": "a044f54f-f28c-48fe-b874-dc8fbf5a4625",
+      "name": "upload"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        704
+      ],
+      "id": "50adc945-c42c-4303-a7a9-5264b0ca649b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/file",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"file_name\": \"video{{ $itemIndex }}.mp4\",\n  \"dir_id\": \"{{ $('HTTP Request2').item.json.directory.id }}\"\n\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -256,
+        704
+      ],
+      "id": "3790662c-58cc-4955-adcb-ddfb79d70552",
+      "name": "get_url",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get ALL items produced by HTTP Request1\nconst items = $items('download-video1');\n\n// Build the inputs array using file_path\nconst inputs = items.map(item => ({\n  file_path: item.json.file.file_path\n}));\n\n// Return ONE aggregated item\nreturn [\n  {\n    json: {\n      inputs,\n      number: inputs.length\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        704
+      ],
+      "id": "ed699c3e-f551-4c9f-86bc-8de55d72a467",
+      "name": "merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/directory",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -704,
+        704
+      ],
+      "id": "79a03252-ba84-4ac7-8751-2654790222cc",
+      "name": "HTTP Request2",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = [\n  {\n    name: \"first\",\n    link: \"https://drive.google.com/uc?export=download&id=YOUR_GOOGLE_FILE_ID\"\n  },\n  {\n    name: \"first\",\n    link: \"https://drive.google.com/uc?export=download&id=YOUR_GOOGLE_FILE_ID\"\n  },\n  {\n    name: \"first\",\n    link: \"https://drive.google.com/uc?export=download&id=YOUR_GOOGLE_FILE_ID\"\n  }\n];\n\nreturn data.map(item => ({\n  json: item,\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        704
+      ],
+      "id": "5c455f7c-58a3-43a0-94a4-d9f6a1ced5ea",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result[0].download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        704
+      ],
+      "id": "8afeea99-09ff-4b83-ab82-f4f2f3608905",
+      "name": "download-video"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/ffmpeg/process",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task\": {\n    \"inputs\": {{ JSON.stringify($json.inputs) }},\n    \"outputs\": [\n      {\n        \"file\": \"merged_video.mp4\",\n        \"options\": [\n          \"-filter_complex\", \"concat=n={{ $json.number }}:v=1:a=1 [v] [a]\",\n          \"-map\", \"[v]\",\n          \"-map\", \"[a]\",\n          \"-preset\", \"fast\"\n        ]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        736,
+        704
+      ],
+      "id": "0ba19eb6-c01a-4462-b059-8e19be3acf81",
+      "name": "ffmpeg-process",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Code in JavaScript').item.json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -64,
+        704
+      ],
+      "id": "e95c4e29-550a-4b7b-bb96-e86d98b12588",
+      "name": "download-video1"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        704
+      ],
+      "id": "83f0a971-a3fc-4a92-b482-54db1e444009",
+      "name": "Wait",
+      "webhookId": "6ad1e022-8ccf-519a-8e53-3133b2c2a369"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1088,
+        704
+      ],
+      "id": "f3f56c05-8f31-4c61-8187-8f028deefde6",
+      "name": "HTTP Request",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Get Upload URL": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload File": {
+      "main": [
+        [
+          {
+            "node": "Process File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process File": {
+      "main": [
+        [
+          {
+            "node": "Download URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Upload URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_url": {
+      "main": [
+        [
+          {
+            "node": "download-video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload": {
+      "main": [
+        [
+          {
+            "node": "merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "get_url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ffmpeg-process": {
+      "main": [
+        [
+          {
+            "node": "download-video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download-video1": {
+      "main": [
+        [
+          {
+            "node": "upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "ffmpeg-process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download-video": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

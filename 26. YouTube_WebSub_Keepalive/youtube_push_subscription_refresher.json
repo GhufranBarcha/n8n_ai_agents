@@ -1,0 +1,202 @@
+{
+  "name": "YouTube Push Subscription Refresher",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pubsubhubbub.appspot.com/subscribe",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "hub.callback",
+              "value": "https://your-n8n-instance.com/webhook/your-youtube-push-webhook"
+            },
+            {
+              "name": "hub.topic",
+              "value": "=https://www.youtube.com/xml/feeds/videos.xml?channel_id={{ $json.channels }}"
+            },
+            {
+              "name": "hub.verify",
+              "value": "sync"
+            },
+            {
+              "name": "hub.mode",
+              "value": "subscribe"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -64,
+        -112
+      ],
+      "id": "bffc62a4-70fc-4016-a22c-fc1ade81ee2a",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        -32
+      ],
+      "id": "7d55c7db-d6ee-4b3e-9250-c68112dd91b6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "channels",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -112
+      ],
+      "id": "ec46a80e-27c6-4f98-b508-539b9508216d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f22cbc16-7179-4b76-8fe4-de12dd03920e",
+              "name": "channels",
+              "value": "={\n'Animeaura1518': 'UCWntmC173IFBOzhbTYGcPsA',\n'scchanel206': 'UC7bl5ZjHFol6RdIXIBwP0-A',\n'mangamonarch': 'UCmXeNJgti1xOrLVXv51Rojw',\n'DomiAnime': 'UCHf-htlRRgVELIQwbNhAo-Q',\n'kimdokjastories': 'UCeIq5Jpz2FakH_VSfwyTOMA',\n'kimdokjastories': 'UCeIq5Jpz2FakH_VSfwyTOMA',\n'FlorinaXx': 'UCqOuf3Fi2iiNYw-jbJaQqug'\n}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        64
+      ],
+      "id": "5b87a030-3c8a-4a5d-9f0b-bc7df3bc7d9f",
+      "name": "channel_details"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f22cbc16-7179-4b76-8fe4-de12dd03920e",
+              "name": "channels",
+              "value": "={\n  'Animeaura1518': 'UCWntmC173IFBOzhbTYGcPsA',\n  'scchanel206': 'UC7bl5ZjHFol6RdIXIBwP0-A',\n  'mangamonarch': 'UCmXeNJgti1xOrLVXv51Rojw',\n  'DomiAnime': 'UCHf-htlRRgVELIQwbNhAo-Q',\n  'kimdokjastories': 'UCeIq5Jpz2FakH_VSfwyTOMA',\n  'AshleyChapman-o9q': 'UCNMbo7Ou0KyaiOOjtUdaszA',\n  'FlorinaXx': 'UCqOuf3Fi2iiNYw-jbJaQqug',\n  'AnimeBallsDeep': 'UCrNrl-jALrFZftgCrzjrfrw',\n  'GeniusAnimeExplains': 'UCA45o8JwnYcIYp2sEZ9wmKw',\n  'UnikAnimeExplains': 'UCERzSYW5xqZEb1JVHv7WanA',\n  'AnimeFacts': 'UCzNzgVd2E4_y411kSST3DoA',\n  'AnimeShorts': 'UC0HVzGrEpaORGMAReHNJLEQ',\n  'Animoments': 'UCvE_vESN6UWeVRYOSVu_z0w',\n  'AnimeDragonsDen': 'UCDAzmE9V4Xw5CdLkn3pvO3A'\n}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        -112
+      ],
+      "id": "46fcd17d-9354-462f-a681-63e69a1429ad",
+      "name": "channel_details1"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "get",
+        "videoId": "mDZQ5F_BkRQ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        288
+      ],
+      "id": "7f42d936-ed00-4939-b0ed-177db39c0290",
+      "name": "Get a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "channel_details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "channel_details1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "channel_details": {
+      "main": [
+        []
+      ]
+    },
+    "channel_details1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

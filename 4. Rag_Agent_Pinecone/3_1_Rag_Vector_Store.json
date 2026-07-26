@@ -13,10 +13,10 @@
         "triggerOn": "specificFile",
         "fileToWatch": {
           "__rl": true,
-          "value": "1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ",
+          "value": "YOUR_GOOGLE_FILE_ID",
           "mode": "list",
-          "cachedResultName": "Understanding_Climate_Change.pdf",
-          "cachedResultUrl": "https://drive.google.com/file/d/1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ/view?usp=drivesdk"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         }
       },
       "type": "n8n-nodes-base.googleDriveTrigger",
@@ -29,8 +29,8 @@
       "name": "Google Drive Trigger",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "k8L8ptNzDrq2vKkP",
-          "name": "Google Drive account"
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
         }
       }
     },
@@ -39,10 +39,10 @@
         "operation": "download",
         "fileId": {
           "__rl": true,
-          "value": "1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ",
+          "value": "YOUR_GOOGLE_FILE_ID",
           "mode": "list",
-          "cachedResultName": "Understanding_Climate_Change.pdf",
-          "cachedResultUrl": "https://drive.google.com/file/d/1W71kf4wCSrdympJXd1AnHiAsaDZVSveQ/view?usp=drivesdk"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "options": {}
       },
@@ -56,8 +56,8 @@
       "name": "Google Drive",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "k8L8ptNzDrq2vKkP",
-          "name": "Google Drive account"
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
         }
       }
     },
@@ -82,8 +82,8 @@
       "name": "Pinecone Vector Store",
       "credentials": {
         "pineconeApi": {
-          "id": "ZrrAuha1kGcQrsmf",
-          "name": "PineconeApi account"
+          "id": "AyezkCl9ODddUPFc",
+          "name": "YOUR_PINECONE_API_CREDENTIAL"
         }
       }
     },
@@ -101,8 +101,8 @@
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
-          "id": "oFM0JTAot8ZgzZXJ",
-          "name": "OpenAi account"
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
         }
       }
     },
@@ -160,7 +160,6 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
   "connections": {
     "Google Drive Trigger": {
       "main": [
@@ -222,11 +221,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4b98c727-2f9f-4205-a067-add8dd49147a",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
-  },
-  "id": "doIpwKxljFUi974s",
   "tags": []
 }

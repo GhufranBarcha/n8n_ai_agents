@@ -13,7 +13,7 @@
       ],
       "id": "6da9404a-747a-4190-ac4e-f5547faff6ea",
       "name": "When chat message received",
-      "webhookId": "8410459a-f4b9-4163-b602-30acf4af5186"
+      "webhookId": "50be9950-92b1-5cd0-ab50-38ee0c3ad35f"
     },
     {
       "parameters": {
@@ -52,8 +52,8 @@
       "name": "Pinecone Vector Store",
       "credentials": {
         "pineconeApi": {
-          "id": "ZrrAuha1kGcQrsmf",
-          "name": "PineconeApi account"
+          "id": "AyezkCl9ODddUPFc",
+          "name": "YOUR_PINECONE_API_CREDENTIAL"
         }
       }
     },
@@ -71,8 +71,8 @@
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
-          "id": "oFM0JTAot8ZgzZXJ",
-          "name": "OpenAi account"
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
         }
       }
     },
@@ -106,8 +106,8 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "oFM0JTAot8ZgzZXJ",
-          "name": "OpenAi account"
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
         }
       }
     },
@@ -127,7 +127,6 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
   "connections": {
     "When chat message received": {
       "main": [
@@ -189,11 +188,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "777d9b32-b7fe-4490-8c33-24aaf27af9d8",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
-  },
-  "id": "MLFXlYwXPJiDOcic",
   "tags": []
 }

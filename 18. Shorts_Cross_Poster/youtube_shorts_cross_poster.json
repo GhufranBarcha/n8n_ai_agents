@@ -1,0 +1,817 @@
+{
+  "name": "YouTube Shorts Cross-Poster",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "youtube-shorts-cross-poster-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -464
+      ],
+      "id": "40343fa3-62a4-468e-b39e-c419a1579207",
+      "name": "Webhook",
+      "webhookId": "08b99ec4-a670-5f33-9e8a-89f45b5f4fc9"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        208,
+        -464
+      ],
+      "id": "2a9d306f-e1e7-4bde-9356-ea21102777c4",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "youtube-shorts-cross-poster-webhook-listen-for-videos",
+        "options": {}
+      },
+      "id": "bd4eff56-6ae6-47dc-9375-c44b8fdcfcca",
+      "name": "Webhook (Listen for Videos)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -256
+      ],
+      "webhookId": "5b431f6b-fd65-5696-85a7-2eb6fc9e984b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f67713e5-ecee-4eb5-b62d-bfd224492d47",
+              "name": "title",
+              "value": "={{ $json.body.feed.entry.title }}",
+              "type": "string"
+            },
+            {
+              "id": "007410e6-6838-448e-a653-51436f9a239a",
+              "name": "id",
+              "value": "={{ $json.body.feed.entry['yt:videoid'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f6e457d5-d858-4fca-8872-d4cfa676785c",
+              "name": "channel_id",
+              "value": "={{ $json.body.feed.entry['yt:channelid'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c3252410-2898-49ac-98af-04a53b3f414c",
+              "name": "video_url",
+              "value": "={{ $json.body.feed.entry.link['$'].href }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -256
+      ],
+      "id": "cdaa5aa1-9a48-4989-a400-2cb476d16c64",
+      "name": "rename"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gemini-2.5-flash\",\n  \"input\": [\n    {\n      \"type\": \"video\",\n      \"uri\": \"{{ $json.input }}\"\n    },\n    {\n      \"type\": \"text\",\n      \"text\": \"You are an expert Pinterest SEO strategist specializing in anime, manga, and manhua content.\\n\\nAnalyze this YouTube Short and return ONLY valid JSON.\\n\\nDetermine:\\n- Anime/Manga/Manhua title (only if confidently identifiable)\\n- Characters shown\\n- Genre\\n- Theme\\n- Mood\\n- Scene type (Fight, Edit, AMV, Romance, Comedy, Emotional, Transformation, Power Showcase, etc.)\\n- Whether the clip contains spoilers.\\n\\nGenerate Pinterest-optimized metadata.\\n\\nReturn ONLY this JSON schema:\\n\\n{\\n  \\\"detected_series\\\": \\\"\\\",\\n  \\\"media_type\\\": \\\"Anime|Manga|Manhua|Unknown\\\",\\n  \\\"confidence\\\": 0.0,\\n  \\\"characters\\\": [],\\n  \\\"genre\\\": [],\\n  \\\"theme\\\": [],\\n  \\\"scene_type\\\": \\\"\\\",\\n  \\\"mood\\\": \\\"\\\",\\n  \\\"title\\\": \\\"\\\",\\n  \\\"description\\\": \\\"\\\",\\n  \\\"hashtags\\\": [],\\n  \\\"keywords\\\": [],\\n  \\\"search_queries\\\": [],\\n  \\\"board_suggestions\\\": [],\\n  \\\"pin_text_overlay\\\": \\\"\\\",\\n  \\\"cta\\\": \\\"\\\",\\n  \\\"spoiler_level\\\": \\\"none\\\",\\n  \\\"viral_score\\\": 0,\\n  \\\"summary\\\": \\\"\\\"\\n}\\n\\nRequirements:\\n- Title under 100 characters.\\n- Description between 250 and 500 characters.\\n- Include a natural call-to-action.\\n- Generate 20-30 Pinterest hashtags.\\n- Generate 20 Pinterest SEO keywords.\\n- Generate 10 Pinterest search queries.\\n- Suggest 5 Pinterest boards.\\n- Never invent anime names or character names.\\n- If uncertain, set detected_series to \\\"Unknown\\\" and lower confidence.\\n- Use only information present in the video.\\n- Return ONLY valid JSON with no markdown or additional text.\"\n    }\n  ]\n}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        -256
+      ],
+      "id": "213a4368-b4ff-4a5e-8f45-40b5024a9476",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert Pinterest and Facebook SEO strategist specializing in anime, manga, and manhua content.\n\nAnalyze this YouTube Short and return ONLY valid JSON.\n\nDetermine:\n- Anime/Manga/Manhua title\n- Genre\n- Theme\n\nBased on your analysis, you MUST select the most relevant Pinterest Board from the following strict list. DO NOT invent boards.\n\nAVAILABLE BOARDS:\n1. \"Best Manhwa Recommendations\" - Use for all Korean Manhwa and Webtoons.\n2. \"Epic Anime Edits & Shorts\" - Use for animated Japanese Anime clips.\n3. \"Isekai & Fantasy Webtoons\" - Use for any comic involving reincarnation, magic, or fantasy worlds.\n4. \"Manga Panels & Moments\" - Use for Japanese Manga panels (black and white).\n5. \"The Otaku Stream Daily\" - Default. Use only if you are completely unsure.\n\nGenerate social media metadata for both Pinterest and Facebook Reels.\n\nReturn ONLY this JSON schema:\n\n{\n  \"media_type\": \"Anime|Manga|Manhua|Unknown\",\n  \"genre\": [],\n  \"title\": \"\",\n  \"description\": \"\",\n  \"hashtags\": [],\n  \"selected_board_name\": \"\",\n  \"fb_title\": \"\",\n  \"fb_caption\": \"\",\n  \"fb_hashtags\": []\n}\n\nRequirements:\n- Pinterest Title (`title`): Under 100 characters.\n- Pinterest Description (`description`): Between 250 and 500 characters.\n- Pinterest Hashtags (`hashtags`): Generate 20-30 Pinterest hashtags.\n- \"selected_board_name\": MUST be one of the 5 exact names listed above.\n- Facebook Reel Title (`fb_title`): Short, punchy hook under 60 characters.\n- Facebook Reel Caption (`fb_caption`): Engaging caption designed for Facebook Reels engagement (150-300 characters).\n- Facebook Hashtags (`fb_hashtags`): Array of 3-5 high-volume Facebook hashtags (e.g., [\"#AnimeReels\", \"#Manhwa\", \"#Otaku\"]).\n- Return ONLY valid JSON with no markdown or additional text.\n\nVideo Analysis:\n{{ $json.steps[1].content[0].text }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1216,
+        -256
+      ],
+      "id": "3e5d2bde-94fa-47f2-96b9-93631c41001d",
+      "name": "Basic LLM Chain",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "z-ai/glm-5.2",
+          "mode": "list",
+          "cachedResultName": "z-ai/glm-5.2"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        -32
+      ],
+      "id": "545de162-d89c-4567-a389-78b078931c68",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"media_type\": {\n      \"type\": \"string\",\n      \"enum\": [\"Anime\", \"Manga\", \"Manhua\", \"Unknown\"]\n    },\n    \"genre\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"title\": {\n      \"type\": \"string\"\n    },\n    \"description\": {\n      \"type\": \"string\"\n    },\n    \"hashtags\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"selected_board_name\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Best Manhwa Recommendations\",\n        \"Epic Anime Edits & Shorts\",\n        \"Isekai & Fantasy Webtoons\",\n        \"Manga Panels & Moments\",\n        \"The Otaku Stream Daily\"\n      ]\n    },\n    \"fb_title\": {\n      \"type\": \"string\"\n    },\n    \"fb_caption\": {\n      \"type\": \"string\"\n    },\n    \"fb_hashtags\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"media_type\",\n    \"genre\",\n    \"title\",\n    \"description\",\n    \"hashtags\",\n    \"selected_board_name\",\n    \"fb_title\",\n    \"fb_caption\",\n    \"fb_hashtags\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        -32
+      ],
+      "id": "0b048e43-60c1-43c1-a505-c3c5b6eade35",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb39139d-d6d8-4c4d-8023-8aea012a4edd",
+              "name": "media_type",
+              "value": "={{ $json.output.media_type }}",
+              "type": "string"
+            },
+            {
+              "id": "41a1c9bb-8d4a-4abc-85d5-6248295e1e92",
+              "name": "output.genre",
+              "value": "={{ $json.output.genre }}",
+              "type": "array"
+            },
+            {
+              "id": "ce8daaf8-5c88-41e2-b41b-63beceb8ebad",
+              "name": "title",
+              "value": "={{ $json.output.title }}",
+              "type": "string"
+            },
+            {
+              "id": "2894052c-377f-4603-bac8-eaa3841c13a2",
+              "name": "description",
+              "value": "={{ $json.output.description }}",
+              "type": "string"
+            },
+            {
+              "id": "da8c052e-df13-44af-92b3-0aadc931f407",
+              "name": "board_id",
+              "value": "={{ ({\n  \"Best Manhwa Recommendations\": \"YOUR_BOARD_ID_1\",\n  \"Epic Anime Edits & Shorts\": \"YOUR_BOARD_ID_2\",\n  \"Isekai & Fantasy Webtoons\": \"YOUR_BOARD_ID_3\",\n  \"Manga Panels & Moments\": \"YOUR_BOARD_ID_4\",\n  \"The Otaku Stream Daily\": \"YOUR_BOARD_ID_5\"\n})[$json.output.selected_board_name] || \"YOUR_BOARD_ID_5\" }}",
+              "type": "string"
+            },
+            {
+              "id": "7214e3c1-9ac2-4f4d-ad45-fcd8b0ecbea7",
+              "name": "hashtags",
+              "value": "={{ $json.output.hashtags.slice(0, 5).join(', ') }}",
+              "type": "string"
+            },
+            {
+              "id": "85e2be82-0c99-4def-97ba-f8b9a1891108",
+              "name": "video_url",
+              "value": "={{ $('Run an Actor and get dataset').item.json.downloadedFileUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "adf699a3-b985-4638-8116-ba77f4946877",
+              "name": "fb_title",
+              "value": "={{ $json.output.fb_title }}",
+              "type": "string"
+            },
+            {
+              "id": "9571da19-cd82-4a7b-9c3d-45fc5ac23099",
+              "name": "fb_caption",
+              "value": "={{ $json.output.fb_caption }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        -256
+      ],
+      "id": "3f19b7ef-8799-444b-93ca-67260d16a339",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        -32
+      ],
+      "id": "eff18ba3-2dcc-4202-ad98-2041ce50753a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## YouTube Shorts to Pinterest Video Pin Scheduler\n\nThis workflow helps anime, manga, manhwa, and manhua creators automatically repurpose YouTube Shorts into scheduled Pinterest video pins with AI-generated SEO metadata.\n\n### How it works\n\nThe workflow receives new YouTube Short data through a webhook, extracts the video title, video ID, channel ID, and video URL, then sends the video to Apify for processing. After that, an AI model analyzes the video and generates Pinterest-ready metadata, including the media type, genre, title, description, hashtags, and the most relevant Pinterest board. The structured output parser validates the AI response, then the workflow maps the selected board name to the correct Pinterest board ID and schedules the final video pin through the publishing API.\n\n### Setup\n\nAdd your own Apify, AI model, and publishing API credentials inside n8n credentials. Replace all example webhook URLs, account IDs, board IDs, API endpoints, and test data with your own values before activating the workflow.\n\nDo not hardcode private API keys inside HTTP Request nodes. Use n8n credentials for all sensitive information.\n\n### Customization tips\n\nYou can customize the AI prompt, Pinterest board list, board ID mapping, posting delay, hashtag limit, and description style to match your niche.",
+        "height": 624,
+        "width": 672
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -704,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "0075c556-1fe7-4f4c-9905-e6940ea1a46d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Need help customizing this workflow?\n\nI'm **Your Name**, an **AI Engineer** and **AI Automation Solution Expert**.  \nI build custom n8n workflows, AI agents, API integrations, lead generation systems, and automation solutions for businesses and creators.\n\n- GitHub: [your-username](https://github.com/your-username)\n- Upwork: [Hire me on Upwork](https://www.upwork.com/freelancers/~your-upwork-profile-id)\n- Fiverr: [Order on Fiverr](https://www.fiverr.com/sellers/your-username)\n- LinkedIn: [Connect with me](https://www.linkedin.com/in/your-username)\n\nNeed a custom automation like this? Feel free to reach out.",
+        "height": 304,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2000,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "ecc1aa6b-a07c-4c5c-8d14-81669060158c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Workflow steps\n\n1. Receive YouTube Short data  \n2. Extract video details  \n3. Process the video with Apify  \n4. Analyze the video with AI  \n5. Generate Pinterest SEO metadata  \n6. Map the selected Pinterest board  \n7. Schedule the final video pin",
+        "height": 256,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2016,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "8db84345-61ca-462b-b917-d8c376d78acb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fb423c80-95de-4f63-be91-61a911e977d3",
+              "leftValue": "={{ $json.body.feed.entry.link['$'].href }}",
+              "rightValue": "shorts",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        -256
+      ],
+      "id": "e0546dce-bdee-43a0-84d7-37ba4a13bb5f",
+      "name": "short checker"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zernio.com/api/v1/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": {{ JSON.stringify($json.description) }},\n  \"mediaItems\": [\n    {\n      \"type\": \"video\",\n      \"url\": {{ JSON.stringify($json.video_url) }}\n    }\n  ],\n  \"platforms\": [\n    {\n      \"platform\": \"pinterest\",\n      \"accountId\": \"YOUR-PINTEREST-ACCOUNT-ID\",\n      \"platformSpecificData\": {\n        \"title\": {{ JSON.stringify($json.title) }},\n        \"boardId\": {{ JSON.stringify($json.board_id) }}\n      }\n    }\n  ],\n  \"scheduledFor\": \"{{ $now.plus(5, 'minutes').setZone('utc').toISO() }}\",\n  \"publishNow\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1808,
+        -352
+      ],
+      "id": "c042e679-356f-4bfd-a5c6-d7bf3bb57de6",
+      "name": "pinterest posting",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zernio.com/api/v1/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": {{ JSON.stringify($json.fb_caption) }},\n  \"mediaItems\": [\n    {\n      \"type\": \"video\",\n      \"url\": {{ JSON.stringify($json.video_url) }}\n    }\n  ],\n  \"platforms\": [\n    {\n      \"platform\": \"facebook\",\n      \"accountId\": \"YOUR-FACEBOOK-ACCOUNT-ID\",\n      \"platformSpecificData\": {\n        \"contentType\": \"reel\",\n        \"title\": {{ JSON.stringify($json.fb_title) }}\n      }\n    }\n  ],\n  \"scheduledFor\": \"{{ $now.plus(10, 'minutes').setZone('utc').toISO() }}\",\n  \"publishNow\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1824,
+        -144
+      ],
+      "id": "db305e98-43ba-415a-82bd-f378643dcd5e",
+      "name": "Facebook Page",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "UUhJDfKJT2SsXdclR",
+          "mode": "id"
+        },
+        "customBody": "={\n    \"preferredFormat\": \"mp4\",\n    \"preferredQuality\": \"2160p\",\n    \"storeInKVStore\": true,\n    \"videos\": [\n        {\n            \"url\": \"{{ $json.video_url }}\"\n        }\n    ]\n}",
+        "timeout": {},
+        "memory": 4096
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -256
+      ],
+      "id": "87d38cba-bc49-4695-a2d1-b3a0eed61109",
+      "name": "Run an Actor and get dataset",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "apifyApi": {
+          "id": "f4qGUMuYuUUHyXqt",
+          "name": "YOUR_APIFY_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "70022bf8-b5de-430e-b8ce-b3c0b0d86e47",
+              "leftValue": "={{ $('Run an Actor and get dataset').item.json.durationSeconds }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1632,
+        16
+      ],
+      "id": "087beb4c-f782-4ff2-81c2-aacaca032d85",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zernio.com/api/v1/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": {{ JSON.stringify($json.fb_caption) }},\n  \"mediaItems\": [\n    {\n      \"type\": \"video\",\n      \"url\": {{ JSON.stringify($json.video_url) }}\n    }\n  ],\n  \"platforms\": [\n    {\n      \"platform\": \"facebook\",\n      \"accountId\": \"YOUR-FACEBOOK-ACCOUNT-ID\",\n      \"platformSpecificData\": {\n        \"contentType\": \"video\",\n        \"title\": {{ JSON.stringify($json.fb_title) }}\n      }\n    }\n  ],\n  \"scheduledFor\": \"{{ $now.plus(10, 'minutes').setZone('utc').toISO() }}\",\n  \"publishNow\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1824,
+        112
+      ],
+      "id": "35c5ab3f-f0f4-45b9-8342-dac035d093e5",
+      "name": "Facebook Page1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "087fc2d6-9ad5-4031-a332-3c38f7c61902",
+              "leftValue": "={{ $json.creator.canPostMore }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1968,
+        -752
+      ],
+      "id": "74526c27-486e-4347-a8a9-26dcb344cb6b",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "https://zernio.com/api/v1/accounts/YOUR-TIKTOK-ACCOUNT-ID/tiktok/creator-info",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "mediaType",
+              "value": "video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        -752
+      ],
+      "id": "4c0ab8d4-cc78-40f4-8a49-2faf3dc7e9de",
+      "name": "Check TikTok",
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zernio.com/api/v1/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"{{ $('Basic LLM Chain').item.json.output.title }}\",\n  \"mediaItems\": [\n    {\n      \"type\": \"video\",\n      \"url\": \"{{ $('Run an Actor and get dataset').item.json.downloadedFileUrl }}\"\n    }\n  ],\n  \"platforms\": [\n    {\n      \"platform\": \"tiktok\",\n      \"accountId\": \"YOUR-TIKTOK-ACCOUNT-ID\"\n    }\n  ],\n  \"tiktokSettings\": {\n    \"privacy_level\": \"PUBLIC_TO_EVERYONE\",\n    \"allow_comment\": true,\n    \"allow_duet\": true,\n    \"allow_stitch\": true,\n    \"content_preview_confirmed\": true,\n    \"express_consent_given\": true\n  },\n  \"scheduledFor\": \"{{ $now.plus(3, 'minutes').setZone('utc').toISO() }}\",\n  \"publishNow\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2272,
+        -896
+      ],
+      "id": "55940780-01ac-4dd3-a705-556147e73ca1",
+      "name": "Post Tiktok",
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zernio.com/api/v1/posts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "lateApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"{{ $('Basic LLM Chain').item.json.output.title }}\",\n  \"mediaItems\": [\n    {\n      \"type\": \"video\",\n      \"url\": \"{{ $('Run an Actor and get dataset').item.json.downloadedFileUrl }}\"\n    }\n  ],\n  \"platforms\": [\n    {\n      \"platform\": \"tiktok\",\n      \"accountId\": \"YOUR-TIKTOK-ACCOUNT-ID\"\n    }\n  ],\n  \"tiktokSettings\": {\n    \"privacy_level\": \"PUBLIC_TO_EVERYONE\",\n    \"allow_comment\": true,\n    \"allow_duet\": true,\n    \"allow_stitch\": true,\n    \"content_preview_confirmed\": true,\n    \"express_consent_given\": true\n  },\n  \"scheduledFor\": \"{{ $now.plus(1, 'days').setZone('utc').toISO() }}\",\n  \"publishNow\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2448,
+        -736
+      ],
+      "id": "216b0ad5-6917-4417-acb5-66e13673aff0",
+      "name": "Post Tiktok1",
+      "credentials": {
+        "lateApi": {
+          "id": "v2FZyAzBj8tAcxPm",
+          "name": "YOUR_LATE_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (Listen for Videos)": {
+      "main": [
+        [
+          {
+            "node": "short checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "rename": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "pinterest posting",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check TikTok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "short checker": {
+      "main": [
+        [
+          {
+            "node": "rename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pinterest posting": {
+      "main": [
+        []
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Facebook Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Facebook Page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check TikTok": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Post Tiktok",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Tiktok1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

@@ -1,0 +1,150 @@
+{
+  "name": "SSH Remote Video Renderer",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        112,
+        0
+      ],
+      "id": "8c22792a-b87b-454a-9bcc-a17b38eb57ee",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/youtube_image.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        304,
+        0
+      ],
+      "id": "4eb6d521-7dd3-4462-a9df-81d6585fbdc5",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/ubuntu/",
+        "options": {
+          "fileName": "background_image.png"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "f2839a58-730e-4283-ae86-e99e9ee488bf",
+      "name": "Upload a file",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=ffmpeg -y \\\n-loop 1 -i /home/ubuntu/background_image.png \\\n-i /home/ubuntu/subtitle.mp3 \\\n-vf \"subtitles=/home/ubuntu/subtitles.ass\" \\\n-c:v libx264 -preset veryfast -crf 35 \\\n-c:a aac -b:a 64k \\\n-shortest /home/ubuntu/output_video.mp4"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "62b039a5-c42f-47ee-80b2-d792fa70158b",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "operation": "download",
+        "path": "/home/ubuntu/output_video.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        896,
+        0
+      ],
+      "id": "938a2445-eb85-462c-9770-b8dd539fd40a",
+      "name": "Download a file",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Download a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

@@ -1,0 +1,1153 @@
+{
+  "name": "Voice Agent Appointment Backend",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "timeMin": "={{ DateTime.fromISO($json.date_time).toISO() }}",
+        "timeMax": "={{ DateTime.fromISO($json.date_time).plus({ hours: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        -16
+      ],
+      "id": "aaee2518-5cbb-463e-a805-ecbf40f8034f",
+      "name": "Get availability in a calendar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8df58f43-e52c-4da9-87fa-19e6367b0584",
+              "name": "tool_id",
+              "value": "={{ $json.body.message.toolCalls[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "eced08ce-9937-45ba-9593-5ec92ecc3779",
+              "name": "date_time",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.date_time }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        -16
+      ],
+      "id": "1e5ec229-02ed-44c0-b53f-13716a1da150",
+      "name": "Input_data"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-scheduler-checkavailability",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -16
+      ],
+      "id": "e93c41d0-354b-4de6-87c0-c3809b19c30b",
+      "name": "checkAvailability",
+      "webhookId": "610ff86c-c4c5-5644-889c-2f3c533c29c9"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-scheduler-createappointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        352
+      ],
+      "id": "d2d7bcd1-a1ad-4a59-928d-e897bd64a7d8",
+      "name": "createAppointment",
+      "webhookId": "610ff86c-c4c5-5644-889c-2f3c533c29c9"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"results\": [\n    {\n      \"toolCallId\": \"{{ $('Input_data1').item.json.tool_id }}\",\n      \"result\": \"Status: {{ $json.status }}\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        288,
+        352
+      ],
+      "id": "f060836b-afda-4567-baa3-4613376140fc",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "start": "={{ $json.start_time }}",
+        "end": "={{ $json.start_time.toDateTime().plus(1, 'hour') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $json.email }}"
+          ],
+          "description": "=Scedule Appointment with Wellness Dentist with Mr. {{ $json.name }} at {{ $json.start_time.toDateTime().format('yyyy-MM-dd hh:mm') }}",
+          "summary": "={{ $json.service }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        352
+      ],
+      "id": "16d94e31-fd22-4071-a54a-1b660d720a4d",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1d04dd14-4b8b-41c0-b016-cf7cca8cfe34",
+              "leftValue": "={{ $json.available }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        -16
+      ],
+      "id": "5ad93774-7c65-4f8b-8527-62dc958804fb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"results\": [\n    {\n      \"toolCallId\": \"{{ $('Input_data').item.json.tool_id }}\",\n      \"result\": \"Available: {{ $json.available }}\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        -160
+      ],
+      "id": "c8cc84a4-984e-46e4-9a85-dd117fab4302",
+      "name": "respondAvailable"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"results\": [\n    {\n      \"toolCallId\": \"{{ $('Input_data').item.json.tool_id }}\",\n      \"result\": \"That slot is not available. These are available date and times: {{ $json.available_slots_summary }}\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1344,
+        128
+      ],
+      "id": "e752bfdc-54c3-435f-9d52-c548a5352ccc",
+      "name": "respondNotAvailable"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Time: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1744,
+        512
+      ],
+      "id": "705b1a0c-15ae-456b-a325-a425c4764059",
+      "name": "AI Agent1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        1520,
+        512
+      ],
+      "id": "83348ac6-1be5-4506-9baa-2d017551c18c",
+      "name": "When chat message received",
+      "webhookId": "a07d2a31-7edf-5e6f-9936-1465d4aff136",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        720
+      ],
+      "id": "beb1096c-b346-484a-8705-138ed6248491",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1904,
+        912
+      ],
+      "id": "97c4ff71-2d28-46e4-9803-82408ff6c1ef",
+      "name": "getManyEvents",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "attendees": [],
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2032,
+        896
+      ],
+      "id": "d1f66f3d-ec07-4cfc-b41d-6b8f2b05f288",
+      "name": "createEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2192,
+        880
+      ],
+      "id": "8bcca3f1-6d33-46e5-9006-2dadac33e83a",
+      "name": "checkAvailability1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        912
+      ],
+      "id": "82bff7aa-e4be-4a28-ba73-623cfd6d2f69",
+      "name": "updateEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "returnAll": true,
+        "options": {
+          "orderBy": "startTime"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        112
+      ],
+      "id": "2da00a08-d87e-4eeb-9c86-28441d057f27",
+      "name": "Get many events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "077adbce-aafc-4e95-8205-0e3ec362869e",
+              "name": "start",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "fe0f148e-b716-408e-b246-e6a3614c2be5",
+              "name": "end",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "5fc1fc11-89e6-4b70-aa0f-7b06f5c356a2",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "9d42e4ab-f39b-4a8a-ac56-70e866e063c6",
+              "name": "sort",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "c7a0cd0a-df23-4397-8259-84eb5eba01cf",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        128
+      ],
+      "id": "83734bd3-2415-4626-8da7-96861f0260cc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "sort"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        832,
+        128
+      ],
+      "id": "4ddd7e09-8b40-4a03-9e26-c044379c51c5",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        976,
+        128
+      ],
+      "id": "86472bdb-2275-4957-838c-059df1af91e6",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Setup Business Hours & Timezone\nconst timezone = 'Asia/Karachi';\nconst WORK_START_HOUR = 9;\nconst WORK_END_HOUR = 18;\nconst BUFFER_HOURS = 2; // Minimum 2 hours from now\n\n// 2. Get current time and earliest bookable time\nconst now = DateTime.now().setZone(timezone);\nconst earliestBookableTime = now.plus({ hours: BUFFER_HOURS });\n\n// 3. Get the requested date from Input_data node\nconst requestedDateTime = DateTime.fromISO($('Input_data').first().json.date_time, { zone: timezone });\n\n// 4. Extract busy slots from Google Calendar events\nconst inputData = items[0].json.data || [];\n\n// Parse all busy slots and convert to timezone\nconst busySlots = inputData\n  .map(slot => ({\n    start: DateTime.fromISO(slot.start, { zone: timezone }),\n    end: DateTime.fromISO(slot.end, { zone: timezone })\n  }))\n  .sort((a, b) => a.start - b.start);\n\n// 5. Generate next 7 working days (Mon-Fri only) starting from today\nconst workDays = [];\nlet checkDate = now.startOf('day');\n\nfor (let i = 0; i < 14 && workDays.length < 7; i++) {\n  const dayOfWeek = checkDate.weekday; // 1=Mon, 7=Sun\n  if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Mon-Fri only\n    workDays.push(checkDate);\n  }\n  checkDate = checkDate.plus({ days: 1 });\n}\n\n// 6. Function to find available slots for a given day\nfunction getAvailableSlotsForDay(day) {\n  const dateOnly = day.toISODate();\n  let dayStart = DateTime.fromISO(`${dateOnly}T${String(WORK_START_HOUR).padStart(2, '0')}:00:00`, { zone: timezone });\n  const dayEnd = DateTime.fromISO(`${dateOnly}T${String(WORK_END_HOUR).padStart(2, '0')}:00:00`, { zone: timezone });\n  \n  // If this is today, start from earliestBookableTime (now + 2 hours)\n  if (dateOnly === now.toISODate()) {\n    // Round up to next hour for cleaner slots\n    const roundedEarliest = earliestBookableTime.minute > 0 \n      ? earliestBookableTime.startOf('hour').plus({ hours: 1 })\n      : earliestBookableTime.startOf('hour');\n    \n    if (roundedEarliest > dayStart) {\n      dayStart = roundedEarliest;\n    }\n  }\n  \n  // If day has already ended or start is after end, no slots available\n  if (dayStart >= dayEnd) {\n    return [];\n  }\n  \n  // Filter busy slots for this specific day\n  const dayBusySlots = busySlots\n    .filter(slot => slot.start.toISODate() === dateOnly)\n    .sort((a, b) => a.start - b.start);\n  \n  let availableSlots = [];\n  let currentTime = dayStart;\n  \n  if (dayBusySlots.length === 0) {\n    availableSlots.push({ start: dayStart, end: dayEnd });\n  } else {\n    dayBusySlots.forEach(busy => {\n      const effectiveBusyStart = busy.start < dayStart ? dayStart : busy.start;\n      const effectiveBusyEnd = busy.end;\n      \n      if (currentTime < effectiveBusyStart) {\n        availableSlots.push({ start: currentTime, end: effectiveBusyStart });\n      }\n      if (effectiveBusyEnd > currentTime) {\n        currentTime = effectiveBusyEnd;\n      }\n    });\n    \n    if (currentTime < dayEnd) {\n      availableSlots.push({ start: currentTime, end: dayEnd });\n    }\n  }\n  \n  return availableSlots;\n}\n\n// 7. Format time to readable string (e.g., \"9am\", \"5pm\")\nfunction formatTime(dt) {\n  return dt.toFormat('ha').toLowerCase();\n}\n\n// 8. Build availability summary - intuitive format\nconst availabilityParts = [];\n\nworkDays.forEach(day => {\n  const slots = getAvailableSlotsForDay(day);\n  if (slots.length > 0) {\n    const dayName = day.toFormat('ccc d MMM'); // e.g., \"Wed 7 Jan\"\n    const slotsText = slots.map(s => `${formatTime(s.start)}-${formatTime(s.end)}`).join(' and ');\n    availabilityParts.push(`${dayName}: ${slotsText}`);\n  }\n});\n\n// 9. Create final human-readable summary\nconst available_slots_summary = availabilityParts.join(' | ');\n\n// 10. Return result - clean single output\nreturn {\n  available_slots_summary: available_slots_summary\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        128
+      ],
+      "id": "6295d044-6473-4fb9-a17d-3f3e24d13e26",
+      "name": "configure slots"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8df58f43-e52c-4da9-87fa-19e6367b0584",
+              "name": "tool_id",
+              "value": "={{ $json.body.message.toolCalls[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "9782b0dd-ec26-4b6c-9933-12c0e7fe9c1b",
+              "name": "number",
+              "value": "={{ $json.body.message.customer.number }}",
+              "type": "string"
+            },
+            {
+              "id": "c73ab32e-479b-42f5-94fb-78222e5af9a0",
+              "name": "email",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.email }}",
+              "type": "string"
+            },
+            {
+              "id": "32ebf7d5-0e2c-44c1-b5fd-61f30aaf461b",
+              "name": "name",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.email }}",
+              "type": "string"
+            },
+            {
+              "id": "e1828287-6442-4dc0-a1d3-127e3cd7c988",
+              "name": "reason",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.reason }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        592
+      ],
+      "id": "f22c3fb8-bcb9-4180-8dea-c42df07d95e5",
+      "name": "Input_data2"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"results\": [\n    {\n      \"toolCallId\": \"{{ $('Input_data2').item.json.tool_id }}\",\n      \"result\": \"Status: {{ $json.success }}\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        560
+      ],
+      "id": "f115ad32-618a-4d8f-8771-bf713af016b7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "YOUR_DATATABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "full_name": "={{ $('Input_data1').item.json.name }}",
+            "phone_number": "={{ $('Input_data1').item.json.call_num }}",
+            "email": "={{ $('Input_data1').item.json.email }}",
+            "service": "={{ $('Input_data1').item.json.service }}",
+            "eventId": "={{ $('Create an event').item.json.id }}",
+            "description": "={{ $('Create an event').item.json.description }}",
+            "summary": "={{ $('Create an event').item.json.summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "eventId",
+              "displayName": "eventId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        352
+      ],
+      "id": "23d22d19-8bc9-447e-9470-816d43be55dc",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8df58f43-e52c-4da9-87fa-19e6367b0584",
+              "name": "tool_id",
+              "value": "={{ $json.body.message.toolCalls[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "eced08ce-9937-45ba-9593-5ec92ecc3779",
+              "name": "start_time",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.start_time }}",
+              "type": "string"
+            },
+            {
+              "id": "b04a04c3-d541-47a9-b8a4-b2afc54c66a4",
+              "name": "end_time",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.end_time }}",
+              "type": "string"
+            },
+            {
+              "id": "9782b0dd-ec26-4b6c-9933-12c0e7fe9c1b",
+              "name": "number",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.number }}",
+              "type": "string"
+            },
+            {
+              "id": "c73ab32e-479b-42f5-94fb-78222e5af9a0",
+              "name": "email",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.email }}",
+              "type": "string"
+            },
+            {
+              "id": "32ebf7d5-0e2c-44c1-b5fd-61f30aaf461b",
+              "name": "name",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.name }}",
+              "type": "string"
+            },
+            {
+              "id": "e1828287-6442-4dc0-a1d3-127e3cd7c988",
+              "name": "service",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.service }}",
+              "type": "string"
+            },
+            {
+              "id": "a2ae7d1a-5bbd-4249-8b91-a86071432606",
+              "name": "call_num",
+              "value": "={{ $json.body.message.customer.number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        352
+      ],
+      "id": "e2777ace-ec8a-4ecf-a8d0-98532bae99b3",
+      "name": "Input_data1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-scheduler-deleteappointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -576,
+        592
+      ],
+      "id": "4f6e0e6c-9848-45b4-bdfc-558a341939c7",
+      "name": "deleteAppointment",
+      "webhookId": "610ff86c-c4c5-5644-889c-2f3c533c29c9"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "eventId": "={{ $json.eventId }}",
+        "options": {
+          "sendUpdates": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        592
+      ],
+      "id": "edd694af-ce9d-419f-9710-a814744e4314",
+      "name": "Delete an event",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YOUR_DATATABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_number",
+              "keyValue": "={{ $json.number }}"
+            },
+            {
+              "keyName": "email",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        592
+      ],
+      "id": "223fa60b-7af2-4533-812a-7f4bbb694f95",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YOUR_DATATABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Get row(s)').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        560
+      ],
+      "id": "a328dfee-5751-4f45-b8b7-618608f40265",
+      "name": "Delete row(s)"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"results\": [\n    {\n      \"toolCallId\": \"{{ $('Input_data2').item.json.tool_id }}\",\n      \"result\": \"Status: true\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        752
+      ],
+      "id": "857e802d-06b0-4585-996f-ff0c93e5bb7e",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "connections": {
+    "Get availability in a calendar": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input_data": {
+      "main": [
+        [
+          {
+            "node": "Get availability in a calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkAvailability": {
+      "main": [
+        [
+          {
+            "node": "Input_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createAppointment": {
+      "main": [
+        [
+          {
+            "node": "Input_data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "respondAvailable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getManyEvents": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkAvailability1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "configure slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "configure slots": {
+      "main": [
+        [
+          {
+            "node": "respondNotAvailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input_data2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input_data1": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteAppointment": {
+      "main": [
+        [
+          {
+            "node": "Input_data2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Delete an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

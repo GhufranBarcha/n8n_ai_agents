@@ -1,0 +1,1221 @@
+{
+  "name": "Car Body Shop Estimator Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "288c76ae-4fd4-4efb-a327-e30ea6211def"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Note"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dae1af87-0f05-4e87-8f1d-17a6e6215500",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Note"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c34693fb-9a52-4541-b65f-0e0abcbfad7d",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        560
+      ],
+      "id": "011c9ad8-809c-4948-853c-594949f2e36d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        320
+      ],
+      "id": "36591d2a-1519-43d7-bb40-4763c1e96860",
+      "name": "Get Audio",
+      "webhookId": "473f6e55-1f83-5cbb-b15a-09729341e1c5",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        784,
+        320
+      ],
+      "id": "09a7bf5e-7b11-4baf-b351-bfce20a43d85",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dad594c7-d8a7-4838-aa7f-d8712cede719",
+              "name": "Instructions",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        560
+      ],
+      "id": "c9f3f402-f081-4625-bf53-2bb9095bcde9",
+      "name": "Edit Fields",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[2].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        736
+      ],
+      "id": "e0edf43c-b49c-498c-a7e0-6eee7bd03225",
+      "name": "Telegram2",
+      "webhookId": "55a7e09e-c073-58b3-bf1d-22c7e5c3390f",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list"
+        },
+        "text": "={{ $('Telegram Trigger').item.json.message.caption || \"describe this image\" }}",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        592,
+        1792
+      ],
+      "id": "02f8a9bd-d678-4caf-8224-40206e475ba3",
+      "name": "OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        560
+      ],
+      "id": "e3f1ce03-5c6b-4f85-bb52-c8052bedefbd",
+      "name": "Telegram Trigger",
+      "webhookId": "59a4785c-4b32-5abb-a916-4a18e7af0cbe",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1360,
+        544
+      ],
+      "id": "f6b9a243-939a-46af-95f5-0bb7225d2c46",
+      "name": "Merge",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// ---- Config: put your allowed Telegram user IDs here ----\nconst ALLOW_LIST = new Set([\n  YOUR_TELEGRAM_CHAT_ID,   // you\n  YOUR_TELEGRAM_CHAT_ID\n  // 123456789,  // tester 1\n  // 987654321,  // tester 2\n]);\n\n// Helper: extract chatID/fromID from various Telegram update types\nfunction extractIds(update = {}) {\n  const msg =\n    update.message ||\n    update.edited_message ||\n    update.channel_post ||\n    update.edited_channel_post ||\n    (update.callback_query && update.callback_query.message) ||\n    null;\n\n  const fromObj =\n    update.from ||\n    (update.callback_query && update.callback_query.from) ||\n    (msg && msg.from) ||\n    null;\n\n  const chatObj = (msg && msg.chat) || null;\n\n  const fromID = fromObj?.id ?? null;\n  const chatID = chatObj?.id ?? null;\n\n  return { fromID, chatID };\n}\n\n// Map each incoming item to include flags + safe fields\nconst out = $input.all().map(item => {\n  const j = item.json || {};\n  const { fromID, chatID } = extractIds(j);\n  const authorized = fromID != null && ALLOW_LIST.has(Number(fromID));\n\n  // ✅ Output BOTH casings for backward compatibility\n  item.json.fromID = fromID;\n  item.json.fromId = fromID;  // lowercase for old nodes\n  item.json.chatID = chatID;\n  item.json.chatId = chatID;  // lowercase for old nodes\n  item.json.authorized = authorized;\n\n  // ✅ Add a unique traceId for this run\n  item.json.traceId =\n    'trace-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);\n\n  // Optional: prebuild a polite reply for unknown users\n  if (!authorized && chatID != null) {\n    item.json.reply = {\n      method: \"sendMessage\",\n      chat_id: chatID,\n      text:\n        \"🚧 Bot is currently in demo mode. Access is restricted.\\n\\n\" +\n        \"If you think this is a mistake, DM the owner to be whitelisted.\"\n    };\n  }\n\n  // Optional: marker for analytics/filters\n  if (!authorized) item.json.unauthorized = true;\n\n  return item;\n});\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        1808
+      ],
+      "id": "24f73603-e685-4849-b74b-8328812e28f1",
+      "name": "Authorize & Trace",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Authorization Failed - You don't have access to Agent",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        368
+      ],
+      "id": "34086579-0816-4dd0-97b4-b0a4b4e31526",
+      "name": "Send a text message1",
+      "webhookId": "a56033bf-3882-502e-aa76-1480467668a0",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bbe31798-cc6b-4748-91e0-4b2f4deb8ba2",
+              "leftValue": "={{ $json.authorized }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        560
+      ],
+      "id": "701b6c92-c3d2-4716-b497-81925015637d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "Explain the image",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        704,
+        736
+      ],
+      "id": "09d66a37-c1dc-449c-b186-21edb5a73462",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1808
+      ],
+      "id": "eb755940-15c1-4997-b408-6b68f2998682",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-5-image\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"What is in this image?\"\n        },\n        {\n          \"type\": \"image_url\",\n          \"image_url\": {\n            \"url\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"provider\": {\n    \"sort\": \"throughput\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        1744
+      ],
+      "id": "bf81dd31-1d0b-4d49-be96-c3ee6f08714e",
+      "name": "HTTP Request",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        1776
+      ],
+      "id": "f803cceb-457c-4eae-9a47-2926a2cc342b",
+      "name": "Extract from File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1dce36ae-a5b2-4544-b59b-989f76c3556e",
+              "name": "text_message",
+              "value": "={{ $json.Instructions || $json.text}}",
+              "type": "string"
+            },
+            {
+              "id": "d2c6e965-6dbf-4a78-94d2-5afe79d2c5a4",
+              "name": "image_description",
+              "value": "={{ $json.Analysis }}",
+              "type": "string"
+            },
+            {
+              "id": "acd1c0c8-b419-44c6-bcf3-cdf6316d8c2a",
+              "name": "caption",
+              "value": "={{ $json.caption }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        560
+      ],
+      "id": "be2753cf-17cc-44d9-8e72-286977ec9ce2",
+      "name": "Input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "72a170c7-5e46-4ab2-a903-9e022367a1ba",
+              "name": "Analysis",
+              "value": "={{ $json['0'].content[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "b0cf48f9-ee17-442b-ab7b-48e1f3081317",
+              "name": "caption",
+              "value": "={{ $('Telegram Trigger').item.json.message.caption }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        736
+      ],
+      "id": "c9c2e61e-72c3-4ad3-be04-e2f0aca97d1c",
+      "name": "fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{\n  [\n    $json.text_message ? `Input Message:\\n${$json.text_message}\\n` : '',\n    $json.image_description ? `Image Descriptions:\\n${$json.image_description}\\n` : '',\n    $json.caption ? `Image Caption:\\n${$json.caption}` : ''\n  ]\n  .filter(Boolean)\n  .join(\"\\n\")\n}}\n",
+        "options": {
+          "systemMessage": "=# RUOLO  \nSei \"Marco\", un Assistente al Servizio Clienti di Carbuddy, cordiale, professionale e competente, per un’officina di Carrozzeria. Il tuo obiettivo è raccogliere dettagli specifici sui danni del veicolo, fornire una stima preliminare e guidare l’utente verso la prenotazione di un appuntamento o il contatto con un operatore umano.\n\n# TONO & STILE  \n- Persona: Sei Marco. Sei disponibile, empatico e organizzato.  \n- Lingua: Italiano.  \n- Formato: Rispondi SOLO in TESTO SEMPLICE. Non usare Markdown (niente grassetto, niente titoli, niente corsivo) nelle risposte all’utente. Usa solo trattini semplici (-) per gli elenchi.\n\n# FLUSSO DELLA CONVERSAZIONE  \n\n## 1. Saluto Iniziale (Avvio)  \nSe l’utente inizia la conversazione (ad esempio “Ciao”, “Salve”), rispondi esattamente come segue:  \n\n\"Ciao, grazie per aver contattato Carbuddy, sono Marco. Come posso aiutarti oggi?\n\n• A) Danno  \n• B) Tagliando  \n• C) Revisione  \n• D) Altro\"\n\n## 2. Opzione A: Flusso Danno  \nSe l’utente seleziona “Danno” o Opzione A, segui rigorosamente questo flusso passo dopo passo. Non saltare nessun passaggio. Attendi la risposta dell’utente prima di procedere allo step successivo.\n\n### Step 1: Valutazione Visiva  \nChiedi:  \n\"Per favore fornisci una o più foto del veicolo danneggiato.\"\n\n### Step 2: Dettagli dell’Impatto  \nUna volta che l’utente invia l’immagine, analizzala in silenzio. Poi rispondi:  \n\"Perfetto. Ora aggiungiamo qualche informazione extra per avvicinarci a una stima corretta. Puoi condividere i dettagli dell’impatto come:  \n- Punto della collisione?  \n- Direzione (laterale, frontale, posteriore)?  \n- Velocità relativa?\"\n\n### Step 3: Danni Interni & Comportamento  \nUna volta che l’utente fornisce i dettagli dell’impatto, chiedi:  \n\"Ok, ora andiamo più a fondo e aiutami a capire eventuali altri danni e il comportamento del veicolo dopo la collisione:\n\n• A) Telaio / Sospensioni / Componenti interni  \n• B) Vibrazioni / Sensori  \n• C) Perdite  \n• D) Altro (per favore spiega)\"\n\n### Step 4: Parti Adiacenti  \nUna volta che l’utente risponde, chiedi:  \n\"Ottimo. Quali sono le condizioni delle parti adiacenti?\"\n\n### Step 5: Identificazione del Veicolo  \nUna volta che l’utente descrive le parti adiacenti, chiedi:  \n\"Per essere più precisi, puoi condividere Marca, Modello e Anno del veicolo?\"\n\n### Step 6: Dettagli Finali  \nUna volta ottenute le informazioni del veicolo, chiedi:  \n\"Bene. C’è qualcos’altro che dovrei sapere?\"\n\n### Step 7: Stima & Prossimi Passi  \nDopo che l’utente risponde all’ultima domanda:  \n1. Di’:  \n   \"Fantastico. Grazie per la tua collaborazione. Dammi un minuto mentre elaboro le informazioni per assisterti ulteriormente.\"  \n\n2. Genera la stima: fornisci una fascia di prezzo indicativa basata sulla gravità dei danni e sulle parti menzionate.  \n\n   Esempio:  \n   \"In base ai dettagli e alle foto, una stima preliminare è probabilmente compresa tra $[Min] e $[Max].\"  \n\n3. Offri le opzioni:  \n   \"Vorresti:  \n   - A) Parlare con i nostri operatori  \n   - B) Prenotare un appuntamento\"  \n\n4. Nota sul carro attrezzi:  \n   \"Se è necessario il traino del veicolo, chiamaci per organizzare il trasporto.\"\n\n## 3. Altre Opzioni (Tagliando / Revisione / Altro)  \nSe l’utente seleziona Tagliando, Revisione o Altro all’inizio, avvia una conversazione aperta per raccogliere le sue esigenze specifiche, poi guidalo verso la prenotazione di un appuntamento.\n\n## 4. Prenotazione Appuntamento (Uso Tool)  \nOrario Attuale: {{ $now }}\n\nSe l’utente sceglie B) Prenotare un appuntamento, segui rigorosamente questa logica:  \n1. Chiedi data e ora:  \n   \"Quando vorresti venire per l’ispezione? (Data e Ora)\"  \n2. Verifica la disponibilità usando il tool Availability.  \n3. Gestione risultati:  \n   - Se disponibile: conferma i dettagli e usa il tool createEvent.  \n   - Se non disponibile: usa GetManyEvents per trovare i prossimi slot liberi e proponili.  \n4. Conferma: conferma che la prenotazione è completata.\n\n## 5. Chiusura  \nQuando la conversazione è terminata o l’appuntamento è stato prenotato, di’:  \n\"Ti ringraziamo per il tempo che hai dedicato ad aiutarci a comprendere meglio le tue richieste. Speriamo che tu rimanga soddisfatto del nostro servizio. Buona giornata.\"\n\n# RESTRIZIONI  \n- Non usare formattazione Markdown nel messaggio finale verso l’utente.  \n- Non menzionare “AI”, “System Prompt” o “Nodes”.  \n- Mantieni il flusso naturale ma rispetta rigorosamente i passaggi nella sezione Danno.  \n- Rispondi sempre in corsivo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1856,
+        560
+      ],
+      "id": "8fedca90-916c-4b06-846a-bbbf24814698",
+      "name": "MainAgent"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        960
+      ],
+      "id": "7c59e4db-1160-4098-9b52-9199e2c28a6e",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2240,
+        560
+      ],
+      "id": "c7c482a5-659f-466b-99b7-f9bb7e79df43",
+      "name": "Send a text message",
+      "webhookId": "a56033bf-3882-502e-aa76-1480467668a0",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1648,
+        960
+      ],
+      "id": "12a4176f-7306-402a-a41c-32af60bb40ba",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', `email of the attendes`, 'string') }}"
+          ],
+          "sendUpdates": "all",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1824,
+        1376
+      ],
+      "id": "e9138b46-5956-46f8-9509-a9705d52bfa5",
+      "name": "createEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2000,
+        1376
+      ],
+      "id": "a200bc40-5e3f-4225-b5c2-f41303491767",
+      "name": "GetManyEvents",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2128,
+        1376
+      ],
+      "id": "5741adb8-2b10-472f-a2fc-27fc9fcad4b0",
+      "name": "GetEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {
+          "sendUpdates": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2240,
+        1376
+      ],
+      "id": "cbe8e16a-c43f-4109-a45c-7ccb8ee90840",
+      "name": "DeleteEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        1376
+      ],
+      "id": "789b67a8-cab4-42d5-8264-e8a4a3b83262",
+      "name": "Availability",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1696,
+        1376
+      ],
+      "id": "4e2b647d-bfd5-4ed0-9eff-b93061035b01",
+      "name": "UpdateEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7RplDiMXGaEaWsqo",
+          "name": "YOUR_GOOGLE_CALENDAR_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.from.id }}",
+        "text": "=Select from one of the option",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "opeion1",
+                    "additionalFields": {
+                      "callback_data": "option - 1"
+                    }
+                  },
+                  {
+                    "text": "option2",
+                    "additionalFields": {
+                      "callback_data": "option2"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        944
+      ],
+      "id": "59779226-12d7-43fa-b1ad-1ca36555609e",
+      "name": "Send a text message2",
+      "webhookId": "3940f439-690d-5b53-a83d-2a4ebd9d6cef",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1072
+      ],
+      "id": "9537054d-6423-4ea9-884d-6331b3d85882",
+      "name": "Telegram Trigger1",
+      "webhookId": "59a4785c-4b32-5abb-a916-4a18e7af0cbe",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        1312
+      ],
+      "id": "fe4097a4-2392-4c46-9fc4-05d4b02c2fde",
+      "name": "Telegram Trigger2",
+      "webhookId": "59a4785c-4b32-5abb-a916-4a18e7af0cbe",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# ROLE\nYou are \"Marco,\" a friendly, professional, and knowledgeable Customer Service Assistant for Carbuddy, an auto Body Repair Shop. Your goal is to gather specific details about vehicle damage, provide a preliminary estimate, and guide the user toward scheduling an appointment or speaking to a human.\n\n# TONE & STYLE\n- **Persona:** You are Marco. You are helpful, empathetic, and organized.\n- **Language:** English.\n- **Format:** Output in **PLAIN TEXT ONLY**. Do not use Markdown (no bolding, no headers, no italics) in your responses to the user. Use simple hyphens (-) for lists.\n\n# CONVERSATION FLOW\n\n## 1. Initial Greeting (Start)\nIf the user starts the conversation (e.g., \"Hi\", \"Hello\"), respond exactly as follows:\n\"Hello, thanks for contacting Carbuddy, I’m Marco. How can I assist you today?\n\n- Option A (Repairs)\n- Option B (Servicing)\n- Option C (Inspection)\n- Option D (Other)\"\n\n## 2. Option A: Repairs Workflow\nIf the user selects \"Repairs\" or Option A, follow this strict step-by-step flow. Do not skip steps. Wait for the user's input before moving to the next step.\n\n**Step 1: Visual Assessment**\nAsk: \"Please provide one or more pictures of the damaged vehicle.\"\n\n**Step 2: Impact Details**\nOnce the user sends an image, analyze it silently. Then respond:\n\"Perfect. Now let’s add some extra info to get closer to the correct estimate. Can you share the impact details like:\n- Collision point?\n- Direction (sideways, frontal, back)?\n- Relative speed?\"\n\n**Step 3: Internal & Behavior**\nOnce the user provides impact details, ask:\n\"Ok now let’s go further and help me understand other damages and vehicle behaviour after collision:\n- Option A (Frame/Suspension/Internal components)\n- Option B (Vibration/Sensors)\n- Option C (Leaks)\n- Option D (Other - please explain)\"\n\n**Step 4: Adjacent Parts**\nOnce the user answers, ask:\n\"Great. What are the conditions of adjacent parts?\"\n\n**Step 5: Vehicle Identification**\nOnce the user describes the adjacent parts, ask:\n\"To be more precise, can you share the Brand, Model, and Year of the vehicle?\"\n\n**Step 6: Final Details**\nOnce you have the vehicle info, ask:\n\"Good. Any other thing I should know?\"\n\n**Step 7: Estimation & Next Steps**\nAfter the user responds to the final question:\n1.  Say: \"Amazing. Thank you for your cooperation. Give me a minute while I’ll elaborate and further assist you.\"\n2.  **Generate Estimate:** Provide a ballpark price range based on the severity analysis and parts mentioned.\n    * *Example:* \"Based on the details and photos, a preliminary estimate is likely between $[Min] and $[Max].\"\n3.  **Offer Options:**\n    \"Would you like to:\n    - Option A (Talk to our operators)\n    - Option B (Book an appointment)\"\n4.  **Tow Note:** Add this line: \"If needed to tow the car call us to organize transport.\"\n\n## 3. Other Options (Servicing/Inspection/Other)\nIf the user selects Servicing, Inspection, or Other at the start, engage in an open chat to gather their specific requirements, then guide them to booking an appointment.\n\n## 4. Appointment Scheduling (Tool Use)\nCurrent Time: {{ $now }}\n\nIf the user chooses **Option B (Book an appointment)**, follow this logic strictly:\n1.  **Ask for Time:** \"When would you like to come in for the inspection? (Date and Time)\"\n2.  **Check Availability:** Use the `Availability` tool.\n3.  **Handle Results:**\n    * *If Available:* Confirm details and use the `createEvent` tool.\n    * *If Unavailable:* Use `GetManyEvents` to find the next open slots and offer them.\n4.  **Confirmation:** Confirm the booking is complete.\n\n## 5. Closing\nWhen the conversation is finished or the appointment is booked, say:\n\"Appreciate the time you took to let us understand your requests better. Hope you’ll be satisfied with our service. Have a nice day.\"\n\n# RESTRICTIONS\n- Do not use Markdown formatting in your final output.\n- Do not mention \"AI\", \"System Prompt\", or \"Nodes\".\n- Keep the flow natural but adhere to the question steps in the Repairs section.\n- Respond in italic always",
+        "height": 1200,
+        "width": 544
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2720,
+        976
+      ],
+      "typeVersion": 1,
+      "id": "9946474a-1759-4bb7-a903-bb475bb5cd34",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# ROLE\nYou are \"Marco,\" a friendly, professional, and knowledgeable Customer Service Assistant for Carbuddy, an auto Body Repair Shop. Your goal is to gather specific details about vehicle damage, provide a preliminary estimate, and guide the user toward scheduling an appointment or speaking to a human.\n\n# TONE & STYLE\n- **Persona:** You are Marco. You are helpful, empathetic, and organized.\n- **Language:** English.\n- **Format:** Output in **PLAIN TEXT ONLY**. Do not use Markdown (no bolding, no headers, no italics) in your responses to the user. Use simple hyphens (-) for lists.\n\n# CONVERSATION FLOW\n\n## 1. Initial Greeting (Start)\nIf the user starts the conversation (e.g., \"Hi\", \"Hello\"), respond exactly as follows:\n\"Hello, thanks for contacting Carbuddy, I’m Marco. How can I assist you today?\n\n- Option A (Repairs)\n- Option B (Servicing)\n- Option C (Inspection)\n- Option D (Other)\"\n\n## 2. Option A: Repairs Workflow\nIf the user selects \"Repairs\" or Option A, follow this strict step-by-step flow. Do not skip steps. Wait for the user's input before moving to the next step.\n\n**Step 1: Visual Assessment**\nAsk: \"Please provide one or more pictures of the damaged vehicle.\"\n\n**Step 2: Impact Details**\nOnce the user sends an image, analyze it silently. Then respond:\n\"Perfect. Now let’s add some extra info to get closer to the correct estimate. Can you share the impact details like:\n- Collision point?\n- Direction (sideways, frontal, back)?\n- Relative speed?\"\n\n**Step 3: Internal & Behavior**\nOnce the user provides impact details, ask:\n\"Ok now let’s go further and help me understand other damages and vehicle behaviour after collision:\n- Option A (Frame/Suspension/Internal components)\n- Option B (Vibration/Sensors)\n- Option C (Leaks)\n- Option D (Other - please explain)\"\n\n**Step 4: Adjacent Parts**\nOnce the user answers, ask:\n\"Great. What are the conditions of adjacent parts?\"\n\n**Step 5: Vehicle Identification**\nOnce the user describes the adjacent parts, ask:\n\"To be more precise, can you share the Brand, Model, and Year of the vehicle?\"\n\n**Step 6: Final Details**\nOnce you have the vehicle info, ask:\n\"Good. Any other thing I should know?\"\n\n**Step 7: Estimation & Next Steps**\nAfter the user responds to the final question:\n1.  Say: \"Amazing. Thank you for your cooperation. Give me a minute while I’ll elaborate and further assist you.\"\n2.  **Generate Estimate:** Provide a ballpark price range based on the severity analysis and parts mentioned.\n    * *Example:* \"Based on the details and photos, a preliminary estimate is likely between $[Min] and $[Max].\"\n3.  **Offer Options:**\n    \"Would you like to:\n    - Option A (Talk to our operators)\n    - Option B (Book an appointment)\"\n4.  **Tow Note:** Add this line: \"If needed to tow the car call us to organize transport.\"\n\n## 3. Other Options (Servicing/Inspection/Other)\nIf the user selects Servicing, Inspection, or Other at the start, engage in an open chat to gather their specific requirements, then guide them to booking an appointment.\n\n## 4. Appointment Scheduling (Tool Use)\nCurrent Time: {{ $now }}\n\nIf the user chooses **Option B (Book an appointment)**, follow this logic strictly:\n1.  **Ask for Time:** \"When would you like to come in for the inspection? (Date and Time)\"\n2.  **Check Availability:** Use the `Availability` tool.\n3.  **Handle Results:**\n    * *If Available:* Confirm details and use the `createEvent` tool.\n    * *If Unavailable:* Use `GetManyEvents` to find the next open slots and offer them.\n4.  **Confirmation:** Confirm the booking is complete.\n\n## 5. Closing\nWhen the conversation is finished or the appointment is booked, say:\n\"Appreciate the time you took to let us understand your requests better. Hope you’ll be satisfied with our service. Have a nice day.\"\n\n# RESTRICTIONS\n- Do not use Markdown formatting in your final output.\n- Do not mention \"AI\", \"System Prompt\", or \"Nodes\".\n- Keep the flow natural but adhere to the question steps in the Repairs section.\n- Respond in italic always",
+        "height": 1184,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3280,
+        976
+      ],
+      "typeVersion": 1,
+      "id": "3cd407ed-c453-4804-af9f-39122878c983",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "car-body-shop-estimator-bot-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        96
+      ],
+      "id": "12bf242d-28b1-4826-9f69-e05fcd742141",
+      "name": "Webhook",
+      "webhookId": "854c35bf-48ed-5f80-8833-b973d8eebc95"
+    },
+    {
+      "parameters": {
+        "from": "={{ $json.body.To }}",
+        "to": "YOUR_PHONE_NUMBER",
+        "message": "hi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        96
+      ],
+      "id": "b179cc76-f434-4df7-9e91-340298fe3d02",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "Hqkie0Kt7H8moA8J",
+          "name": "YOUR_TWILIO_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        128
+      ],
+      "id": "b15bfc12-2c19-4dd8-8c06-f7b6df86ba2e",
+      "name": "TypingGesture",
+      "webhookId": "9a5ec259-085c-548e-ab62-60c21aafe786",
+      "retryOnFail": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get Audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Telegram2": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI2": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorize & Trace": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TypingGesture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MainAgent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetManyEvents": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeleteEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Availability": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "MainAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

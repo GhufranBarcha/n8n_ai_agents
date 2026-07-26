@@ -1,0 +1,1175 @@
+{
+  "name": "n8n Course Exercises (Level 1 & 2)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://internal.users.n8n.cloud/webhook/custom-erp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "unique_id",
+              "value": "YOUR_COURSE_UNIQUE_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        -192
+      ],
+      "id": "f70bc99d-465b-454e-9d4f-44a619c55c37",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "orderID",
+              "displayName": "orderID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "employeeName",
+              "displayName": "employeeName",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        -288
+      ],
+      "id": "0dcdd880-1a91-40a4-bfa7-d5f9765dee4a",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "526cb30c-0f90-4f66-8f98-b64ceb2e52f2",
+              "leftValue": "={{ $json.orderStatus }}",
+              "rightValue": "processing",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c9bf6c53-c57d-4cda-a96e-4faaf170f281",
+              "leftValue": "={{ $json.employeeName }}",
+              "rightValue": "=Mario",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        -192
+      ],
+      "id": "ca56f877-b090-43e5-bace-e1cb3a5ad19d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20d37948-763a-4d7b-b725-e65f3802af03",
+              "name": "orderID",
+              "value": "={{ $json.orderID }}",
+              "type": "number"
+            },
+            {
+              "id": "9df108a7-6b13-42ab-a6dd-9ca582ba8b49",
+              "name": "employeeName",
+              "value": "={{ $json.employeeName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        -288
+      ],
+      "id": "0fae82f5-100d-4f7f-b229-57e5906c218a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\nlet totalBooked = items.length;\nlet bookedSum = 0;\n\nfor (let i=0; i < items.length; i++) {\n  bookedSum = bookedSum + items[i].json.orderPrice;\n}\n\nreturn [{ json: {totalBooked, bookedSum} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        -96
+      ],
+      "id": "ebb7bd3a-4798-4804-94ac-c3af9d3a95fa",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=This week we've {{$json[\"totalBooked\"]}} booked orders with a total value of {{$json[\"bookedSum\"]}}. My Unique ID: {{ $('HTTP Request').params[\"headerParameters\"][\"parameters\"][0][\"value\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -96
+      ],
+      "id": "7746f61f-914e-40f8-b6e7-f70fb8d8a4c9",
+      "name": "Discord",
+      "webhookId": "55256100-9991-5101-b737-ec6e1a16e85b",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "kjEbgVb5YF87pGSO",
+          "name": "YOUR_DISCORD_WEBHOOK_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1152,
+        -192
+      ],
+      "id": "0fdeb18f-3332-462b-88ae-6f16c47941f9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\nlet totalBooked = items.length;\nlet bookedSum = 0;\n\nfor (let i=0; i < items.length; i++) {\n  bookedSum = bookedSum + items[i].json.orderPrice;\n}\n\nreturn [{ json: {totalBooked, bookedSum} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        -464
+      ],
+      "id": "dc885322-64f6-43fb-964e-2c0b407e2c16",
+      "name": "Code1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        176
+      ],
+      "id": "d21b3c96-df71-4492-b89c-1c0754919c7c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -768,
+        48
+      ],
+      "id": "f4fa8507-063f-480d-92d5-c28f37d6f089",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://learn.app.n8n.cloud/webhook/level2-erp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "unique_id",
+              "value": "YOUR_COURSE_UNIQUE_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -752,
+        336
+      ],
+      "id": "42871626-b36c-4ae3-860c-2b50ea5406ae",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "customerID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -480,
+        192
+      ],
+      "id": "8dacf1e0-28a4-45bb-958f-a6f241400024",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "orderPrice",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        192
+      ],
+      "id": "37b4c798-4f4d-451b-b481-eab57ac116da",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {
+          "fileName": "={{ $json.orderID }}.json"
+        }
+      },
+      "id": "eea10418-73f2-47b4-b9e1-786fa36da5c4",
+      "name": "Convert to File",
+      "position": [
+        -752,
+        848
+      ],
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Regional Sales Report - Americas",
+        "emailType": "text",
+        "message": "Please find attached the regional sales report for the Americas region.",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "id": "2a6d563f-c000-4957-aa46-f6e1a56232af",
+      "name": "Gmail",
+      "position": [
+        -528,
+        848
+      ],
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "webhookId": "1da068d6-f585-58c5-bff2-d125c79ea54d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "a1e298a9-487e-4735-8dd8-09eedf8ccd3c",
+      "name": "Loop Over Items",
+      "position": [
+        -944,
+        1120
+      ],
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.customerSince }}",
+        "outputFieldName": "customerSince",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "id": "b8b27111-962a-48dc-84dd-bb32b1fafe54",
+      "name": "Date & Time",
+      "position": [
+        -480,
+        1168
+      ],
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "={{ $runIndex > 0 ? 'file_low_orders' : 'file_high_orders' }}"
+        }
+      },
+      "id": "deb1ddcf-eb15-4d76-981c-d8c48a6673a8",
+      "name": "Convert to File1",
+      "position": [
+        -256,
+        1168
+      ],
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=I created the spreadsheet {{ $runIndex > 0 ? 'file_low_orders' : 'file_high_orders' }}. My ID: YOUR_COURSE_UNIQUE_ID",
+        "options": {}
+      },
+      "id": "4dd7e7bb-ff22-4b66-9c3d-9f2743ce5caa",
+      "name": "Discord1",
+      "position": [
+        -96,
+        1216
+      ],
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "webhookId": "d09ebbe2-d930-5100-aa46-0df8db0d3814",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "kjEbgVb5YF87pGSO",
+          "name": "YOUR_DISCORD_WEBHOOK_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID"
+        },
+        "options": {}
+      },
+      "id": "73cd4cea-9dd5-493a-b0ca-c732acd03b9a",
+      "name": "Airtable1",
+      "position": [
+        -1696,
+        864
+      ],
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://learn.app.n8n.cloud/webhook/level2-erp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "unique_id",
+              "value": "YOUR_COURSE_UNIQUE_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aac51bad-69c6-4ce0-bc65-62ec38fb5260",
+      "name": "HTTP Request2",
+      "position": [
+        -1680,
+        1152
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "customerID",
+        "options": {}
+      },
+      "id": "b378bdd7-423b-4ec2-8fa9-26544a556d63",
+      "name": "Merge1",
+      "position": [
+        -1408,
+        1008
+      ],
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "orderPrice",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ef050093-dbf7-48e6-94d1-f8bbe74e250a",
+      "name": "Sort1",
+      "position": [
+        -1200,
+        1008
+      ],
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1a2b3c4-d5e6-f7a8-b9c0-d1e2f3a4b5c6",
+              "leftValue": "={{ $json.region }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "Americas"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c8008f46-4e68-424b-ada9-8f3949131d41",
+      "name": "If1",
+      "position": [
+        -1056,
+        928
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=I sent the file using email with the label ID {{ $json.id }}. My ID: YOUR_COURSE_UNIQUE_ID",
+        "options": {}
+      },
+      "id": "59f33f7b-756b-4f66-a0fb-8f7a93f6acb3",
+      "name": "Discord2",
+      "position": [
+        -304,
+        848
+      ],
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "webhookId": "a14d4981-a50f-5e80-a981-4bedebc69e6e",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "kjEbgVb5YF87pGSO",
+          "name": "YOUR_DISCORD_WEBHOOK_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "customerEmail",
+              "type": "string",
+              "value": "={{ $json.customerEmail }}"
+            },
+            {
+              "id": "f2",
+              "name": "customerRegion",
+              "type": "string",
+              "value": "={{ $json.region }}"
+            },
+            {
+              "id": "f3",
+              "name": "customerSince",
+              "type": "string",
+              "value": "={{ $json.customerSince }}"
+            },
+            {
+              "id": "f4",
+              "name": "orderPrice",
+              "type": "number",
+              "value": "={{ $json.orderPrice }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a935b42c-93f8-4378-85ac-2b6f252446fd",
+      "name": "Edit Fields1",
+      "position": [
+        -688,
+        1152
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID"
+        },
+        "options": {}
+      },
+      "id": "a6bc2351-eea5-4994-b058-a0e4d4c38412",
+      "name": "Airtable2",
+      "position": [
+        -1568,
+        2160
+      ],
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://restcountries.com/v3.1/all",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "name,region,subregion"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a7672b35-6e21-4237-bb3d-f91fa9b971f0",
+      "name": "HTTP Request3",
+      "position": [
+        -1568,
+        2416
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "customerCountry",
+              "field2": "name.common"
+            }
+          ]
+        },
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "id": "aef3b28e-c915-468f-b0df-c2e0c65b8c7c",
+      "name": "Merge2",
+      "position": [
+        -1280,
+        2288
+      ],
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted",
+          "mode": "list",
+          "value": "YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "customerID": "={{ $json.customerID }}",
+            "customerCountry": "={{ $json.customerCountry }}",
+            "customerEmail": "={{ $json.customerEmail }}",
+            "customerSince": "={{ $json.customerSince }}",
+            "region": "={{ $json.region }}",
+            "subregion": "={{ $json.subregion }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "customerID",
+              "displayName": "customerID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customerCountry",
+              "displayName": "customerCountry",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customerEmail",
+              "displayName": "customerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customerSince",
+              "displayName": "customerSince",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "region",
+              "displayName": "region",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subregion",
+              "displayName": "subregion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "e7c346b2-fbff-466d-8c96-a422adadc839",
+      "name": "Airtable3",
+      "position": [
+        -1024,
+        2288
+      ],
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Discord2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Discord1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Sort1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Airtable3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

@@ -1,0 +1,1514 @@
+{
+  "name": "GoHighLevel Task API Bridge",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gohighlevel-api-bridge-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -464
+      ],
+      "id": "035c8189-55f5-4e69-88b7-1e16b6c2bbfb",
+      "name": "Webhook",
+      "webhookId": "9a433990-aff5-504e-bd04-97522e0398fb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f0ffc39-8e56-48b8-893a-12c1d2f2b8f9",
+              "name": "name",
+              "value": "={{ $json.body.customData['1'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bc500f10-2780-4374-b3b0-7826cd3f2e37",
+              "name": "dob",
+              "value": "={{ $json.body.customData['3'] }}",
+              "type": "string"
+            },
+            {
+              "id": "21587d31-e2ba-42b5-9db1-5298f94edd98",
+              "name": "address1",
+              "value": "={{ $json.body.customData['4'] }}",
+              "type": "string"
+            },
+            {
+              "id": "60130ceb-4a8b-4c9b-8035-12c472c23817",
+              "name": "city",
+              "value": "={{ $json.body.customData['5'] }}",
+              "type": "string"
+            },
+            {
+              "id": "65aa8608-cf0f-4c9e-a2e3-4ec72d787327",
+              "name": "state",
+              "value": "={{ (() => { const map = {ALABAMA:'AL',ALASKA:'AK',ARIZONA:'AZ',ARKANSAS:'AR',CALIFORNIA:'CA',COLORADO:'CO',CONNECTICUT:'CT',DELAWARE:'DE',FLORIDA:'FL',GEORGIA:'GA',HAWAII:'HI',IDAHO:'ID',ILLINOIS:'IL',INDIANA:'IN',IOWA:'IA',KANSAS:'KS',KENTUCKY:'KY',LOUISIANA:'LA',MAINE:'ME',MARYLAND:'MD',MASSACHUSETTS:'MA',MICHIGAN:'MI',MINNESOTA:'MN',MISSISSIPPI:'MS',MISSOURI:'MO',MONTANA:'MT',NEBRASKA:'NE',NEVADA:'NV','NEW HAMPSHIRE':'NH','NEW JERSEY':'NJ','NEW MEXICO':'NM','NEW YORK':'NY','NORTH CAROLINA':'NC','NORTH DAKOTA':'ND',OHIO:'OH',OKLAHOMA:'OK',OREGON:'OR',PENNSYLVANIA:'PA','RHODE ISLAND':'RI','SOUTH CAROLINA':'SC','SOUTH DAKOTA':'SD',TENNESSEE:'TN',TEXAS:'TX',UTAH:'UT',VERMONT:'VT',VIRGINIA:'VA',WASHINGTON:'WA','WEST VIRGINIA':'WV',WISCONSIN:'WI',WYOMING:'WY','DISTRICT OF COLUMBIA':'DC'}; const raw = String($json.body.customData['6'] ?? '').trim(); const up = raw.toUpperCase(); const out = map[up] || up; if (!/^[A-Z]{2}$/.test(out)) throw new Error(`Invalid state: ${raw}`); return out; })() }}",
+              "type": "string"
+            },
+            {
+              "id": "ac09bc9f-36c2-44ca-98d6-81de8a6a292d",
+              "name": "postal_code",
+              "value": "={{ $json.body.customData['7'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bb146f7e-9e10-4572-85ee-85ad089290a8",
+              "name": "file1",
+              "value": "={{ $json.body.customData['8'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b72b6047-f5cc-4219-a996-3eb50bcb8249",
+              "name": "username",
+              "value": "={{ $json.body.customData['9'] }}",
+              "type": "string"
+            },
+            {
+              "id": "50fabc02-5aff-40dd-bc51-50b17c9218c0",
+              "name": "password",
+              "value": "={{ $json.body.customData['10'] }}",
+              "type": "string"
+            },
+            {
+              "id": "d48e840b-8070-43ec-85af-6d1e9f9c2b0f",
+              "name": "file2",
+              "value": "={{ $json.body.customData['11'] }}",
+              "type": "string"
+            },
+            {
+              "id": "649421d5-963e-4e62-930a-9fe0be45028e",
+              "name": "what_happened",
+              "value": "={{ $json.body.customData['12'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7e89a5fe-0f26-406c-98ed-ee59528a7106",
+              "name": "file3",
+              "value": "={{ $json.body.customData['13'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e332dad8-a9c2-4b4d-8c3c-79cb71a4273e",
+              "name": "lastssn",
+              "value": "={{ $json.body.customData['14'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5026ae62-6d25-46aa-8b3e-4edfd10c0c7c",
+              "name": "resolution",
+              "value": "={{ $json.body.customData['15'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bff325a1-b64f-4c04-8944-5cbd9249b800",
+              "name": "dob1",
+              "value": "={{ (() => {                                                                  \n    const raw = String($json.body.customData['3'] ?? '')                                         \n      .replace(/(\\d+)(st|nd|rd|th)\\b/gi, '$1')                                  \n      .replace(/,/g, '')                                                        \n      .trim();                                                                  \n                                                                                \n    const formats = ['MMMM d yyyy', 'MMM d yyyy', 'M/d/yyyy', 'MM/dd/yyyy',     \n  'yyyy-MM-dd'];                                                                \n    for (const fmt of formats) {                                                \n      const dt = DateTime.fromFormat(raw, fmt);                                 \n      if (dt.isValid) return dt.toFormat('MMddyyyy');\n    }                                                                           \n    const iso = DateTime.fromISO(raw);                                          \n    if (iso.isValid) return iso.toFormat('MMddyyyy');                           \n                                                                                \n    throw new Error(`Invalid DOB: ${raw}`);\n  })() }}",
+              "type": "string"
+            },
+            {
+              "id": "a8cba8ff-c0c5-4dde-9bec-016a7bff30a1",
+              "name": "submit_after_review",
+              "value": "true",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -480
+      ],
+      "id": "6cd96e4c-1fb0-4b22-a65f-4fb752dc2e67",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.file1 }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        -576
+      ],
+      "id": "178e9244-334d-482f-b2e7-03258e223815",
+      "name": "file1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.file2 }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        -432
+      ],
+      "id": "ae4d7631-ae9c-4902-8957-0f8bb3d2eeb8",
+      "name": "file"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.file3 }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        -288
+      ],
+      "id": "2705574f-564a-4293-b5d8-acaef597b680",
+      "name": "file2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        -464
+      ],
+      "id": "28939a74-6c0e-4b2c-bbc2-71dfe9535288",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        832,
+        -448
+      ],
+      "id": "16e4a01e-25fe-49b7-a785-6c087218019b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://YOUR_SERVER_IP/api/external/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "variables_json",
+              "value": "={{ $json.json }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1408,
+        32
+      ],
+      "id": "7c4aaa74-2cac-4327-9377-3737e5f808bf",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ebbf87cb-e52c-4da3-b529-d56c5e5b7dcf",
+              "name": "json",
+              "value": "={{ JSON.stringify({\n  \"login_userid\": $json.data[0].username,\n  \"login_password\": $json.data[0].password,\n  \"product\": \"Credit reporting or other personal consumer reports\",\n  \"product_type\": \"Credit reporting\",\n  \"problem_type\": \"Incorrect information on your report\",\n  \"sub_problem_type\": \"Information belongs to someone else\",\n  \"step2_tried_to_fix_with_company\": true,\n  \"step2_requested_information_from_company\": true,\n  \"step2_requested_information_details\": \"\",\n  \"step2_company_provided_information\": false,\n  \"narrative_what_happened\": $json.data[1].what_happened,\n  \"narrative_resolution\": $json.data[1].resolution,\n  \"submit_after_review\": $('Edit Fields').first().json.submit_after_review,\n  \"primary\": {\n    \"company_name\": \"Experian\",\n    \"ssn_last4\": $json.data[1].lastssn,\n    \"dob\": $('Edit Fields').first().json.dob1,\n    \"name_on_report\": $json.data[0].name,\n    \"tried_to_fix_with_company\": true,\n    \"requested_information_from_company\": true,\n    \"requested_information_details\": \"\",\n    \"company_provided_information\": true\n  },\n  \"secondary\": {\n    \"company_name\": \"TransUnion\",\n    \"ssn_last4\": $json.data[0].lastssn,\n    \"dob\": $('Edit Fields').first().json.dob1,\n    \"name_on_report\": $json.data[0].name,\n    \"tried_to_fix_with_company\": true,\n    \"requested_information_from_company\": true,\n    \"requested_information_details\": \"\",\n    \"company_provided_information\": true\n  },\n  \"tertiary\": {\n    \"company_name\": \"Equifax\",\n    \"ssn_last4\": $json.data[0].lastssn,\n    \"dob\": $('Edit Fields').first().json.dob1,\n    \"name_on_report\": $json.data[0].name,\n    \"tried_to_fix_with_company\": true,\n    \"requested_information_from_company\": true,\n    \"requested_information_details\": \"\",\n    \"company_provided_information\": true\n  },\n  \"consumer_name_on_report\": $json.data[0].name,\n  \"dob\": $('Edit Fields').first().json.dob1,\n  \"address_line1\": $json.data[0].address1,\n  \"address_line2\": \"\",\n  \"city\": $json.data[0].city,\n  \"state\": $json.data[0].state,\n  \"zip\": $json.data[0].postal_code,\n  \"country\": \"United States\"\n}) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "options": {
+          "stripBinary": false,
+          "dotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -448
+      ],
+      "id": "77244d63-879b-4e49-83c1-a7f4def4b40e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://your-backend.example.com/api/external/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "variables_json",
+              "value": "={{ $json.json }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        704
+      ],
+      "id": "43a3a75d-d123-44f9-8bed-5804c1e568f7",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "=http://YOUR_SERVER_IP/api/external/tasks/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1648,
+        32
+      ],
+      "id": "5b2fee3b-c2a5-47bc-82fd-0a7290f2d8ff",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "77ddb4e6-181e-415f-bd9a-7542125128b4",
+                    "leftValue": "running",
+                    "rightValue": "={{ $json.status }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "running"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f50ebb34-6bab-42d0-b0fb-47d6b3abdf73",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "785ac0b5-b88b-421a-8a38-fa37972375d7",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b735a8fa-8c1e-47c4-89b1-2b348c42d3f5",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "cancelled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cancelled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "987d63d2-d727-4fc5-9987-8985eef79af9",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "queued",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "queued"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        -96
+      ],
+      "id": "eec0d001-c448-4039-9804-5e78dd7633aa",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        144
+      ],
+      "id": "92280775-f065-413f-b7f6-819bd8a8ea46",
+      "name": "Wait",
+      "webhookId": "d0a6af95-340e-537c-b3e6-a89a8685ce97"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"completed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2432,
+        48
+      ],
+      "id": "62000e82-62e7-4874-b574-d0408ce41b82",
+      "name": "sucess"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"failed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2432,
+        -192
+      ],
+      "id": "a4e7a05e-ce73-4db1-9f17-b02953d92c55",
+      "name": "failed"
+    },
+    {
+      "parameters": {
+        "url": "=https://your-backend.example.com/api/external/tasks/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        704
+      ],
+      "id": "bdef06b0-8baf-4f3a-80f0-2ddc2f749ae3",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "77ddb4e6-181e-415f-bd9a-7542125128b4",
+                    "leftValue": "running",
+                    "rightValue": "={{ $json.status }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "running"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f50ebb34-6bab-42d0-b0fb-47d6b3abdf73",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "785ac0b5-b88b-421a-8a38-fa37972375d7",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b735a8fa-8c1e-47c4-89b1-2b348c42d3f5",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "cancelled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cancelled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "987d63d2-d727-4fc5-9987-8985eef79af9",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "queued",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "queued"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        576
+      ],
+      "id": "1219578b-4f53-46ec-810b-ff7df9b7414e",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2144,
+        816
+      ],
+      "id": "924fa8de-8865-4515-8241-f766f5badae4",
+      "name": "Wait1",
+      "webhookId": "d0a6af95-340e-537c-b3e6-a89a8685ce97"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://your-backend.example.com/api/external/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            },
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ 'cfpb:' + $execution.id + 3}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "variables_json",
+              "value": "={{ $json.json }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data_2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1520,
+        -704
+      ],
+      "id": "1b5c74f9-e809-4178-b1d2-ed277217349c",
+      "name": "HTTP Request4",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "url": "=https://your-backend.example.com/api/external/tasks/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1760,
+        -704
+      ],
+      "id": "9ed3f1af-576c-45dc-9c1e-740901eb8dfe",
+      "name": "HTTP Request5",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "77ddb4e6-181e-415f-bd9a-7542125128b4",
+                    "leftValue": "running",
+                    "rightValue": "={{ $json.status }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "running"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f50ebb34-6bab-42d0-b0fb-47d6b3abdf73",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "785ac0b5-b88b-421a-8a38-fa37972375d7",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b735a8fa-8c1e-47c4-89b1-2b348c42d3f5",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "cancelled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cancelled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "987d63d2-d727-4fc5-9987-8985eef79af9",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "queued",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "queued"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        -832
+      ],
+      "id": "0c7b3ac8-8f6c-4581-af7c-d10cb289a9d7",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2032,
+        -592
+      ],
+      "id": "038b7fef-be48-4959-9327-c2f5c94b1537",
+      "name": "Wait2",
+      "webhookId": "d0a6af95-340e-537c-b3e6-a89a8685ce97"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"completed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2544,
+        -688
+      ],
+      "id": "faf98b29-7a9f-4afd-b636-89806a9b0cb1",
+      "name": "sucess1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"failed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2544,
+        -928
+      ],
+      "id": "5c0f808b-de0e-41ab-b8df-920443fa6d46",
+      "name": "failed1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"completed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2800,
+        656
+      ],
+      "id": "da413adc-3f13-4f90-90cf-0bf055c53972",
+      "name": "sucess2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/hooks/YOUR_GHL_LOCATION_ID/webhook-trigger/YOUR_GHL_TRIGGER_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GHL_PRIVATE_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"failed\",\n\"unique_id\": \"{{ $('Webhook').first().json.body.contact_id }}\",\n\"phone_number\": \"{{ $('Webhook').first().json.body.phone }}\",\n\"name\":\"{{ $('Webhook').first().json.body.full_name }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2800,
+        416
+      ],
+      "id": "fb341995-450f-4ad6-a46f-5c3071d74934",
+      "name": "failed2"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "file1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "file1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "file2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "sucess",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "sucess2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "sucess1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "failed1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

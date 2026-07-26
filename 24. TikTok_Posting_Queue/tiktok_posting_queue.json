@@ -1,0 +1,226 @@
+{
+  "name": "TikTok Posting Queue",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "bb341569-f78e-41c8-8da6-e7e0d3f37e13",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1785136739,
+          "mode": "list",
+          "cachedResultName": "buffer_tiktok_posting",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "Testing tiktok Videos",
+            "Caption": "Test this",
+            "Publish": "Go",
+            "Link": "={{ $('Update file1').item.json.webContentLink }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Publish",
+              "displayName": "Publish",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "d26ecdbc-7d0a-4f4a-a492-befd7ab20d5a",
+      "name": "AddTikTokVideo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        608,
+        -16
+      ],
+      "id": "7fbba69b-764f-4441-b1da-933a34359ef3",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=YOUR_GOOGLE_FILE_ID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        256,
+        -16
+      ],
+      "id": "05f5bc41-e430-4b95-8ee5-96bdcf0110d5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FILE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "changeFileContent": true,
+        "newUpdatedFileName": "test.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "bab1d20c-72bd-44a3-b289-72e4d1ee7db1",
+      "name": "Update file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "AddTikTokVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Update file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update file1": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

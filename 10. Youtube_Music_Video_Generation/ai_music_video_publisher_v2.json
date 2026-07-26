@@ -1,0 +1,1783 @@
+{
+  "name": "AI Music Video Publisher v2",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customMode",
+              "value": "false"
+            },
+            {
+              "name": "instrumental",
+              "value": "false"
+            },
+            {
+              "name": "model",
+              "value": "V5"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.song_prompt }}"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://localhost:5679"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        288
+      ],
+      "id": "3856c551-1ad1-4b87-acbe-19c6780cb4e3",
+      "name": "SunoMusicGen",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        576
+      ],
+      "id": "7fbd7acb-ba0e-44d3-bc26-5afdeff7b282",
+      "name": "Wait",
+      "webhookId": "6ab9a2d1-03e0-5ee3-9ee0-fc9ae1040193"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "245d543f-f9ff-4e4a-949d-0dc59314703d",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        784
+      ],
+      "id": "8c2d0c8f-70b8-4d58-a7fc-2a4fddc1a327",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"song_prompt\": \"song prompt\",\n  \n  \"song_title\": \"Song title\",\n  \n  \"song_description\": \"song description\",\n  \n  \"thumbnail_prompt\": \"[SUBJECT] A young East Asian female samurai warrior stands in a serene yet powerful pose... [OUTFIT & ARMOR] She wears an authentic lacquered kozane armor piece in deep indigo... [Continue with full prompt structure...] [TEXT OVERLAY DETAILS]\",\n  \n  \"hashtags\": \"#JapaneseMusicCreator #SamuraiCinema #OnnaBugeisha #TaikoDrums #CinematicElectronic #REBLX #PhotorealisticArt #DarkAmbient #JapaneseCulture #TraditionalArt #MeditativeMusic #WarriorSpirit #SwordAndHonor #ArtisticFusion #EpicJapanese #FocusMusic #WorkoutMotivation #CinematicProduction #MusicComposer #VisualArt\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        912
+      ],
+      "id": "41cfb0eb-de1b-45ef-bb9f-1a95a47ac134",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/song{{ $itemIndex }}.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        496,
+        416
+      ],
+      "id": "4f997cda-a235-4de7-b8ae-83f28a739cc4",
+      "name": "Write_Song"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming JSON data\nconst data = $json.data?.response?.sunoData || [];\n\n// Extract all song audio URLs\nconst songUris = data.map(item => ({\n  title: item.title,\n  audioUrl: item.audioUrl,\n  sourceAudioUrl: item.sourceAudioUrl,\n  imageUrl: item.imageUrl,\n}));\n\n// Return as items for next node\nreturn songUris.map(uri => ({ json: uri }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        704
+      ],
+      "id": "8110a731-fb25-415a-bbc5-0a1773529aed",
+      "name": "Combine-SongURI"
+    },
+    {
+      "parameters": {
+        "command": "ffmpeg -y \\\n-f concat -safe 0 \\\n-i <(printf \"file '%s'\\n\" /tmp/song0.mp3 /tmp/song1.mp3) \\\n-c copy /tmp/final_song_combined.mp3"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        432,
+        1104
+      ],
+      "id": "cda272dc-5d7b-4919-9249-f1ef02ae2576",
+      "name": "combine-audio"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        800
+      ],
+      "id": "d267f612-c720-4db8-b212-a1eef8cf00bc",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/tmp/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1248
+      ],
+      "id": "f5c67a92-9f0d-464f-88bb-eab0632e4648",
+      "name": "ReadMusicVideo"
+    },
+    {
+      "parameters": {
+        "content": "Uploading Youtube Video",
+        "height": 272,
+        "width": 704
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1728,
+        1200
+      ],
+      "typeVersion": 1,
+      "id": "941bb76f-30fa-4f44-8e91-7dac0630e224",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# REBL_X - IMAGEN 4 CINEMATIC SAMURAI COMPOSER (DYNAMIC EDITION)\nYou are **REBL_X** — a premium AI composer and visual director specializing in **photorealistic dark traditional Japanese samurai electronic music**.\n\n### 🎯 CORE RULE: NEVER REPEAT\nEvery output must be **completely unique**—never reuse titles, themes, settings, or visual compositions from prior runs or examples. Treat each execution as a **new cinematic short film**.\n\n### 🔄 DYNAMIC INSPIRATION SOURCES (CHOOSE ONE PER RUN):\n- **Seasonal Moment**: e.g., *first frost*, *cherry blossom decay*, *autumn fog over Kyoto*\n- **Emotional State**: e.g., *quiet vengeance*, *grief-forged resolve*, *serene defiance*\n- **Natural Phenomenon**: e.g., *moonbow over a shrine*, *silent avalanche in bamboo forest*, *lightning over a stone bridge*\n- **Poetic Japanese Concept**: e.g., *mono no aware*, *yūgen*, *wabi-sabi*, *kintsugi of the soul*\n\n### 🎵 OUTPUT REQUIREMENTS:\n1. **song_prompt** (<450 chars):  \n   - 110–130 BPM  \n   - Must include: taiko drums + shakuhachi + ambient synths + Japanese vocal elements  \n   - Mood: meditative yet powerful, sacred, emotional  \n   - Example structure: *\"120 BPM dark cinematic Japanese piece with thunderous taiko, breathy shakuhachi, and ghostly female chants beneath analog synth drones. Feels like standing alone on a storm-lit torii bridge at midnight.\"*\n\n2. **song_title**:  \n   - Atleast 4 - 5 words, poetic, inspired by your chosen dynamic source  \n   - NEVER use: \"Warrior’s Path\", \"Silent Blade\", \"Shadow of Honor\", or any example from prior prompts  \n   - Examples: *\"Frost on Steel\"*, *\"Crimson Rain Vow\"*, *\"Ashes in Moonlight\"* and you can be dynamic and more to it\n\n3. **song_description** (120–150 words):  \n   - Tell a micro-story featuring a **female samurai (Onna-Bugeisha)** in a **new setting** (e.g., snow temple, flooded rice field, burning archive, cliffside at dawn)  \n   - Connect music to her inner journey  \n   - End with use-case: *\"Perfect for...\"*\n\n4. **thumbnail_prompt**:  \n   - **Always change the environment** based on your dynamic source  \n   - Include full Imagen 4 specs: lens (50mm/85mm), aperture (f/1.8–f/2.8), lighting (golden hour/moonlit rim), weather (mist/rain/fog), composition (rule of thirds, negative space)  \n   - **Text overlay**: Japanese calligraphy of the **song_title** + subtle \"REBL_X\" logo  \n   - Hero subject only: one Onna-Bugeisha, authentic armor, realistic textures, Doesn't need to be exact style,  emotional expression\n   - If there is a character in the image make sure face are clear\n\n5. **hashtags**:  \n   - Keep core tags (#TaikoDrums, #OnnaBugeisha, etc.) but **rotate 3–5 tags** based on theme (e.g., #WinterSamurai, #MoonlitVow, #BambooWhispers)\n\n### 🚫 STRICTLY AVOID:\n- Generic titles  \n- Reused settings (e.g., \"rainy street at night\" unless reimagined uniquely)  \n- Vague descriptors like \"beautiful\" or \"epic\"  \n- Copying the example in the prompt\n\n### 💡 BEFORE GENERATING:\nUse the **Think tool** to brainstorm:  \n- What season/time/weather defines this moment?  \n- What internal conflict does the warrior face?  \n- How does the environment reflect her emotion?  \n- What makes this thumbnail visually distinct from all prior ones?\n- Make sure the title , the song theme , and the thumbnail should be unique and not same as previous generated\n\nNow generate a **truly original** cinematic music + visual concept.\n\n\n## Important:\n\n- You need every song , thumbnail and title  the style to be unique under that theme.\n- Make sure the title is at least 3 and 4 words\n- Make sure the thumbnail image prompt be unique and theme is unique not always women but theme of samuria and female\n- Always use think tool to think\n- Song need to be unique style as well\n- Thumbnail need to be unique everytime.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -256,
+        688
+      ],
+      "id": "99811c0d-d136-4afb-858a-ed219c26dbcd",
+      "name": "Prompt Generator"
+    },
+    {
+      "parameters": {
+        "content": "## Prompt Generator",
+        "height": 528,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "1c1ed5e2-5841-4dd5-ae17-72969c7cc7b1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sourceAudioUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        560
+      ],
+      "id": "c231e309-d7d8-406d-ad62-597e5e8fd811",
+      "name": "DownloadSongs"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/generate/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || 'YOUR_KIE_TASK_ID'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        432
+      ],
+      "id": "c462d515-cdf4-486d-a197-c376d6c2c851",
+      "name": "GetTaskId",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status&uploadType=resumable",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Upload-Content-Type",
+              "value": "video/webm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "RAW/JSON",
+        "body": "={\n  \"snippet\": {\n    \"title\": \"{{ $('Merge').item.json.output.song_title }}\",\n    \"description\": \"{{ $('Merge').item.json.output.song_description }} \\n\\n {{ $('Merge').item.json.output.hashtags }}\",\n    \"categoryId\": \"24\",\n    \"defaultLanguage\": \"en\",\n    \"defaultAudioLanguage\": \"en\"\n  },\n  \"status\": {\n    \"privacyStatus\": \"public\",\n    \"license\": \"youtube\",\n    \"embeddable\": true,\n    \"publicStatsViewable\": true,\n    \"madeForKids\": false\n  }\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "043bf46c-ee7e-45b3-89c2-b79a1322f247",
+      "name": "Post-Video-Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1808,
+        1248
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $node[\"Post-Video-Info\"].json.headers.location }} ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "2b32f9fe-82b4-48b6-aec7-3e3cbd42832a",
+      "name": "Upload Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2160,
+        1248
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "rm -f final_song_video.mp4 /tmp/song*.mp3 /tmp/final_song_combined.mp3 /tmp/final_song_video_highq.mp4 /tmp/thumbnail.png /tmp/final_song_video.mp4&& echo \"🧹 All temporary files removed successfully.\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        1248
+      ],
+      "id": "a114ec8f-406e-4fb6-9ef1-f8401bd3190c",
+      "name": "DeleteFiles"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Suno.ai Songs",
+        "height": 688,
+        "width": 496,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        208
+      ],
+      "typeVersion": 1,
+      "id": "4e81809d-2dc3-4bb1-91df-c261dfdb722f",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "### Save Songs",
+        "height": 320,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "06f171fc-6b43-4864-ab71-f2537ec01dac",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Combine Audio and Video",
+        "height": 336,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        1056
+      ],
+      "typeVersion": 1,
+      "id": "57d878c7-01c7-4236-abaf-33b9863b3ae7",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "description": "Always use this tool. Use it to think through complex ideas or problems. Try to create a unique title each time based on the theme and style of the prompt and should not be same as system prompt title example. Also think on improving the realistic ness of the thumbnail prompt\nThis tool does not retrieve new information or modify the database — it simply appends your thoughts to the log. Use it whenever complex reasoning or memory caching is needed."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        640
+      ],
+      "id": "159ec078-34cd-42e7-aece-e8cffa14b1bf",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/thumbnail.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        1328
+      ],
+      "id": "e83dec28-7ba2-4ae6-9980-b8bd073b08a3",
+      "name": "write_image1"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Thumbnail Image (Seedream 4)",
+        "height": 592,
+        "width": 512,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        1200
+      ],
+      "typeVersion": 1,
+      "id": "8fd4a502-7913-4bfc-affe-fbaacb7d1a3c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        1456
+      ],
+      "id": "c97e1a94-da99-4fd8-9af2-3a188f939428",
+      "name": "Wait2",
+      "webhookId": "bb71bb5a-5465-53d0-b402-81ac152da5bc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        1600
+      ],
+      "id": "f2c5d9ee-b5a5-41a4-98b1-7b1030df0e09",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"bytedance/seedream-v4-text-to-image\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n          \"prompt\":   {{ JSON.stringify($json.output.thumbnail_prompt) }},\n          \"image_size\": \"landscape_16_9\",\n          \"image_resolution\": \"2K\",\n          \"max_images\": 1\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        1312
+      ],
+      "id": "25d7fe31-17fa-4404-bde0-b41052c21083",
+      "name": "GenerateImage1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || 'YOUR_KIE_TASK_ID'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        1600
+      ],
+      "id": "a8035c7a-8608-44b4-88bd-82c3fb59bd4e",
+      "name": "GetImageURL1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        1456
+      ],
+      "id": "7c586b21-9532-419c-8c3f-1488af2d10aa",
+      "name": "DownloadImg1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "21866722-8487-4136-a6a2-640fcdb2bba2",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        256
+      ],
+      "id": "acec536d-6721-4dbd-9b68-8b30f0987fd5",
+      "name": "tokencheck"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        864,
+        112
+      ],
+      "id": "6caee5ee-89e3-4d23-80f0-6fe5b7ddc5e8",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        1504
+      ],
+      "id": "0e5a4503-9604-4ea9-acc1-467bb206618a",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -896,
+        512
+      ],
+      "id": "10424dbb-a251-4843-ab4b-0a5d3b2f145b",
+      "name": "Telegram Trigger",
+      "webhookId": "21310fdf-52be-5c8f-abcb-d7640b22c70d",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        336
+      ],
+      "id": "7beced3e-f169-438f-82f7-72d71e1286d9",
+      "name": "SendAudio",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Task complete: Uploaded to youtube\nhttps://www.youtube.com/watch?v={{ $('Upload Video').item.json.id }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2560,
+        1248
+      ],
+      "id": "df65d5de-1bd7-4c4a-b081-1def5f78a51d",
+      "name": "SendAudio3",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Task Started",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        656
+      ],
+      "id": "c53f8d49-d538-43d5-8561-1a14ad1eba60",
+      "name": "SendAudio4",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Issue in image api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -944,
+        1296
+      ],
+      "id": "75b76ee2-851b-45a8-941c-93dde1a318c6",
+      "name": "SendAudio5",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        48
+      ],
+      "id": "1cd8001c-7914-4a1c-81c0-24e9620d4d81",
+      "name": "SendImage",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Issue in song api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        112
+      ],
+      "id": "2f801813-37c7-4de0-a834-29af81247395",
+      "name": "AudioError",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Generation Complete",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2128,
+        944
+      ],
+      "id": "c7214e3d-a037-407e-9abc-045b5df99493",
+      "name": "MusicVideo1",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {
+          "includeBinaries": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        1248
+      ],
+      "id": "494e02a5-395c-4da6-9e8a-0369069ad203",
+      "name": "AggregateBinaryFiles"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://your-ffmpeg-server.example.com/async_best_quality_video",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "imgdata"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        832,
+        784
+      ],
+      "id": "a4ad557a-22de-41de-8fdd-d89757ae57f4",
+      "name": "HTTP Request1",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "=https://your-ffmpeg-server.example.com/status/{{ $json.task_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        784
+      ],
+      "id": "98387398-85e0-4827-bade-985f206f2fc5",
+      "name": "HTTP Request2",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "226395a7-3268-446a-ba39-d6df0210fd9e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e68d87ab-921a-40ea-b07c-55e775a30d77",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "in_progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "41780be1-090e-4d35-91a6-ff75009352ae",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1248,
+        768
+      ],
+      "id": "c7d2c313-8b1b-44a1-900e-5f0316d4a23b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        912
+      ],
+      "id": "d95f9034-0c8f-4d92-b40a-98f2273d2a8f",
+      "name": "Wait1",
+      "webhookId": "99c3e643-98e4-5bd8-8603-7bf7ef79aa8d"
+    },
+    {
+      "parameters": {
+        "url": "=https://your-ffmpeg-server.example.com/download/{{ $json.task_id }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        752
+      ],
+      "id": "af6902fd-283e-47f7-8604-021ebf179239",
+      "name": "HTTP Request3",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "errorMessage": "Error Occured"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        2576
+      ],
+      "id": "662b959a-d0b2-45aa-bb2c-b93f6e214851",
+      "name": "Stop and Error2"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/final_song_combined.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1104
+      ],
+      "id": "d93786c6-fffc-4c79-888e-58f0549cf7b9",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/thumbnail.png",
+        "options": {
+          "dataPropertyName": "imgdata"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        1248
+      ],
+      "id": "b3368ac2-ff4a-4fa6-8cd7-1eb937b379a8",
+      "name": "readImage"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/tmp/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        752
+      ],
+      "id": "546e1863-879d-4a7a-a538-f505ddbd6fc4",
+      "name": "write_video"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        1248
+      ],
+      "id": "a7dd5811-f3d4-4441-aacb-561f4780c539",
+      "name": "MergeData"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1584,
+        1248
+      ],
+      "id": "15764baa-44c4-444f-b211-d52c0e7268e8",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c6912a02-d40b-497d-8fa7-104f91aa019b",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        1472
+      ],
+      "id": "3d81e2c4-7321-4dd3-8c80-0ffcb09b42d5",
+      "name": "tokencheck1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "tableName": "music_video_chat_histoy",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        1040
+      ],
+      "id": "91972bd3-5167-4788-9c40-9e426943aa79",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "cB95YFzsprdG7zQr",
+          "name": "YOUR_POSTGRES_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "=llm worked: This step is Ok",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        -112
+      ],
+      "id": "7610e122-2db4-4649-85e8-6cb0a3a2b3a0",
+      "name": "SendLLM",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Creation Started - Server is running",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        544
+      ],
+      "id": "9860fae9-aff6-4e5c-8e61-4d2eaaa6aa97",
+      "name": "SendMsg",
+      "webhookId": "23d8f884-2f8f-5cd9-a53e-ae9d8449633a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        1040
+      ],
+      "id": "6ff6f8d6-c93d-4260-8903-60f33ed30484",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "SunoMusicGen": {
+      "main": [
+        [
+          {
+            "node": "tokencheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Combine-SongURI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write_Song": {
+      "main": [
+        [
+          {
+            "node": "combine-audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine-SongURI": {
+      "main": [
+        [
+          {
+            "node": "DownloadSongs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "combine-audio": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "SendAudio4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReadMusicVideo": {
+      "main": [
+        [
+          {
+            "node": "Upload Video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MusicVideo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Generator": {
+      "main": [
+        [
+          {
+            "node": "GenerateImage1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendLLM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SunoMusicGen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadSongs": {
+      "main": [
+        [
+          {
+            "node": "Write_Song",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendAudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetTaskId": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Video-Info": {
+      "main": [
+        [
+          {
+            "node": "ReadMusicVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video": {
+      "main": [
+        [
+          {
+            "node": "DeleteFiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeleteFiles": {
+      "main": [
+        [
+          {
+            "node": "SendAudio3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_image1": {
+      "main": [
+        [
+          {
+            "node": "readImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "DownloadImg1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateImage1": {
+      "main": [
+        [
+          {
+            "node": "tokencheck1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImg1": {
+      "main": [
+        [
+          {
+            "node": "write_image1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AudioError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "SendAudio4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio4": {
+      "main": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio5": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AudioError": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AggregateBinaryFiles": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendMsg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "MergeData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "readImage": {
+      "main": [
+        [
+          {
+            "node": "MergeData",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "write_video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_video": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MergeData": {
+      "main": [
+        [
+          {
+            "node": "AggregateBinaryFiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Post-Video-Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck1": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendAudio5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompt Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

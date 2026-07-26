@@ -29,7 +29,7 @@
       ],
       "id": "3b37e172-12ae-4959-ac43-93515f2296dd",
       "name": "Lead Topic",
-      "webhookId": "c8a5b127-41a4-49f1-8d27-4100d59a6483"
+      "webhookId": "56762df1-ac7d-543a-b55a-d5ec95487abf"
     },
     {
       "parameters": {
@@ -43,7 +43,7 @@
       ],
       "id": "cd6b11e0-07bd-454e-bce5-1b9ec3ba2723",
       "name": "Wait",
-      "webhookId": "c5df35b2-571d-417b-973e-b85e7bbad9ed"
+      "webhookId": "c4d16558-c110-53b5-9b96-3a960db6ff24"
     },
     {
       "parameters": {
@@ -80,17 +80,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tblERSUOG2cZjT4R3",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "Instragram-lead-generators",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblERSUOG2cZjT4R3"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -209,8 +209,8 @@
       "name": "Lead Airtable",
       "credentials": {
         "airtableTokenApi": {
-          "id": "FnG6rmMlWB6PcH3d",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -230,7 +230,6 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
   "connections": {
     "Lead Topic": {
       "main": [
@@ -281,11 +280,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2585f921-53ad-4b67-8635-b6f65ef9d8a4",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
-  },
-  "id": "HsCdkN57mzPUWQm7",
   "tags": []
 }

@@ -1,0 +1,2725 @@
+{
+  "name": "Lofi Video Generator v2",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customMode",
+              "value": "false"
+            },
+            {
+              "name": "instrumental",
+              "value": "false"
+            },
+            {
+              "name": "model",
+              "value": "V5"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.suno_music_prompt }}"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://localhost:5679"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -736,
+        -1232
+      ],
+      "id": "4a7a6bdc-abe5-43a3-8b8d-128006295feb",
+      "name": "SunoMusicGen1",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -1216
+      ],
+      "id": "ce9f5f88-e0e3-4096-a334-29e25be699eb",
+      "name": "Wait1",
+      "webhookId": "2c04ab3c-95fd-50d2-ab03-dc4ac35aded9"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "245d543f-f9ff-4e4a-949d-0dc59314703d",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -1136
+      ],
+      "id": "b4b76d8c-237c-4e49-b44a-eaaa91d5bad3",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"video_title\": \"Title of the Video\",\n  \"suno_music_prompt\": \"suno music prompt\",\n  \"nano_banana_thumbnail_prompt\": \"image prompt\",\n  \"grok_video_prompt\": \"image-to-video animation prompt matching the thumbnail scene\",\n  \"video_description\": \"video description\",\n  \"hashtags\": \"#JapaneseMusicCreator #SamuraiCinema #OnnaBugeisha #TaikoDrums #CinematicElectronic #REBLX #PhotorealisticArt #DarkAmbient #JapaneseCulture #TraditionalArt #MeditativeMusic #WarriorSpirit #SwordAndHonor #ArtisticFusion #EpicJapanese #FocusMusic #WorkoutMotivation #CinematicProduction #MusicComposer #VisualArt\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        -848
+      ],
+      "id": "922c7f05-556b-4c50-aa3d-c81388ac59dd",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/scrollsOfDream/song{{ $itemIndex }}.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        832,
+        -1040
+      ],
+      "id": "29284ae6-8576-488f-8d96-0fbcae09b141",
+      "name": "Write_Song1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming JSON data\nconst data = $json.data?.response?.sunoData || [];\n\n// Extract all song audio URLs\nconst songUris = data.map(item => ({\n  title: item.title,\n  audioUrl: item.audioUrl,\n  sourceAudioUrl: item.sourceAudioUrl,\n  imageUrl: item.imageUrl,\n}));\n\n// Return as items for next node\nreturn songUris.map(uri => ({ json: uri }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -1136
+      ],
+      "id": "3af4abba-5587-4190-b615-59d72f2f3689",
+      "name": "Combine-SongURI1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Idea: Generate Unique Idea Your Self",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=ROLE\nYou are a master prompt-craft assistant and creative director whose sole purpose is to produce complete, production-ready asset packages for Medieval Fantasy Tavern Lofi music videos. Every output must be original, evocative, and immediately usable by image-generation and audio-generation tools. You serve a YouTube channel called ScrollOfDream.\n \nMANDATORY OUTPUT FORMAT (exact — never deviate)\n1. Video Title\n2. Suno Music Prompt\n3. Nano Banana Thumbnail Prompt\n4. Grok Video Prompt\n5. Video Description\nCORE IDENTITY — SCROLLOFDREAM\nScrollOfDream produces Medieval Fantasy Lofi — a sub-genre pairing slow, warm lofi hip-hop beats with the immersive aesthetic of candlelit taverns, enchanted libraries, moonlit castle parapets, misty forest clearings, and cozy medieval interiors. The channel's audience includes: D&D/TTRPG players, Baldur's Gate/Skyrim/Elden Ring gamers, fantasy readers (BookTok), and students seeking aesthetically differentiated study music. Every video is an invitation to step into a living, breathing fantasy world.\n \nIMAGE STYLE ANCHOR (prepend VERBATIM to every thumbnail prompt)\nVibrant digital impressionistic painting, heavy impasto brushwork, visible thick hand-painted textures, rich oil-painting aesthetic, cinematic high-contrast warm firelight and candlelight illumination.\n \nPAINTERLY ENFORCERS (MANDATORY — include after anchor in every thumbnail prompt)\n- \"oil on canvas / impasto\"\n- \"visible canvas texture and canvas grain\"\n- \"palette knife and thick-bristle brush strokes\"\n- \"expressive, semi-abstract forms\"\n- \"softened facial/detail rendering — stylized anatomy, not photoreal\"\n- \"tactile paint edges and smeared firelight highlights\"\nIMAGE GUIDELINES (strict)\nSUBJECTS: One anonymous figure per scene — a cloaked traveler, robed scholar, hooded mage, weary knight, lone bard, or wise herbalist. Stylized and non-recognizable. Medieval/fantasy period attire only (cloaks, robes, chainmail, leather armor, fur-lined hoods, wizard hats). Never modern clothing or recognizable faces.\n \nSETTINGS — rotate every video, never repeat consecutive scenes:\n- Cozy stone tavern interior: rough wooden tables, iron chandeliers, dripping candles, roaring hearth, hanging tankards, background patron silhouettes in mist\n- Enchanted tower library: towering bookshelves in shadow, floating candles, glowing grimoires, runes drifting from open pages, dusty tomes, a perched raven\n- Moonlit castle parapet: stone battlements, lantern light, misty valley below, distant owl, starfield above\n- Enchanted forest clearing: ancient oaks, glowing mushrooms, fireflies, moss-covered ruins, moonlight filtering through canopy\n- Village healer's cottage: dried herbs from beams, bubbling cauldron, warm hearth, rain on leaded glass windows\n- Scholar's candlelit study: ink wells, quills, parchment maps pinned to stone walls, open spellbook, wax seals\nLIGHT: Every scene must have a warm practical light source — roaring fireplace, cluster of candles, iron torch, glowing lantern, bioluminescent mushrooms, or moonbeam through a window. Describe the bloom, rim light, and shadows it creates.\n \nPALETTE: Warm amber, deep burgundy, forest green, aged gold, midnight violet, soft ivory. Avoid cold blues unless depicting a moonlit exterior.\n \nATMOSPHERE: Smoke from hearths, floating embers, misty candlelight bloom, glowing runes, firefly light, steam from mugs, rain on stone, dusty cobwebs catching candlelight.\n \nAVOID: \"photorealistic\", \"photo\", \"ultra-real\", \"4k\", \"hdr\", \"render\", \"lens\", \"bokeh\" (except as painterly metaphor). No modern or sci-fi elements.\n \nFORMAT: Image Style Anchor → Painterly Enforcers → detailed scene description → \"(Style: Medieval Fantasy Impressionism)\" → \"---- NEGATIVE PROMPT ----\" → negative prompt string.\n \nNEGATIVE PROMPT (append after every thumbnail prompt)\n---- NEGATIVE PROMPT ----\nphotorealistic, photo, ultra-real, 4k, hdr, cinematic photograph, DSLR, lens flare, bokeh, 3D, octane render, unreal engine, CG, hyper-detailed skin, recognizable face, celebrity likeness, modern clothing, smartphone, logo, watermark, text, signature, sci-fi, neon lights, modern furniture\n \nMUSIC PROMPT GUIDELINES (Suno V5)\nPRIMARY INSTRUMENT — rotate every video, never repeat consecutively:\nlute (fingerpicked arpeggios) | Celtic harp (shimmering, delicate) | medieval flute/recorder (breathy, pastoral) | hurdy-gurdy (droning, warm) | hammered dulcimer (bright, resonant) | medieval fiddle (expressive, intimate) | tin whistle (light, folk) | slow cello/viola (moody, cinematic)\n \nMANDATORY DESCRIPTORS: Always include \"slow\", \"ambient\", \"peaceful\", \"lofi hip-hop beats\", \"warm reverb\".\n \nAMBIENCE LAYER — pick 2–3 matching the visual setting:\n- Crackling fireplace with occasional wood pop\n- Soft tavern murmur (distant conversation, clinking tankards)\n- Rain on stone windows\n- Wind through stone castle corridors\n- Distant owl calls in the forest\n- Bubbling cauldron or brook\n- Dripping water in a stone corridor\n- Pages turning softly\n- Wax dripping from a candle\nBEATS: Soft brushed snare + gentle kick only. No modern drums, no electronic elements.\n \nGROK IMAGE-TO-VIDEO PROMPT GUIDELINES\nPurpose: This prompt animates the generated thumbnail painting into a subtle, looping video. It MUST match the exact scene described in the thumbnail prompt — same setting, figure, light sources, and atmosphere.\n \nMANDATORY STRUCTURE (follow exactly):\n1. Opening instruction: \"Create a subtle, atmospheric motion video from this medieval fantasy oil painting.\"\n2. Preservation clause: \"Keep the entire composition exactly the same — do not add, remove, or alter any objects, figures, or architectural elements. Preserve the color palette, lighting mood, and painterly aesthetic perfectly. No camera movement whatsoever (no pan, zoom, tilt, or rotation).\"\n3. Animation directives: List ONLY the natural environmental elements that exist in YOUR thumbnail scene. Pick 4–6 from the master list below, but ONLY if they logically exist in the scene you described:\n   - Candle or fireplace flames flickering softly with natural fire movement\n   - Embers or sparks drifting slowly upward from a hearth\n   - Torch or lantern light gently pulsing and breathing\n   - Shadows shifting softly in response to flickering flame movement\n   - Steam or smoke rising lazily from mugs, cauldrons, or a hearth\n   - Dust motes drifting slowly through shafts of warm candlelight\n   - Rain or snow falling softly outside windows\n   - Rune particles or magical glowing elements drifting gently\n   - Fabric, banners, or curtains swaying very subtly in a draft\n   - Candle wax dripping extremely slowly\n   - Fireflies pulsing softly in a forest clearing\n   - Moonlight shifting gently through tree canopy or windows\n   - Pages of an open book fluttering very slightly\n   - Bubbling liquid in a cauldron\n4. Non-existence clause: \"If an element does not exist in the painting, do not generate it.\"\n5. Closing constraints: \"All motion must be extremely subtle, warm, and hypnotic. No dramatic movement. No morphing or distortion of the painterly brushwork. No characters moving, shifting posture, or changing expression. The result should feel like a living oil painting — timeless and still, yet warmly alive with flickering candlelight. Duration: 4–6 seconds. Perfect seamless loop — identical start and end frame. No audio.\"\nCRITICAL: Do NOT include animation directives for elements that are not in your thumbnail scene. If there is no rain in the painting, do not mention rain. If there are no runes, do not mention runes. The video prompt must be a precise mirror of the thumbnail.\n \nVIDEO DESCRIPTION GUIDELINES\nStructure: Title as headline → one short evocative opener line (e.g. \"Pull up a chair.\" / \"The fire is warm.\" / \"The candles are lit.\") → 2 short atmospheric paragraphs describing the sonic palette and mood → \"Perfect for:\" bullet list (5–6 items) → hashtag block.\n \nHASHTAGS — always include: #MedievalLofi #FantasyLofi #CozyFantasy #StudyMusic #AmbientMusic #SleepMusic #TavernMusic #ScrollOfDream\nAdd 4–6 specific tags per video theme from: #DnDMusic #SkyrimLofi #LuteMusic #CelticLofi #EnchantedLibrary #CandlelitLofi #MedievalFantasy #FocusMusic #BaldursGate #CozyGaming\n \nTITLE FORMULAS — pick one each video:\nA: \"[Evocative Name] | [X] Hours of Medieval Lofi for [Activity]\"\nB: \"[Evocative Name] 🕯️ Fantasy Lofi [X] Hours [Activity]\"\nC: \"You're [immersive second-person scenario] | medieval lofi mix\"\n \nGood title examples:\n- \"The Wanderer's Hearth | 2 Hours of Medieval Lofi for Deep Study\"\n- \"Grimoire & Candlelight 🕯️ Fantasy Lofi 2 Hours Sleep Music\"\n- \"You're a scholar in a candlelit tower at midnight | medieval lofi mix\"\n- \"Rain on the Parapet | 3 Hours of Castle Lofi for Sleep & Focus\"\n- \"The Alchemist's Laboratory | Cozy Fantasy Lofi Beats for Focus\"\nCONSISTENCY AND ENFORCEMENT\n- Every thumbnail prompt MUST begin with the Image Style Anchor exactly as written, followed by the Painterly Enforcers, then the scene.\n- Every grok_video_prompt MUST only reference elements that exist in the corresponding thumbnail prompt scene.\n- Rotate settings, instruments, and ambience elements every generation — never repeat the same combination.\n- Always use the Think tool first to plan a unique scene before generating output.\nTHINK TOOL GUIDANCE\nAlways use the Think tool first to:\n1. Choose a setting not used recently (rotate through the 6 settings above)\n2. Choose a primary instrument not used recently\n3. Select 2–3 ambience elements that match the chosen setting\n4. Draft a unique, evocative video title using the formulas above\n5. Plan the full thumbnail scene — figure type, light source, palette, atmosphere details\n6. Draft the grok_video_prompt — select only the animation elements that exist in the thumbnail scene you just planned\nEXAMPLE A — The Wanderer's Hearth\n1. Video Title: The Wanderer's Hearth | 2 Hours of Medieval Lofi for Deep Study & Sleep\n2. Suno Music Prompt: Slow, peaceful medieval lofi hip-hop. Primary instrument: lute, gentle fingerpicked arpeggios in a warm minor key. Layered with soft hurdy-gurdy drone, crackling fireplace with occasional wood pop, distant tavern murmur (muffled conversation, clinking tankard), light rain on stone windows, and warm cinematic reverb. Lofi hip-hop beats — soft brushed snare, gentle kick. No modern drums or electronic elements. Organic, cozy, and deeply relaxing. Perfect for deep study, sleep, and tabletop RPG session background.\n3. Nano Banana Thumbnail Prompt: Vibrant digital impressionistic painting, heavy impasto brushwork, visible thick hand-painted textures, rich oil-painting aesthetic, cinematic high-contrast warm firelight and candlelight illumination. oil on canvas / impasto, visible canvas texture and canvas grain, palette knife and thick-bristle brush strokes, expressive semi-abstract forms, softened facial/detail rendering (stylized anatomy, not photoreal), tactile paint edges and smeared firelight highlights. A lone hooded traveler in a worn wool cloak sits at a rough-hewn wooden table in a stone tavern, warming gloved hands around a steaming mug by a roaring hearth; iron chandelier with dripping candles hangs above; hanging tankards and a longsword lean against the far wall; silhouettes of other patrons dissolve into background mist. Palette of deep amber, burnt umber, burgundy, and warm gold. Bold impasto brushstrokes on stone walls; glowing firelight rim-lighting the traveler's hood; floating embers drifting upward from the hearth; rain streaking a small leaded window. (Style: Medieval Fantasy Impressionism)\n---- NEGATIVE PROMPT ----\nphotorealistic, photo, ultra-real, 4k, hdr, cinematic photograph, DSLR, 3D, octane render, unreal engine, CG, hyper-detailed skin, recognizable face, modern clothing, smartphone, logo, text, neon, sci-fi\n4. Grok Video Prompt: Create a subtle, atmospheric motion video from this medieval fantasy oil painting. Keep the entire composition exactly the same — do not add, remove, or alter any objects, figures, or architectural elements. Preserve the color palette, lighting mood, and painterly aesthetic perfectly. No camera movement whatsoever (no pan, zoom, tilt, or rotation). Only animate natural environmental elements that already exist in the painting: Candle and fireplace flames flickering softly and warmly with natural fire movement. Embers and sparks drifting slowly upward from the roaring hearth. Shadows shifting softly in response to flickering flame movement. Steam rising lazily from the steaming mug on the table. Rain streaking softly down the small leaded window. Candle wax dripping extremely slowly from the iron chandelier. If an element does not exist in the painting, do not generate it. All motion must be extremely subtle, warm, and hypnotic. No dramatic movement. No morphing or distortion of the painterly brushwork. No characters moving, shifting posture, or changing expression. The result should feel like a living oil painting — timeless and still, yet warmly alive with flickering candlelight. Duration: 4–6 seconds. Perfect seamless loop — identical start and end frame. No audio.\n5. Video Description:\nThe Wanderer's Hearth\nPull up a chair.\n \nTwo hours of warm lute arpeggios and hurdy-gurdy drones, wrapped in the amber glow of a stone tavern hearth. Let the fireplace crackle and the rain tap at the window while you settle in for a long night of study or quiet rest.\n \nThe lofi beats are slow and organic — a soft brushed snare and gentle kick beneath deep reverb — built to keep you in flow without pulling your attention from the page.\n \nPerfect for:\n- Deep Study & Essay Writing\n- Sleep & Relaxation\n- D&D / TTRPG Background Music\n- Fantasy Reading & Creative Writing\n- Late-Night Focus Sessions\n- Cozy Gaming Ambience\n#MedievalLofi #FantasyLofi #CozyFantasy #StudyMusic #AmbientMusic #SleepMusic #TavernMusic #ScrollOfDream #DnDMusic #LuteMusic #CandlelitLofi #MedievalFantasy #FocusMusic #CozyGaming\n \nEXAMPLE B — Grimoire & Candlelight\n1. Video Title: Grimoire & Candlelight 🕯️ 2 Hours of Enchanted Library Lofi for Deep Focus\n2. Suno Music Prompt: Slow, mysterious medieval lofi hip-hop. Primary instrument: Celtic harp, delicate shimmering arpeggios in a hauntingly peaceful minor key. Layered with soft candlelight ambience (wax dripping, gentle flame flicker), distant wind through stone corridors, ancient pages turning slowly, quiet choral undertone like distant monks, and warm cinematic reverb. Very light finger snaps and soft brushed snare — no drums or modern production. Deeply peaceful and focused. For studying, writing, and creative flow.\n3. Nano Banana Thumbnail Prompt: Vibrant digital impressionistic painting, heavy impasto brushwork, visible thick hand-painted textures, rich oil-painting aesthetic, cinematic high-contrast warm firelight and candlelight illumination. oil on canvas / impasto, visible canvas texture and canvas grain, palette knife and thick-bristle brush strokes, expressive semi-abstract forms, softened facial/detail rendering (stylized anatomy, not photoreal), tactile paint edges and smeared firelight highlights. A robed scholar in deep violet robes reads a glowing grimoire at a carved oak desk in an enchanted stone library; towering bookshelves recede into shadow above; dozens of floating candles cast warm amber pools of light; glowing golden runes drift upward from the open pages; a raven perches silently on a nearby shelf. Palette of deep violet, dusty gold, aged ivory, and warm amber candlelight bloom. Heavy impasto on bookshelves and stone floor; smeared gold highlights on drifting rune particles; dramatic chiaroscuro shadow behind the scholar. (Style: Medieval Fantasy Impressionism)\n---- NEGATIVE PROMPT ----\nphotorealistic, photo, ultra-real, 4k, hdr, cinematic photograph, DSLR, 3D, octane render, unreal engine, CG, hyper-detailed skin, recognizable face, modern clothing, smartphone, logo, text, neon, sci-fi\n4. Grok Video Prompt: Create a subtle, atmospheric motion video from this medieval fantasy oil painting. Keep the entire composition exactly the same — do not add, remove, or alter any objects, figures, or architectural elements. Preserve the color palette, lighting mood, and painterly aesthetic perfectly. No camera movement whatsoever (no pan, zoom, tilt, or rotation). Only animate natural environmental elements that already exist in the painting: Dozens of floating candle flames flickering softly with natural warm movement. Glowing golden runes drifting gently upward from the open grimoire pages. Shadows shifting softly across the towering bookshelves in response to flickering candlelight. Dust motes drifting slowly through shafts of warm candlelight between the shelves. Candle wax dripping extremely slowly from the floating candles. If an element does not exist in the painting, do not generate it. All motion must be extremely subtle, warm, and hypnotic. No dramatic movement. No morphing or distortion of the painterly brushwork. No characters moving, shifting posture, or changing expression. The result should feel like a living oil painting — timeless and still, yet warmly alive with flickering candlelight. Duration: 4–6 seconds. Perfect seamless loop — identical start and end frame. No audio.\n5. Video Description:\nGrimoire & Candlelight\nThe pages glow. The candles drift.\n \nGentle Celtic harp arpeggios fill an enchanted library where candlelight floats and ancient grimoires hold their secrets. This is deep focus music for the intellectually curious — slow, mysterious, and utterly absorbing.\n \nThe ambient bed layers wax dripping, distant wind through stone corridors, and quiet choral undertones beneath a soft lofi groove — creating a sonic world that draws you in and holds you there.\n \nPerfect for:\n- Deep Focus & Study\n- Fantasy Writing & Worldbuilding\n- D&D Dungeon Master Prep\n- Sleep & Relaxation\n- Late-Night Reading\n- Spellbook Afternoons\n#MedievalLofi #FantasyLofi #CozyFantasy #StudyMusic #AmbientMusic #SleepMusic #TavernMusic #ScrollOfDream #EnchantedLibrary #CelticLofi #DnDMusic #CandlelitLofi #FocusMusic #MedievalFantasy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1392,
+        -1232
+      ],
+      "id": "1acc72d7-ebad-4e6c-a241-3ab4843d2e09",
+      "name": "Prompt Generator1"
+    },
+    {
+      "parameters": {
+        "content": "● # ScrollOfDream: Automated Medieval Lofi YouTube Pipeline                                                                                                                                                                                   \n  **One trigger. One published YouTube video. No manual steps.**                                                                                                                                                                              \n                                                                                                                                                                                                                                              \n  `Trigger → Generate prompts → Music + Image → Animate → Assemble video → Upload to YouTube → Publish thumbnail`                                                                                                                             \n                                                                                                                                                                                                                                              \n  This workflow handles end-to-end Medieval Fantasy Lofi video production. All creative assets are AI-generated, the final video is assembled on a remote Oracle server, and the result gets uploaded to YouTube with a Telegram notification \n  sent when done.                                                                                                                                                                                                                             \n                                                                                                                                                                                                                                              \n  > 📺 Live channel: [youtube.com/@ScrollOfDream](https://www.youtube.com/@ScrollOfDream)                                                                                                                                                     \n                                                                                                                                                                                                                                              \n  ### How it works                                                                                                                                                                                                                            \n  1. A schedule trigger (Mon / Wed / Fri at 6AM) or a Telegram message starts the run. A confirmation hits Telegram straight away.                                                                                                            \n  2. An AI agent (DeepSeek + Gemini with Postgres chat memory) writes a video title, Suno music prompt, thumbnail prompt, description, and hashtags, then saves everything to an n8n Data Table.                                              \n  3. Two tracks run in parallel:                                                                                                                                                                                                              \n     - Music: Suno V5 via Kie API generates two songs, polls until complete, downloads the MP3s, and pushes them to the Oracle server over SSH.                                                                                               \n     - Background image: Nano Banana via Kie API generates a medieval fantasy oil painting. Grok image-to-video then turns it into a seamlessly looping animated clip.                                                                        \n  4. When both finish, FFmpeg on the Oracle server loops the animation against each song, joins the clips into a 2-hour file, and sends it back to n8n.                                                                                       \n  5. The video goes up to YouTube with title, description, tags, and license from the Data Table.                                                                                                                                             \n  6. A second Nano Banana job builds a styled thumbnail from the reference painting and video title, polls until ready, then sets it via the YouTube Thumbnails API.                                                                          \n  7. Telegram gets the final YouTube link. Temp files are cleaned off the server.                                                                                                                                                             \n                                                                                                                                                                                                                                              \n  ### Setup                                                                                                                                                                                                                                   \n  - Configure credentials: Kie API, OpenRouter, Google Gemini, Telegram Bot, YouTube OAuth2, SSH private key (Oracle server), Postgres (Supabase).                                                                                            \n  - Make sure `/home/user/video-workspace/` exists and is writable on your remote server.                                                                                                                                                    \n  - Set up the n8n Data Table (`scrolls-of-dreams`) with the correct schema before the first run.                                                                                                                                             \n  - Set your Telegram `chatId` in all Telegram nodes.                                                                                                                                                                                         \n                                                                                                                                                                                                                                              \n  ### Customization                                                                                                                                                                                                                           \n  - Change schedule days and times in the Schedule Trigger node.                                                                                                                                                                              \n  - Adjust song count, loop count, or output resolution in the FFmpeg SSH commands.                                                                                                                                                           \n  - Swap the Kie model (`nano-banana-2`, `grok-imagine/image-to-video`) for any supported alternative.                                                                                                                                        \n  - Edit the AI system prompt to switch to a different music or visual genre.                                                                                                                                                                 \n                                                                                                                                                                                                                                              \n  ---  \n\n                                                                                                                                                                                                                                       \n                                                                                                                                                                                                                                              \n  Need help setting this up? Reach out at your-email@example.com ",
+        "height": 1152,
+        "width": 944
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2912,
+        -1456
+      ],
+      "typeVersion": 1,
+      "id": "5c4c065a-4490-41c6-b808-9509e9b7e76a",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sourceAudioUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        -1136
+      ],
+      "id": "2470aa72-97fb-48ed-9911-e65c28334bb4",
+      "name": "DownloadSongs1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/generate/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || 'YOUR_KIE_TASK_ID'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -288,
+        -1136
+      ],
+      "id": "ed208345-cad6-472b-a535-59c48ddc7b8c",
+      "name": "GetTaskId1",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Generate Suno.ai Songs",
+        "height": 544,
+        "width": 752,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        -1520
+      ],
+      "typeVersion": 1,
+      "id": "75b80df5-5eb1-4826-b6db-59c199a8925b",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## Combine and Save songs",
+        "height": 336,
+        "width": 1104,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        448,
+        -1216
+      ],
+      "typeVersion": 1,
+      "id": "63d69808-f3c0-4452-8d57-6f8cc6c2bb1d",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "## Combine Audio and Video",
+        "height": 352,
+        "width": 736
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1936,
+        -1056
+      ],
+      "typeVersion": 1,
+      "id": "01e3528e-e44a-4c51-afae-cb63fdfbbd68",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "fileName": "=/tmp/scrollsOfDream/thumbnail.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -640
+      ],
+      "id": "88b911c9-6a3a-45a9-bba5-06012320362e",
+      "name": "write_image"
+    },
+    {
+      "parameters": {
+        "content": "## Generate background Image",
+        "height": 336,
+        "width": 1600,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        -832
+      ],
+      "typeVersion": 1,
+      "id": "263f4c87-c7f7-47e4-aab4-527d070c8137",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        -848
+      ],
+      "id": "8b618594-6986-4f4b-b992-b5cc53819995",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"nano-banana-2\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n  \"image_input\": [\n    \"https://res.cloudinary.com/your-cloudinary-id/image/upload/v1775328637/medival2_vvxbq8.jpg\",\n    \"https://res.cloudinary.com/your-cloudinary-id/image/upload/v1775328637/medival4_j8swoe.jpg\",\n\"https://res.cloudinary.com/your-cloudinary-id/image/upload/v1775328637/medival1_q8kubs.jpg\",\n\"https://res.cloudinary.com/your-cloudinary-id/image/upload/v1775328637/medival3_bkc9ui.jpg\"\n  ],\n  \"prompt\": {{ JSON.stringify($json.output.nano_banana_thumbnail_prompt) }},\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"2K\"\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -512,
+        -656
+      ],
+      "id": "0396c9bf-3d0d-4063-97f5-743e7914b3c4",
+      "name": "GenerateImage",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || 'YOUR_KIE_TASK_ID'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        -768
+      ],
+      "id": "28c32841-3b7c-4f5d-9c55-0b90ff5e944a",
+      "name": "GetImageURL2",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        544,
+        -848
+      ],
+      "id": "2d7b2226-d6e5-4d9e-8d01-959c019d88b3",
+      "name": "DownloadImg2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "21866722-8487-4136-a6a2-640fcdb2bba2",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -512,
+        -1232
+      ],
+      "id": "c22feeb5-9479-4cd0-99d2-eda1debf96fe",
+      "name": "tokencheck3"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -1408
+      ],
+      "id": "9db8d832-7cf4-4442-bbda-7cd119bea751",
+      "name": "Stop and Error2"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -512
+      ],
+      "id": "4b297c82-2c2f-454f-8141-5fef29748887",
+      "name": "Stop and Error4"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1840,
+        -1232
+      ],
+      "id": "c50e6325-0ea5-4e7a-80a5-6a213ecff0bc",
+      "name": "Telegram Trigger1",
+      "webhookId": "d854d247-c367-5c82-bc15-bd2bd5ac8151",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        -1232
+      ],
+      "id": "7c0f7253-3074-4db1-b1d4-0d2ecd6e65a2",
+      "name": "SendAudio1",
+      "webhookId": "afe20777-4af6-5ba6-86c9-3432aafae1d0",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Task Started",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1616,
+        -1232
+      ],
+      "id": "836edb09-4661-4421-90dc-803ae93177de",
+      "name": "SendAudio8",
+      "webhookId": "b91b1ff9-6068-51eb-a6af-31d784aee3a3",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Issue in image api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -512
+      ],
+      "id": "29394d5d-30d4-47b9-baad-32445ac08819",
+      "name": "SendAudio9",
+      "webhookId": "f3790857-03f8-5850-993a-2fd99a3220af",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        -848
+      ],
+      "id": "2ec22812-f01e-4e1d-80ae-8be6967ed8d3",
+      "name": "SendImage2",
+      "webhookId": "5d561332-60ee-5c42-91ff-8881a45e18ac",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Issue in song api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        -1408
+      ],
+      "id": "3e63e0c8-1987-4c87-b629-49649398207d",
+      "name": "AudioError1",
+      "webhookId": "8f9ae053-b639-53c1-95cc-64f109f0e1b0",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/tmp/scrollsOfDream/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        -864
+      ],
+      "id": "84c58b73-a21d-41a4-a99d-68c4e5c92a4d",
+      "name": "write_video1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        -1280
+      ],
+      "id": "6f2078f9-decb-4a6e-90ab-ea586d690e7a",
+      "name": "MergeData1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c6912a02-d40b-497d-8fa7-104f91aa019b",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        -656
+      ],
+      "id": "2253e5b4-a742-431c-917a-eb620eb2ca8a",
+      "name": "tokencheck4"
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "=llm worked: This step is Ok",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        -1616
+      ],
+      "id": "d300f9d7-590c-49f7-a18c-d42f8f482ed5",
+      "name": "SendLLM1",
+      "webhookId": "917ae886-f82d-5f8e-9436-f020e7ed2a8e",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Creation Started - Server is running",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        -1712
+      ],
+      "id": "a48ff641-2dd5-416a-8b91-e4510a1750b6",
+      "name": "SendMsg2",
+      "webhookId": "e5fd408d-2b65-5ae7-957e-fdddcac74753",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=YOUR_TELEGRAM_CHAT_ID",
+        "tableName": "scroll_of_dreams_v3",
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        -1008
+      ],
+      "id": "61fea371-7417-40aa-bfcc-ca9a664a129f",
+      "name": "ChatMemory1",
+      "credentials": {
+        "postgres": {
+          "id": "cB95YFzsprdG7zQr",
+          "name": "YOUR_POSTGRES_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -1008
+      ],
+      "id": "8687be1d-df24-4a7e-81aa-0147529a89f3",
+      "name": "ChatModel1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/tmp/scrollsOfDream/song{{ $itemIndex }}.mp3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -1040
+      ],
+      "id": "7a0a98b5-e4bd-4278-ad31-5a262ee12723",
+      "name": "ReadAudio1"
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Created - Server Completed",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2368,
+        -1056
+      ],
+      "id": "0d5d0440-452c-4b0a-b6e0-42659ba8e937",
+      "name": "SendMsg3",
+      "webhookId": "17728961-0d61-5587-8362-2dd768a2c75e",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Get row(s)1').item.json.title }}",
+        "regionCode": "PK",
+        "categoryId": "10",
+        "options": {
+          "description": "={{ $('Get row(s)1').item.json.description }}",
+          "license": "creativeCommon",
+          "notifySubscribers": true,
+          "privacyStatus": "public",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Get row(s)1').item.json.hashtags }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        -656
+      ],
+      "id": "e27160c6-1d4e-4c47-b1d8-6d343b9d1e91",
+      "name": "Upload a video1",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "videoId",
+              "value": "={{ $('Upload a video1').item.json.uploadId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4864,
+        -656
+      ],
+      "id": "a5c855b8-ec0b-4536-b794-b43d4bde5458",
+      "name": "Thumbnail-Uploader1",
+      "retryOnFail": true,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3968,
+        -752
+      ],
+      "id": "2b0e04e0-f4e8-451d-bb2d-f6d4514ca005",
+      "name": "Wait5",
+      "webhookId": "c1e664c1-d9d9-51e4-88b2-0ee0445f9acb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4416,
+        -752
+      ],
+      "id": "982a8ce0-5ed2-4b12-be81-5a0d24f7b60b",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json?.data?.taskId || 'YOUR_KIE_TASK_ID'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4192,
+        -832
+      ],
+      "id": "e37cb569-2bea-42b6-90ae-3642038f7414",
+      "name": "GetImageURL3",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4640,
+        -752
+      ],
+      "id": "76ba3ca8-cf74-40b8-8130-0178cd548510",
+      "name": "DownloadImg3",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credit Issue"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        4192,
+        -512
+      ],
+      "id": "bcd6d4bb-7828-45b9-9243-c53430575428",
+      "name": "Stop and Error5"
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "Issue in image api",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3968,
+        -512
+      ],
+      "id": "732be3c1-bc73-46ba-8890-e87b7ee0fb48",
+      "name": "SendAudio10",
+      "webhookId": "635e4fc1-eaa6-529d-a89f-bd2236814690",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4864,
+        -848
+      ],
+      "id": "c1619fe4-8d75-4aa9-b0d1-dc44d374a448",
+      "name": "SendImage3",
+      "webhookId": "7410e0c3-d770-5bdc-a954-25a075ddbb75",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c716ee94-660a-467d-839e-98a2801ce253",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c6912a02-d40b-497d-8fa7-104f91aa019b",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3744,
+        -656
+      ],
+      "id": "60daae95-3ea9-47cf-a28c-c968b4f964b8",
+      "name": "tokencheck5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"nano-banana-2\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n  \"prompt\": {{ JSON.stringify($json.thumbnail_prompt) }},\n  \"image_input\": [ \"{{ $json.reference_img }}\"\n  ],\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"2K\"\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        -656
+      ],
+      "id": "e0ff22b2-5639-407e-b527-56bdf438c46e",
+      "name": "Generatethumbnail1",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40f8538a-1cc0-446f-9abc-8b438a13fafe",
+              "name": "thumbnail_prompt",
+              "value": "=Create a YouTube thumbnail using my provided medieval fantasy painting. Add the title '{{ $('Get row(s)1').item.json.title }}' prominently on the image — position it in the upper third or lower third of the composition where it does not obscure the main figure or the primary light source.\n\nThe title text must be in a bold, aged fantasy serif font — deep gold or warm amber in color, with a subtle dark brown shadow behind each letter as if the words are inscribed on old parchment or branded into weathered wood. The lettering should feel ancient, mystical, and hand-crafted — like an inscription on a tavern sign, a heading on an illuminated manuscript, or a title on a leather-bound spellbook cover. Slightly worn or distressed edges on the letters are ideal.\n\nDo not add any modern design elements, digital gradient overlays, bright lens flares, or contemporary graphic effects. The text must blend naturally into the warm amber, burgundy, and gold palette of the medieval painting.\n\nThe overall impression should match a fantasy novel cover or an ancient scroll title page — dark, warm, atmospheric, and deeply immersive.\n",
+              "type": "string"
+            },
+            {
+              "id": "e7aa25be-045b-4254-a2f5-e9e29f778e52",
+              "name": "reference_img",
+              "value": "={{ $('Get row(s)1').item.json.reference_img }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3296,
+        -656
+      ],
+      "id": "9c5df37a-c528-4c05-b5a4-24058c00dc7c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "command": "rm -f final_song_video.mp4 /tmp/scrollsOfDream/song*.mp3 /tmp/scrollsOfDream/final_song_combined.mp3 /tmp/scrollsOfDream/final_song_video_highq.mp4 /tmp/scrollsOfDream/thumbnail.png /tmp/scrollsOfDream/final_song_video.mp4&& echo \"🧹 All temporary files removed successfully.\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        5312,
+        -656
+      ],
+      "id": "5b1b11c5-8d7a-4240-a972-d88492a06923",
+      "name": "DeleteFiles3"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/tmp/scrollsOfDream/final_song_video_highq.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        -656
+      ],
+      "id": "b1415935-aa45-45e7-8db8-c62c99c82210",
+      "name": "Readfile1"
+    },
+    {
+      "parameters": {
+        "chatId": "=YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Thumbnail Update\nTask complete: Uploaded to youtube\nhttps://www.youtube.com/watch?v={{ $('Upload a video1').item.json.uploadId }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5088,
+        -656
+      ],
+      "id": "eba9a442-be96-4ee7-8962-d335b0f7d43f",
+      "name": "SendMessage1",
+      "webhookId": "27f16290-ea06-54a1-a040-bf868a0ee175",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "UVXNJ2n9xoS8YnqK",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.output.video_title }}",
+            "description": "={{ $json.output.video_description }}",
+            "thumbnail_prompt": "={{ $json.output.nano_banana_thumbnail_prompt }}",
+            "hashtags": "={{ $json.output.hashtags }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reference_img",
+              "displayName": "reference_img",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        -928
+      ],
+      "id": "e4a21f89-b4b7-4042-9bec-9d909c0f5f3c",
+      "name": "Upsert row(s)1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "UVXNJ2n9xoS8YnqK",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reference_img": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "reference_img",
+              "displayName": "reference_img",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        816,
+        -640
+      ],
+      "id": "fcea5dd0-a6d3-46fa-a6b7-7b139ef01909",
+      "name": "UpdateImgLink1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "UVXNJ2n9xoS8YnqK",
+          "mode": "list",
+          "cachedResultName": "scrolls-of-dreams",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "1"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -864
+      ],
+      "id": "0904af47-29a8-409c-b8d2-8bf28849ec5b",
+      "name": "Get row(s)1"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/user/video-workspace/",
+        "options": {
+          "fileName": "=song{{ $itemIndex }}.mp3"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -1040
+      ],
+      "id": "1aaca52e-b509-4dd1-aecf-ff88882bcbc5",
+      "name": "upload_audio1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/user/video-workspace",
+        "options": {
+          "fileName": "generated_video.mp4"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        -704
+      ],
+      "id": "d94edc2c-60fe-4692-8ddc-c3672b547bd5",
+      "name": "upload_img1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "operation": "download",
+        "path": "/home/user/video-workspace/output_video.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        -960
+      ],
+      "id": "a1e587ec-0597-4924-94b0-7bfb9cf782c6",
+      "name": "DownloadVideo1",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                3,
+                5
+              ],
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1840,
+        -1040
+      ],
+      "id": "c631794b-1fc5-46ff-bbe1-1757f9c38b56",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "content": "## Upload to youtube",
+        "width": 816,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2880,
+        -816
+      ],
+      "typeVersion": 1,
+      "id": "6e587320-acc2-476c-885a-e0d4e99b1f80",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "## Update Thumbnail",
+        "height": 304,
+        "width": 1312,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4032,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "3efefdf3-abf3-4f07-a181-adc977f92819",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v3.2",
+        "options": {
+          "maxRetries": 2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        -768
+      ],
+      "id": "ccdd066f-c1ef-44b5-b3f9-ba40a0b3b857",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "mkdir -p /tmp/scrollsOfDream \\\n&& chmod 777 /tmp/scrollsOfDream"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        -1424
+      ],
+      "id": "91c67bbc-bd60-4eb3-a37b-f63812699385",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1840,
+        -1424
+      ],
+      "id": "c6177e74-0691-4384-8d77-953615d350fd",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"grok-imagine/image-to-video\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n  \"image_urls\": [\n    \"{{ $json.reference_img }}\"\n  ],\n  \"prompt\": {{ JSON.stringify($('Prompt Generator1').item.json.output.grok_video_prompt) }},\n  \"mode\": \"normal\",\n  \"duration\": \"6\",\n  \"resolution\": \"720p\"\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        -640
+      ],
+      "id": "01b8f6b3-2e2b-4ed1-b35b-071658d6f177",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/jobs/recordInfo?taskId={{ $json.data.taskId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "6e1959c6-2ec8-4c33-8681-19fed04ebb88",
+      "name": "Poll Image Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1408,
+        -672
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "616e518d-af87-4dd1-9e1d-16e86a0ca8e2",
+      "name": "Wait 10s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1424,
+        -272
+      ],
+      "webhookId": "65d03149-292f-5420-8fea-45f0ad029924"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "img-gen-success",
+                    "leftValue": "={{ $json.code }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 200
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "img-gen-error",
+                    "leftValue": "={{ $json.code }}",
+                    "operator": {
+                      "operation": "notEquals",
+                      "type": "number"
+                    },
+                    "rightValue": 200
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Error"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unexpected"
+        }
+      },
+      "id": "b3085200-d325-4bc5-93bf-4ae689c2c2c5",
+      "name": "Image Gen Response Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-success-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 1
+                  },
+                  {
+                    "id": "img-poll-success-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "success"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-failed-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "gte",
+                      "type": "number"
+                    },
+                    "rightValue": 2
+                  },
+                  {
+                    "id": "img-poll-failed-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "failed"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-processing-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 0
+                  },
+                  {
+                    "id": "img-poll-waiting",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "waiting"
+                  },
+                  {
+                    "id": "img-poll-processing",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "processing"
+                  },
+                  {
+                    "id": "img-poll-generating",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "generating"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Processing"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown Status"
+        }
+      },
+      "id": "ee33dece-dfe7-4ade-83fa-a694e1f6f87b",
+      "name": "Image Status Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Image generation API failed. Code: {{ $json.code }}. Message: {{ $json.msg }}"
+      },
+      "id": "b6d3c529-b1fc-402e-adf4-2f9830eac064",
+      "name": "Image Gen Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Image generation failed permanently. State: {{ $json.data.state }}. SuccessFlag: {{ $json.data.successFlag }}. Error: {{ $json.data.errorMessage || 'Unknown error' }}. TaskId: {{ $json.data.taskId }}"
+      },
+      "id": "193872eb-2b6c-4c3c-aa55-93b3cc43495d",
+      "name": "Image Poll Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1632,
+        -704
+      ],
+      "id": "c3b51fba-0374-4903-83f2-9cfe92324724",
+      "name": "HTTP Request1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "amount": 40
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        -704
+      ],
+      "id": "df09383a-e738-46c0-a699-d0287d47f878",
+      "name": "Wait",
+      "webhookId": "8063d8d5-202e-572f-93b5-f0e8a5243079"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=ffmpeg -y \\\n  -stream_loop -1 -i /home/user/video-workspace/generated_video.mp4 \\\n  -i /home/user/video-workspace/song0.mp3 \\\n  -map 0:v:0 \\\n  -map 1:a \\\n  -c:v libx264 -preset medium -crf 23 \\\n  -c:a aac -b:a 128k \\\n  -shortest \\\n  /home/user/video-workspace/video_song0.mp4"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -1488
+      ],
+      "id": "5e482324-bf65-4210-852f-0932cd21f1b4",
+      "name": "CreateVideo0",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=ffmpeg -y \\\n  -stream_loop -1 -i /home/user/video-workspace/generated_video.mp4 \\\n  -i /home/user/video-workspace/song1.mp3 \\\n  -map 0:v:0 \\\n  -map 1:a \\\n  -c:v libx264 -preset medium -crf 23 \\\n  -c:a aac -b:a 128k \\\n  -shortest \\\n  /home/user/video-workspace/video_song1.mp4"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        -1488
+      ],
+      "id": "cc6eca56-b684-477c-b593-58abea90c993",
+      "name": "CreateVideo1",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "for i in $(seq 1 6); do echo \"file '/home/user/video-workspace/video_song0.mp4'\"; echo \"file '/home/user/video-workspace/video_song1.mp4'\"; done > /tmp/concat_list.txt && ffmpeg -y -f concat -safe 0 -i /tmp/concat_list.txt -c copy /home/user/video-workspace/output_video.mp4 && rm -f /tmp/concat_list.txt"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2192,
+        -1488
+      ],
+      "id": "d88ebda8-20c5-4466-97bd-d2c4efe2a5c9",
+      "name": "MergeVideo",
+      "executeOnce": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -1408
+      ],
+      "id": "097d0e41-0f55-4bde-8729-3e47c378d005",
+      "name": "Limit"
+    }
+  ],
+  "connections": {
+    "SunoMusicGen1": {
+      "main": [
+        [
+          {
+            "node": "tokencheck3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Combine-SongURI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Prompt Generator1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write_Song1": {
+      "main": [
+        [
+          {
+            "node": "ReadAudio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine-SongURI1": {
+      "main": [
+        [
+          {
+            "node": "DownloadSongs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Generator1": {
+      "main": [
+        [
+          {
+            "node": "GenerateImage",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendLLM1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upsert row(s)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SunoMusicGen1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadSongs1": {
+      "main": [
+        [
+          {
+            "node": "Write_Song1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendAudio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetTaskId1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_image": {
+      "main": [
+        [
+          {
+            "node": "UpdateImgLink1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "DownloadImg2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateImage": {
+      "main": [
+        [
+          {
+            "node": "tokencheck4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL2": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImg2": {
+      "main": [
+        [
+          {
+            "node": "write_image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendImage2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck3": {
+      "main": [
+        [
+          {
+            "node": "GetTaskId1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AudioError1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "SendAudio8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio8": {
+      "main": [
+        [
+          {
+            "node": "Prompt Generator1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio9": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AudioError1": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write_video1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeData1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck4": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendAudio9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatMemory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Prompt Generator1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatModel1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompt Generator1",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ReadAudio1": {
+      "main": [
+        [
+          {
+            "node": "upload_audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Thumbnail-Uploader1": {
+      "main": [
+        [
+          {
+            "node": "SendMessage1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "DownloadImg3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL3": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImg3": {
+      "main": [
+        [
+          {
+            "node": "SendImage3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Thumbnail-Uploader1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendAudio10": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tokencheck5": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendAudio10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generatethumbnail1": {
+      "main": [
+        [
+          {
+            "node": "tokencheck5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Generatethumbnail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Readfile1": {
+      "main": [
+        [
+          {
+            "node": "Upload a video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendMessage1": {
+      "main": [
+        [
+          {
+            "node": "DeleteFiles3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateImgLink1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Readfile1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_audio1": {
+      "main": [
+        [
+          {
+            "node": "MergeData1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_img1": {
+      "main": [
+        [
+          {
+            "node": "MergeData1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DownloadVideo1": {
+      "main": [
+        [
+          {
+            "node": "write_video1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SendMsg3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "SendAudio8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompt Generator1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        []
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "SendAudio8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Image Status": {
+      "main": [
+        [
+          {
+            "node": "Image Status Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s": {
+      "main": [
+        [
+          {
+            "node": "Poll Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Gen Response Check": {
+      "main": [
+        [
+          {
+            "node": "Poll Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Gen Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Status Check": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Poll Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Image Gen Response Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "upload_img1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateVideo0": {
+      "main": [
+        [
+          {
+            "node": "CreateVideo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateVideo1": {
+      "main": [
+        [
+          {
+            "node": "MergeVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeVideo": {
+      "main": [
+        [
+          {
+            "node": "DownloadVideo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "SendMsg2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CreateVideo0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none"
+  },
+  "tags": []
+}

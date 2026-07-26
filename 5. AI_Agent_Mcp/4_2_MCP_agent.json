@@ -13,7 +13,7 @@
       ],
       "id": "205525fd-67d9-4548-b6b5-0722f13c7025",
       "name": "When chat message received",
-      "webhookId": "51abaf0c-b106-43ae-bfd1-919e46eef1ad"
+      "webhookId": "6e63c601-3bad-57bd-8757-78313cd2327f"
     },
     {
       "parameters": {
@@ -47,8 +47,8 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "oFM0JTAot8ZgzZXJ",
-          "name": "OpenAi account"
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
         }
       }
     },
@@ -92,7 +92,6 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
   "connections": {
     "When chat message received": {
       "main": [
@@ -143,11 +142,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "50edbfc1-5613-474b-81cc-fa5fd88a6b44",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
-  },
-  "id": "MGBA7pZ65yJVplwt",
   "tags": []
 }

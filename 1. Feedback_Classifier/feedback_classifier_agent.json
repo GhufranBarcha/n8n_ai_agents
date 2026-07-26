@@ -34,7 +34,7 @@
       ],
       "id": "8676160c-2dce-40cf-8a9e-5db247efd8c3",
       "name": "On form submission",
-      "webhookId": "fe804cd9-6de0-4f7e-b8c1-9d037010db9e"
+      "webhookId": "cc23328a-c836-5969-ad97-f2181ab5d8d6"
     },
     {
       "parameters": {
@@ -66,8 +66,8 @@
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "e5zfr95A5FyDbdis",
-          "name": "Groq account"
+          "id": "IEFIH8RCmlwzcVIC",
+          "name": "YOUR_GROQ_API_CREDENTIAL"
         }
       }
     },
@@ -177,17 +177,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tblgC6qw6hJdIaQQn",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "complaint",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblgC6qw6hJdIaQQn"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -259,8 +259,8 @@
       "name": "Complaint",
       "credentials": {
         "airtableTokenApi": {
-          "id": "oMDJ3Eeptpn7T0cf",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -269,17 +269,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tblNja4utaJsGvYO0",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "appreciation",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblNja4utaJsGvYO0"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -351,8 +351,8 @@
       "name": "Appreciation",
       "credentials": {
         "airtableTokenApi": {
-          "id": "oMDJ3Eeptpn7T0cf",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -361,17 +361,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tbldEqRTAiV6yz75R",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "feature",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tbldEqRTAiV6yz75R"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -443,8 +443,8 @@
       "name": "feature",
       "credentials": {
         "airtableTokenApi": {
-          "id": "oMDJ3Eeptpn7T0cf",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -454,9 +454,9 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C08PVD5FSRY",
+          "value": "YOUR_SLACK_CHANNEL_ID",
           "mode": "list",
-          "cachedResultName": "n8n_test_channel"
+          "cachedResultName": "Your resource"
         },
         "text": "=New Complaint\n\nfull_name: {{ $('Switch').item.json['Full Name'] }}\nemail: {{ $json.fields.Email }}\n\nfeedback: {{ $json.fields.Feedback }}",
         "otherOptions": {}
@@ -469,11 +469,11 @@
       ],
       "id": "67a99150-5230-47bd-bdc0-bb136c7e8207",
       "name": "Slack",
-      "webhookId": "32e49e9e-05cc-4b5a-87d1-48921f1d74b6",
+      "webhookId": "7de1e1c4-3989-596c-bb8c-d77d1f2960dd",
       "credentials": {
         "slackOAuth2Api": {
-          "id": "1aNqcgBLGYkfoJSx",
-          "name": "Slack account"
+          "id": "J5ohYK9jT5mOKAgV",
+          "name": "YOUR_SLACK_OAUTH2_API_CREDENTIAL"
         }
       }
     },
@@ -483,9 +483,9 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C08PVD5FSRY",
+          "value": "YOUR_SLACK_CHANNEL_ID",
           "mode": "list",
-          "cachedResultName": "n8n_test_channel"
+          "cachedResultName": "Your resource"
         },
         "text": "=New Feature Request\n\nfull_name: {{ $('Switch').item.json['Full Name'] }}\nemail: {{ $json.fields.Email }}\n\nfeedback: {{ $json.fields.Feedback }}",
         "otherOptions": {}
@@ -498,11 +498,11 @@
       ],
       "id": "246d3c13-1458-4865-a2be-d7f9c15321ca",
       "name": "Slack1",
-      "webhookId": "32e49e9e-05cc-4b5a-87d1-48921f1d74b6",
+      "webhookId": "7de1e1c4-3989-596c-bb8c-d77d1f2960dd",
       "credentials": {
         "slackOAuth2Api": {
-          "id": "1aNqcgBLGYkfoJSx",
-          "name": "Slack account"
+          "id": "J5ohYK9jT5mOKAgV",
+          "name": "YOUR_SLACK_OAUTH2_API_CREDENTIAL"
         }
       }
     },
@@ -522,11 +522,11 @@
       ],
       "id": "52161582-82ab-49c4-9b9e-1135923b9269",
       "name": "Gmail",
-      "webhookId": "739e2bfe-fc51-4464-9303-8a29694146b3",
+      "webhookId": "eab9c778-3d64-57dd-bfaa-6f62d292d455",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     },
@@ -546,11 +546,11 @@
       ],
       "id": "59571a70-e438-491e-b658-53932fbb3647",
       "name": "Gmail1",
-      "webhookId": "739e2bfe-fc51-4464-9303-8a29694146b3",
+      "webhookId": "eab9c778-3d64-57dd-bfaa-6f62d292d455",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     },
@@ -570,16 +570,15 @@
       ],
       "id": "7f84e71c-7e28-4756-aa4e-64073462389e",
       "name": "Gmail2",
-      "webhookId": "739e2bfe-fc51-4464-9303-8a29694146b3",
+      "webhookId": "eab9c778-3d64-57dd-bfaa-6f62d292d455",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     }
   ],
-  "pinData": {},
   "connections": {
     "On form submission": {
       "main": [
@@ -715,11 +714,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "41f6dc1d-646c-4d40-986b-fd56d66b2b3c",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "5c3cc1df1e131540372bb2ccef4a623fa751f1881ad7621acc07cc7adaf384a9"
-  },
-  "id": "6not2WOyg4ChTkgA",
   "tags": []
 }

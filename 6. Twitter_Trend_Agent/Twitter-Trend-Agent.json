@@ -22,7 +22,7 @@
           "parameters": [
             {
               "name": "X-API-Key",
-              "value": "52c16d8218fa4781b8b41d9d308c87a3"
+              "value": "YOUR_API_TOKEN"
             }
           ]
         },
@@ -60,7 +60,7 @@
       ],
       "id": "3c76a671-3ef6-43bd-8cd1-27101e568937",
       "name": "When chat message received",
-      "webhookId": "77938e78-fbd3-47e9-bf62-36afe7347e60"
+      "webhookId": "82a08461-5466-551a-a703-45d981ddcd8b"
     },
     {
       "parameters": {
@@ -80,17 +80,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tblqLpoQEf3IXAqdF",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "twitter-trends-agent",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tblqLpoQEf3IXAqdF"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -233,8 +233,8 @@
       "name": "Create a record",
       "credentials": {
         "airtableTokenApi": {
-          "id": "FnG6rmMlWB6PcH3d",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -254,7 +254,6 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
   "connections": {
     "When chat message received": {
       "main": [
@@ -294,11 +293,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ce1c93f1-33cb-403f-a753-6de96a54e7e8",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "c91cae2bb8341f3e820a15b8f5c6ea3f48044777659152ecede055519a271186"
-  },
-  "id": "i46HRE9NTqgavWKo",
   "tags": []
 }

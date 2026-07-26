@@ -1,0 +1,620 @@
+{
+  "name": "LinkedIn Post & PDF Newsletter Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: {{ $json.title }}\n\nDescription: {{ $json.description }}\n\nPlainText Subtitle:\n{{ $json.plaintext_subtitle }}",
+        "options": {
+          "systemMessage": "=# Role: Personal AI Curator\nYou are writing a LinkedIn post for a professional's personal profile based on a YouTube video transcript about AI news.\n\n# GOAL\nCreate a single, clean post summarizing the updates. Do not include any meta-labels (like \"Title:\", \"Introduction:\", \"Update 1:\", etc.). The output must be ready to copy-paste immediately. No \n\n# TONE GUIDELINES\n- **Human & Direct:** Write like a knowledgeable colleague. Use \"I\", \"You\", \"We\".\n- **Anti-Hype:** Do not use words like \"revolutionary,\" \"game-changer,\" \"unveiled,\" \"landscape,\" \"harnessing,\" or \"realm.\"\n- **Visuals:** Use bolding for titles and line breaks for readability. Don't use sasterisk for bold.\n- Make slight changes in Intro and Outro. Based on memory of previous generation\n- Output should be plain text and no steriks.\n\n\n# OUTPUT FORMAT STRUCTURE\n[Headline: One punchy sentence]\n\n[Intro: 1-2 sentences setting the context]\n\nModel1/Update1:\n[2-3 sentences explaining exactly what it does and why it is useful.]\n• [Key Feature / Spec 1]\n• [Key Feature / Spec 2]\n• [Note on limitation or price if available]\n🔗 [Link]\n\nModel2Update2:\n[2-3 sentences explaining exactly what it does and why it is useful.]\n• [Key Feature / Spec 1]\n• [Key Feature / Spec 2]\n• [Note on limitation or price if available]\n🔗 [Link]\n\n(Repeat for top 5-7 updates)\n\n[Outro: 1 sentence question or closing thought]\n\n[Hashtags]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -144,
+        -272
+      ],
+      "id": "f2061410-6e45-4330-9aaf-7df63327518e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "b3ef4eb5-ed14-4ec1-b717-1f80267713ce",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "get",
+        "videoId": "fpAbYRNxYPM",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -880
+      ],
+      "id": "6b4a092d-b257-44a4-b959-c7abb801efd0",
+      "name": "Get a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "o5HvUEuiNMQEW2I5",
+          "name": "YOUR_YOU_TUBE_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d345d26-83a4-449b-b45c-0cf3a2a7ae15",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "d8595970-fcf2-483f-b49b-f314312f72ec",
+              "name": "channelId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "45df513b-4896-44b3-997c-1d47f1fb1ac8",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "f549764f-cc99-4836-8f9e-551c4fb9b5b4",
+              "name": "description",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "5550d36b-7b10-4c20-8d72-fc870a0c4792",
+              "name": "plaintext_subtitle",
+              "value": "={{ $json.subtitles[0].plaintext }}",
+              "type": "string"
+            },
+            {
+              "id": "e1ded21b-f9c5-4668-84e9-257bf21bcfb3",
+              "name": "input",
+              "value": "={{ $json.input }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        -272
+      ],
+      "id": "4a71cb4c-4c10-45b8-af4c-8cbaae4d0c91",
+      "name": "fields"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "h7sDV53CddomktSi5",
+          "mode": "list",
+          "cachedResultName": "YouTube Scraper (streamers/youtube-scraper)",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "customBody": "{\n  \"downloadSubtitles\": true,\n  \"hasCC\": false,\n  \"hasLocation\": false,\n  \"hasSubtitles\": false,\n  \"is360\": false,\n  \"is3D\": false,\n  \"is4K\": false,\n  \"isBought\": false,\n  \"isHD\": false,\n  \"isHDR\": false,\n  \"isLive\": false,\n  \"isVR180\": false,\n  \"maxResultStreams\": 0,\n  \"maxResults\": 10,\n  \"maxResultsShorts\": 0,\n  \"preferAutoGeneratedSubtitles\": false,\n  \"saveSubsToKVS\": false,\n  \"searchQueries\": [\n    \"Crawlee\"\n  ],\n  \"startUrls\": [\n    {\n      \"url\": \"https://youtu.be/8grIT-xK50M\"\n    }\n  ],\n  \"subtitlesFormat\": \"plaintext\",\n  \"subtitlesLanguage\": \"en\"\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -272
+      ],
+      "id": "ef52c192-db3e-4be9-8616-7d2d7f5142a1",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyApi": {
+          "id": "f4qGUMuYuUUHyXqt",
+          "name": "YOUR_APIFY_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4629bb8e-6ffc-4e69-a93d-464c9d7c1bb9",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -272
+      ],
+      "id": "9b8c2f8a-9fa9-4702-a39a-f624def4cef0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "options": {
+          "fileName": "index.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        -272
+      ],
+      "id": "b5e24b21-0e8f-4991-9e7d-a1fefa518227",
+      "name": "html"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://your-n8n-instance.com/pdf/forms/chromium/convert/html",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "=data"
+            },
+            {
+              "name": "marginTop",
+              "value": "0"
+            },
+            {
+              "name": "marginBottom",
+              "value": "0"
+            },
+            {
+              "name": "marginLeft",
+              "value": "0"
+            },
+            {
+              "name": "marginRight",
+              "value": "0"
+            },
+            {
+              "name": "preferCssPageSize",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1584,
+        -272
+      ],
+      "id": "77d0bb4f-0a31-4fa9-8372-bec9100276bd",
+      "name": "gostenbergAPI"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        -272
+      ],
+      "id": "f4d44171-e942-4fb2-a0bf-c83106b702c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        384,
+        -448
+      ],
+      "id": "80fa6d1b-8b03-4a11-8eb9-389eb00cef02",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Full AI Updates/trascript:\n{{ $('fields').item.json.plaintext_subtitle }}\n\nLink to AI Updates:\n{{ $('fields').item.json.description }}\n\nLinkedln Post on AI Updates:\n{{ $json.output }}",
+        "options": {
+          "systemMessage": "=\n# Role: AI Research Content Writer\n\nYou are a technical writer for an AI engineering newsletter. Your objective is to transform raw transcripts and summaries into **long-form, high-density HTML content**.\n\n## Source Hierarchy (Critical)\n1. **Primary Source:** YouTube Transcript. Use this for all technical details, benchmarks, and architectural notes.\n2. **Secondary Source:** LinkedIn Post. Use this strictly for **ordering** the updates and identifying headlines.\n3. **Expansion:** Do not summarize. Explain *how* it works, *why* it matters, and include specific technical comparisons found in the transcript.\n\n## Formatting Rules\n1. **Structure:** Wrap content blocks in `<div class=\"page\">`. Aim for approximately 1 tools per page to fit the A4 layout.\n2. **No Placeholders:** Every field (Title, Features, Notes) must be filled with real, technical data.\n3. **HTML Classes:** You must use the exact HTML classes provided below.\n4. **Additional Updates:** After covering all LinkedIn items, check the transcript for any missed tools/papers and add them in a new page/card.\n5. Generate the update cards using only the <div class=\"update-card\"> structure. Use exactly 1 update cards per page to ensure they do not overflow the A4 boundaries.\n\n## HTML Template Reference\nUse this exact structure for each tool card:\n\n<div class=\"update-card\">\n    <div class=\"update-number\">NUMBER</div>\n    <h2 class=\"update-title\">TOOL_NAME</h2>\n    <p>DEEP_TECHNICAL_OVERVIEW_PARAGRAPHS</p>\n    <div class=\"section-label\">Key Features</div>\n    <ul class=\"feature-list\">\n        <li>TECHNICAL_FEATURE_1</li>\n        <li>TECHNICAL_FEATURE_2</li>\n    </ul>\n    <div class=\"tech-box\">\n        <strong>Notes:</strong> IMPLEMENTATION_DETAILS_BENCHMARKS_OR_LIMITATIONS\n    </div>\n    <a href=\"LINK_IF_AVAILABLE\">URL</a>\n</div>\n\n## Final Output\nOutput ONLY the HTML sequence containing the main body pages (starting with `<div class=\"page\">`). Do not output markdown wrappers or explanations.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        -272
+      ],
+      "id": "fd5d654d-314f-4c80-8031-403ecb3bd60e",
+      "name": "MainBody"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a1e420d-f3f0-48b7-b447-06ea3358128f",
+              "name": "cta",
+              "value": "=<div class=\"page cta-page\">\n    <h2 class=\"cta-heading\">Stay Updated on AI Innovations</h2>\n\n    <p>Weekly AI updates and Open-source tools</p>\n    <p>Follow me for more updates </p>\n\n\n\n    <hr style=\"margin:40px auto; width:40px; border:1px solid black\">\n\n    <p><strong>Your Name</strong></p>\n    <p>AI Engineering | Open Source Models | Practical AI | AI Automation</p>\n</div>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -32
+      ],
+      "id": "9bace767-ef15-45a7-befa-77a6338fbc6c",
+      "name": "CTA"
+    },
+    {
+      "parameters": {
+        "content": "# Role: AI Research Newsletter & PDF Content Generator\n\nYou are a professional AI researcher and technical writer producing long-form, high-density PDF newsletters for an audience of AI engineers, researchers, and advanced practitioners.\n\nYour primary objective is to transform raw source material into a **comprehensive, technically detailed PDF newsletter**, not a summary.\n\n---\n\n## Source Hierarchy (Critical)\n\nYou will receive multiple inputs. Treat them with the following priority order:\n\n1. **YouTube Full Transcript (PRIMARY SOURCE)**\n   - This is the canonical source of truth.\n   - Extract *all* technical details, benchmarks, architectural notes, limitations, comparisons, and implementation insights from it.\n   - If something is mentioned briefly in LinkedIn but explained deeply in the transcript, you must expand it fully.\n\n2. **LinkedIn Post (SECONDARY SOURCE)**\n   - Use this ONLY to:\n     - Determine the **ordering of the main updates**\n     - Identify which updates are considered “headline” items\n   - Do NOT limit your depth or wording to LinkedIn-level summaries.\n\n3. **Any Additional Metadata / Links**\n   - Use for attribution, context, and references only.\n\n---\n\n## Core Content Rules\n\n### 1. Depth Over Brevity (Non-Negotiable)\n\n- Each **main update** must include:\n  - Clear explanation of *what it is*\n  - *How it works* (architecture, training approach, agent design, etc.)\n  - *Why it matters* technically (not marketing value)\n  - *Where it outperforms or underperforms*\n  - Practical implications (local running, cost, hardware, deployment)\n\n- Assume the reader already understands basic AI concepts.\n- Avoid surface-level explanations.\n\n---\n\n### 2. Main Updates (LinkedIn-Aligned, Transcript-Expanded)\n\nFor each update listed in the LinkedIn post:\n\n- Follow the LinkedIn order exactly\n- Expand each item using **full transcript details**\n- If the transcript mentions:\n  - Benchmarks → include them\n  - Comparisons → explain them\n  - Tradeoffs → explicitly state them\n  - Criticism or caveats → include them\n\nLinkedIn provides the *headline*.  \nThe transcript provides the *substance*.\n\n---\n\n### 3. Missing / Additional Updates (Transcript-Only)\n\nAfter finishing all LinkedIn-listed updates:\n\n- Scan the full transcript for:\n  - Additional tools\n  - Models\n  - Research papers\n  - Frameworks\n  - Side discussions that introduce meaningful updates\n\n- Add a clearly labeled section:\n  **“Additional Noteworthy Updates”** or **“Other Updates from This Week”**\n\n- These updates should:\n  - Follow the same depth and structure\n  - Not feel secondary or rushed\n  - Be fully written, not bullet-only mentions\n\n---\n\n### 4. Writing Style & Tone\n\n- Professional, analytical, and engineering-focused\n- Neutral and anti-hype\n- No exaggerated claims\n- Prefer concrete details over adjectives\n- Use direct language (“This model does…”, “The tradeoff is…”)\n\nAvoid words such as:\n- “Revolutionary”\n- “Game-changing”\n- “Groundbreaking”\n- “Unveiled”\n- “Next-gen”\n\n---\n\n### 5. PDF-Specific Expectations\n\nYou are writing for a **multi-page PDF**, not a social post.\n\nTherefore:\n- Longer paragraphs are acceptable\n- Structured sections are encouraged\n- Redundancy for clarity is acceptable\n- Visual hierarchy matters (titles, sections, feature blocks)\n\nDo NOT:\n- Compress content just to fit space\n- Leave placeholder-style descriptions\n- Repeat LinkedIn summaries verbatim\n\n---\n\n### 6. Output Requirements\n\n- Populate the provided HTML template with:\n  - Fully written content\n  - No placeholder text\n  - No generic filler\n- Every update card must feel “complete” on its own.\n- If transcript data is missing for a LinkedIn item, explicitly infer conservatively rather than inventing facts.\n\n---\n\n## Final Check Before Responding\n\nBefore outputting the final HTML, ensure:\n\n- The PDF contains **more information than the LinkedIn post**\n- The transcript has been clearly leveraged\n- No meaningful transcript update was ignored\n- The document reads like a technical weekly briefing, not a marketing digest\n\n\n**Important**:\n- You can add more details about the project from the trascript as much and detailed.\n- You need to follow the order of the Linkedln post for model update, You can also add other updates after the updates of the linkedln post .\n- You need to use below template and update the content of the template, only output the html code only\n- Keep the styling of the content same as below template, especially cover and cta page.\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Open Source AI Weekly Highlights</title>\n\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n\n        :root {\n            --black: #000000;\n            --white: #ffffff;\n            --gray-100: #f7f7f7;\n            --gray-200: #e5e5e5;\n            --gray-500: #6b7280;\n            --gray-700: #374151;\n            --gray-900: #111827;\n        }\n\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Inter', sans-serif;\n            background: white;\n            color: var(--gray-900);\n            line-height: 1.5;\n        }\n\n        .page {\n            /* A4 Dimensions (210mm x 297mm) */\n            width: 210mm;\n            min-height: 297mm;\n            \n            /* Spacing for screen viewing */\n            margin: 0 auto 30px auto;\n            padding: 60px 50px;\n            \n            background: white;\n            page-break-after: always;\n            break-after: page;\n            position: relative;\n            overflow: hidden; /* Ensures content stays within the page dimensions */\n        }\n\n        /* Print Specific Settings */\n        @media print {\n            body {\n                background: white;\n                -webkit-print-color-adjust: exact;\n                print-color-adjust: exact;\n            }\n            .page {\n                margin: 0;\n                width: 100%;\n                height: 100%;\n                box-shadow: none;\n                page-break-after: always;\n            }\n            @page {\n                size: A4;\n                margin: 0;\n            }\n        }\n\n        /* Screen specific shadow (Optional, helps visualize sheets on monitor) */\n        @media screen {\n            .page {\n                box-shadow: 0 0 15px rgba(0,0,0,0.05);\n            }\n        }\n\n        h1, h2 {\n            font-weight: 700;\n            color: var(--black);\n        }\n\n        p {\n            color: var(--gray-700);\n            margin-bottom: 16px;\n        }\n\n        a {\n            color: var(--black);\n            text-decoration: underline;\n        }\n\n        /* COVER */\n        .cover-page {\n            border: 3px solid var(--black);\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n            text-align: center;\n        }\n\n        .cover-badge {\n            font-size: 12px;\n            letter-spacing: 0.15em;\n            margin-bottom: 24px;\n            text-transform: uppercase;\n            color: var(--gray-500);\n        }\n\n        .cover-title {\n            font-size: 48px;\n            margin-bottom: 20px;\n        }\n\n        .cover-subtitle {\n            font-size: 22px;\n            color: var(--gray-500);\n            margin-bottom: 40px;\n        }\n\n        .header-bar {\n            display: flex;\n            justify-content: space-between;\n            border-bottom: 2px solid var(--black);\n            padding-bottom: 20px;\n            margin-bottom: 40px;\n            font-size: 12px;\n            text-transform: uppercase;\n            font-weight: 700;\n        }\n\n        .update-card {\n            margin-bottom: 48px;\n            padding-bottom: 32px;\n            border-bottom: 1px solid var(--gray-200);\n        }\n\n        .update-number {\n            font-size: 11px;\n            letter-spacing: 0.1em;\n            color: var(--gray-500);\n            margin-bottom: 8px;\n        }\n\n        .update-title {\n            font-size: 24px;\n            margin-bottom: 12px;\n        }\n\n        .section-label {\n            font-size: 11px;\n            letter-spacing: 0.1em;\n            text-transform: uppercase;\n            color: var(--gray-500);\n            margin-bottom: 10px;\n        }\n\n        .feature-list {\n            list-style: none;\n            margin-bottom: 20px;\n        }\n\n        .feature-list li {\n            padding-left: 20px;\n            position: relative;\n            margin-bottom: 8px;\n        }\n\n        .feature-list li::before {\n            content: \"—\";\n            position: absolute;\n            left: 0;\n        }\n\n        .tech-box {\n            background: var(--gray-100);\n            padding: 16px;\n            margin-bottom: 16px;\n            font-size: 14px;\n        }\n\n        .cta-page {\n            text-align: center;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n        }\n\n        .cta-heading {\n            font-size: 36px;\n            margin-bottom: 40px;\n        }\n    </style>\n</head>\n\n<body>\n\n<!-- PAGE 1: COVER -->\n<div class=\"page cover-page\">\n    <div class=\"cover-badge\">Weekly Newsletter</div>\n    <h1 class=\"cover-title\">Open Source AI:<br>Weekly Highlights</h1>\n    <p class=\"cover-subtitle\">Placeholder Tools & Updates</p>\n\n    <p><strong>Your Name</strong></p>\n    <p>AI Engineer</p>\n    <p>December 2025</p>\n</div>\n\n<!-- PAGE 2 -->\n<div class=\"page\">\n    <div class=\"header-bar\">\n        <span>Your Name</span>\n        <span>December 2025</span>\n    </div>\n\n    <!-- Tool 1 -->\n    <div class=\"update-card\">\n        <div class=\"update-number\">01</div>\n        <h2 class=\"update-title\">Tool One</h2>\n        <p>\n            This is a dummy description for Tool One. Replace this paragraph with the\n            real overview once the content is finalized.\n        </p>\n\n        <div class=\"section-label\">Key Features</div>\n        <ul class=\"feature-list\">\n            <li>Placeholder feature one</li>\n            <li>Placeholder feature two</li>\n            <li>Placeholder feature three</li>\n        </ul>\n\n        <div class=\"tech-box\">\n            <strong>Notes:</strong> Dummy technical or implementation details.\n        </div>\n\n        <a href=\"#\">example.com/tool-one</a>\n    </div>\n\n    <!-- Tool 2 -->\n    <div class=\"update-card\">\n        <div class=\"update-number\">02</div>\n        <h2 class=\"update-title\">Tool Two</h2>\n        <p>\n            Placeholder summary text for Tool Two. Used only to validate layout and spacing.\n        </p>\n\n        <div class=\"section-label\">Key Features</div>\n        <ul class=\"feature-list\">\n            <li>Dummy capability A</li>\n            <li>Dummy capability B</li>\n            <li>Dummy capability C</li>\n        </ul>\n\n        <a href=\"#\">example.com/tool-two</a>\n    </div>\n\n    <!-- Tool 3 -->\n    <div class=\"update-card\">\n        <div class=\"update-number\">03</div>\n        <h2 class=\"update-title\">Tool Three</h2>\n        <p>\n            Generic placeholder content for Tool Three.\n        </p>\n\n        <ul class=\"feature-list\">\n            <li>Feature placeholder</li>\n            <li>Feature placeholder</li>\n        </ul>\n\n        <a href=\"#\">example.com/tool-three</a>\n    </div>\n</div>\n\n<!-- PAGE 3 -->\n<div class=\"page\">\n    <div class=\"header-bar\">\n        <span>Your Name</span>\n        <span>December 2025</span>\n    </div>\n\n    <!-- Tool 4 -->\n    <div class=\"update-card\">\n        <div class=\"update-number\">04</div>\n        <h2 class=\"update-title\">Tool Four</h2>\n        <p>\n            Placeholder description for Tool Four.\n        </p>\n\n        <a href=\"#\">example.com/tool-four</a>\n    </div>\n\n    <!-- Tool 5 -->\n    <div class=\"update-card\">\n        <div class=\"update-number\">05</div>\n        <h2 class=\"update-title\">Tool Five</h2>\n        <p>\n            Placeholder description for Tool Five.\n        </p>\n\n        <a href=\"#\">example.com/tool-five</a>\n    </div>\n</div>\n\n\n<!-- PAGE 4: CTA -->\n<div class=\"page cta-page\">\n    <h2 class=\"cta-heading\">Stay Updated on AI Innovations</h2>\n\n    <p>• Weekly AI updates</p>\n    <p>• Open-source tools</p>\n    <p>• Practical implementation insights</p>\n\n    <hr style=\"margin:40px auto; width:40px; border:1px solid black\">\n\n    <p><strong>Your Name</strong></p>\n    <p>AI Engineering | Open Source Models | Practical AI | AI Automation</p>\n</div>\n\n</body>\n</html>",
+        "height": 528,
+        "width": 1248
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "e817cf1c-de44-4b61-ae43-d636caa8520b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        -288
+      ],
+      "id": "b24e1c0b-6a0b-404e-8b1d-0ae8bb0343bc",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}\n\n{{ $('fields').item.json.title }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role: Newsletter Creative Editor\n\nYou are an editor for a high-end AI Engineering newsletter. Your task is to read the provided raw content (transcripts and posts) and generate a compelling, unique title and subtitle for the weekly issue.\n\n## Instructions\n1. Analyze the provided source text to identify the most important theme or update.\n2. Create a unique H1 title and a descriptive subtitle.\n3. The tone must be professional, engineering-focused, and anti-hype.\n4. **Strict Output Requirement:** Output ONLY the HTML code block for the cover page. Do not output markdown, do not output explanations, and do not include any other HTML tags (like <html> or <body>).\n\n## Template to Fill\nUse the exact structure below. Ensure the date is dynamically inserted based on the current date provided.\n\n<div class=\"page cover-page\">\n    <div class=\"cover-badge\">Weekly AI Updates</div>\n    <h1 class=\"cover-title\">INSERT_UNIQUE_TITLE_HERE</h1>\n    <p class=\"cover-subtitle\">INSERT_UNIQUE_SUBTITLE_HERE</p>\n\n    <p><strong>Your Name</strong></p>\n    <p>AI Engineer</p>\n    <p>{{ new Date($now).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }}</p>\n</div>\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        384,
+        -624
+      ],
+      "id": "1f7abcd2-4d59-429d-bce2-5f675a5ea7bd",
+      "name": "CoverPage"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57af2f47-01dd-4c2c-bdb1-c922a6526760",
+              "name": "html",
+              "value": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Open Source AI Weekly Highlights</title>\n\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n\n        :root {\n            --black: #000000;\n            --white: #ffffff;\n            --gray-100: #f7f7f7;\n            --gray-200: #e5e5e5;\n            --gray-500: #6b7280;\n            --gray-700: #374151;\n            --gray-900: #111827;\n        }\n\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Inter', sans-serif;\n            background: white;\n            color: var(--gray-900);\n            line-height: 1.5;\n        }\n\n        .page {\n            /* A4 Dimensions (210mm x 297mm) */\n            width: 210mm;\n            min-height: 297mm;\n            \n            /* Spacing for screen viewing */\n            margin: 0 auto 30px auto;\n            padding: 60px 50px;\n            \n            background: white;\n            page-break-after: always;\n            break-after: page;\n            position: relative;\n            overflow: hidden; /* Ensures content stays within the page dimensions */\n        }\n\n        /* Print Specific Settings */\n        @media print {\n            body {\n                background: white;\n                -webkit-print-color-adjust: exact;\n                print-color-adjust: exact;\n            }\n            .page {\n                margin: 0;\n                width: 100%;\n                height: 100%;\n                box-shadow: none;\n                page-break-after: always;\n            }\n            @page {\n                size: A4;\n                margin: 0;\n            }\n        }\n\n        /* Screen specific shadow (Optional, helps visualize sheets on monitor) */\n        @media screen {\n            .page {\n                box-shadow: 0 0 15px rgba(0,0,0,0.05);\n            }\n        }\n\n        h1, h2 {\n            font-weight: 300;\n            color: var(--black);\n        }\n\n        p {\n            color: var(--gray-700);\n            margin-bottom: 16px;\n        }\n\n        a {\n            color: var(--black);\n            text-decoration: underline;\n        }\n\n        /* COVER */\n        .cover-page {\n            border: 3px solid var(--black);\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n            text-align: center;\n        }\n\n        .cover-badge {\n            font-size: 18px;\n            letter-spacing: 0.15em;\n            margin-bottom: 24px;\n            text-transform: uppercase;\n            color: var(--gray-1000);\n        }\n\n        .cover-title {\n            font-size: 40px;\n            margin-bottom: 20px;\n        }\n\n        .cover-subtitle {\n            font-size: 22px;\n            color: var(--gray-500);\n            margin-bottom: 40px;\n        }\n\n        .header-bar {\n            display: flex;\n            justify-content: space-between;\n            border-bottom: 2px solid var(--black);\n            padding-bottom: 20px;\n            margin-bottom: 40px;\n            font-size: 12px;\n            text-transform: uppercase;\n            font-weight: 700;\n        }\n\n        .update-card {\n            margin-bottom: 48px;\n            padding-bottom: 32px;\n            border-bottom: 1px solid var(--gray-200);\n        }\n\n        .update-number {\n            font-size: 11px;\n            letter-spacing: 0.1em;\n            color: var(--gray-500);\n            margin-bottom: 8px;\n        }\n\n        .update-title {\n            font-size: 24px;\n            margin-bottom: 12px;\n            text-align: center;\n            \n        }\n\n        .section-label {\n            font-size: 11px;\n            letter-spacing: 0.1em;\n            text-transform: uppercase;\n            color: var(--gray-500);\n            margin-bottom: 10px;\n        }\n\n        .feature-list {\n            list-style: none;\n            margin-bottom: 20px;\n        }\n\n        .feature-list li {\n            padding-left: 20px;\n            position: relative;\n            margin-bottom: 8px;\n        }\n\n        .feature-list li::before {\n            content: \"—\";\n            position: absolute;\n            left: 0;\n        }\n\n        .tech-box {\n            background: var(--gray-100);\n            padding: 16px;\n            margin-bottom: 16px;\n            font-size: 14px;\n        }\n\n        .cta-page {\n            text-align: center;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n        }\n\n        .cta-heading {\n            font-size: 36px;\n            margin-bottom: 40px;\n        }\n        a {\n            display: block;\n            text-align: center;\n        }\n    </style>\n</head>\n\n<body>\n{{ $json.text }}\n{{ $json.output }}\n{{ $json.cta }}\n</body>\n</html>",
+              "type": "string"
+            },
+            {
+              "id": "ac8bc79a-acdc-4f1c-93cf-eb6328b8e2c2",
+              "name": "linkedln_post",
+              "value": "={{ $('AI Agent').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        -272
+      ],
+      "id": "31a1f55c-83dd-455d-add9-4bf172e7c121",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        -272
+      ],
+      "id": "1b2b426f-04c9-4aec-a2bc-19235e753bd0",
+      "name": "Create a post",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "862567fb-dce2-40a0-9ae2-0a706b41da63",
+              "name": "text",
+              "value": "={{ \n  $json.text.replace(\n    /<p>[A-Za-z]+\\s+\\d{1,2},\\s+\\d{4}<\\/p>/,\n    `<p>${$now.format(\"MMMM dd, yyyy\")}</p>`\n  ) \n}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        -624
+      ],
+      "id": "18c26daf-7be9-4337-8236-dd8978690f30",
+      "name": "CoverPage1"
+    }
+  ],
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a video": {
+      "main": [
+        []
+      ]
+    },
+    "fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "MainBody",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CoverPage",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CTA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "html": {
+      "main": [
+        [
+          {
+            "node": "gostenbergAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "MainBody",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "CoverPage",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MainBody": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "CTA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoverPage": {
+      "main": [
+        [
+          {
+            "node": "CoverPage1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gostenbergAPI": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoverPage1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

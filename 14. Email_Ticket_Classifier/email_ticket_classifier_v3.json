@@ -1,0 +1,1562 @@
+{
+  "name": "Email Ticket Classifier v3",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": false
+        }
+      },
+      "id": "b5e8f2fd-0d45-4ad9-af65-46890269aeb4",
+      "name": "Gmail Trigger",
+      "position": [
+        -736,
+        224
+      ],
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cd4f7f06-fea5-456e-9bea-5522732bd38c",
+              "leftValue": "={{ ['client-a.example.com','client-b.example.com','your-email@example.com','client-c.example.com','client-c2.example.com','client-d.example.com','client-e2.example.com','client-e3.example.com','client-e.example.com','client-f.example.com','client-g2.example.com','client-g.example.com','client-h.example.com','client-i.example.com','client-j.example.com','client-j2.example.com','client-k.example.com','client-l.example.com','client-l2.example.com','client-m.example.com','client-o.example.com','client-p.example.com','client-n.example.com', 'gmail.com'].some(domain => $json.from.value[0].address.endsWith(domain)) }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "df31d0a4-5efc-4916-8fbb-3fd8c0bc3b01",
+      "name": "clientCheck",
+      "position": [
+        -496,
+        224
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $json.headers.subject }}\n\nEmail:\n{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a strict email classifier used inside an automation workflow.\n\nYour task:\nDetermine whether the email requires creating a CLIENT TICKET.\n\nA ticket MUST be created (output: true) if the email from a client contains ANY of the following:\n- A bug, error, issue, problem, or something not working\n- A request for a change, update, modification, removal, or addition\n- A task request related to a website, system, checkout, UI, content, or configuration\n- A complaint about incorrect behavior, missing data, broken flow, or visual issue\n\nThis applies to BOTH English and Dutch emails.\n\nDutch indicators include (but are not limited to):\n- probleem / problemen\n- bug\n- fout / foutmelding\n- werkt niet / gaat fout\n- klopt niet\n- wil graag\n- kunnen jullie\n- aanpassen / wijzigen / verwijderen / toevoegen\n- verzoek / vraag\n- issue\n\nEnglish indicators include:\n- bug / issue / problem\n- not working / broken / error\n- please change / update / remove / add\n- request / can you / we need\n\nDO NOT create a ticket (output: false) if the email is:\n- Purely informational\n- A job vacancy or HR message\n- Marketing, sales, newsletters, or announcements\n- Forwarded messages with no actionable request\n- Acknowledgements, thanks, or confirmations only\n\nRules:\n- Ignore email signatures, disclaimers, and contact details\n- Focus on the actual message content\n- If there is ANY actionable work requested, output true\n- If unsure, but it sounds like work is required, output true\n\nOutput format:\n{\"output\": true} or {\"output\": false}"
+        }
+      },
+      "id": "f8b425ef-9407-45a3-a2ec-37b6121e21c7",
+      "name": "Email Classifier Agent",
+      "position": [
+        -112,
+        208
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "id": "fd7d1f7e-bd2c-4474-9110-4cac31d75bd0",
+      "name": "Groq Chat Model",
+      "position": [
+        -256,
+        512
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "credentials": {
+        "groqApi": {
+          "id": "IEFIH8RCmlwzcVIC",
+          "name": "YOUR_GROQ_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"output\": {\n      \"type\": \"boolean\"\n    }\n  },\n  \"required\": [\"output\"],\n  \"additionalProperties\": false\n}\n",
+        "autoFix": true
+      },
+      "id": "470835b6-8c58-4239-874e-02058fbb614a",
+      "name": "Classifier Output Parser",
+      "position": [
+        -48,
+        416
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "route-ticket-check",
+              "leftValue": "={{ $json.output }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "route-ticket-decision",
+      "name": "Should Create Ticket?",
+      "position": [
+        240,
+        208
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger').item.json.headers.subject }}\n\nFrom: {{ $('Gmail Trigger').item.json.from.value[0].address }}\n\nEmail Body:\n{{ $('Gmail Trigger').item.json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a ticket data extractor. Your job is to analyze the email and extract structured ticket information.\n\nIMPORTANT: ALL OUTPUT MUST BE IN ENGLISH. If the email is in Dutch or another language, translate the extracted information to English.\n\nExtract the following fields from the email:\n\n1. **title**: A concise, clear title for the ticket in English (max 100 characters). Should summarize the main issue or request.\n\n2. **description**: A detailed description of what the client wants or what the problem is, in English (3-5 sentences). Include relevant context.\n\n3. **priority**: Determine the priority level based on the email tone and content:\n   - \"Very High\" - Words like urgent, ASAP, critical, blocking, production down\n   - \"High\" - Important, deadline soon, affecting business\n   - \"Medium\" - Normal requests, standard changes needed\n   - \"Low\" - Nice to have, no rush, future improvements\n   - \"Very Low\" - Whenever possible, backlog items\n\n4. **issueType**: Classify the ticket type (use EXACTLY one of these values):\n   - \"Bug\" - Something is broken, not working, error, issue\n   - \"Task\" - General work item, action needed\n   - \"Story\" - New functionality, user story\n   - \"Improvement\" - Enhancement to existing feature\n   - \"Epic\" - Large feature spanning multiple tasks\n   - \"Subtask\" - Part of a larger task\n   - \"Characteristic\" - Property or attribute change\n\n5. **client**: Extract the sender's name or company if available.\n\n6. **sprint**: Set to \"Backlog\" (default value).\n\nOutput ONLY valid JSON in English, no other text."
+        }
+      },
+      "id": "ticket-details-agent",
+      "name": "Ticket Details Extractor",
+      "position": [
+        576,
+        192
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "id": "groq-model-2",
+      "name": "Groq Chat Model 2",
+      "position": [
+        576,
+        432
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "credentials": {
+        "groqApi": {
+          "id": "IEFIH8RCmlwzcVIC",
+          "name": "YOUR_GROQ_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\": \"Concise ticket title in English\"\n    },\n    \"description\": {\n      \"type\": \"string\",\n      \"description\": \"Detailed description of the issue or request in English\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"Very High\", \"High\", \"Medium\", \"Low\", \"Very Low\"],\n      \"description\": \"Priority level\"\n    },\n    \"issueType\": {\n      \"type\": \"string\",\n      \"enum\": [\"Bug\", \"Task\", \"Story\", \"Improvement\", \"Epic\", \"Subtask\", \"Characteristic\"],\n      \"description\": \"Type of issue\"\n    },\n    \"client\": {\n      \"type\": \"string\",\n      \"description\": \"Client name or company\"\n    },\n    \"sprint\": {\n      \"type\": \"string\",\n      \"description\": \"Sprint assignment\"\n    }\n  },\n  \"required\": [\"title\", \"description\", \"priority\", \"issueType\"],\n  \"additionalProperties\": false\n}\n",
+        "autoFix": true
+      },
+      "id": "ticket-output-parser",
+      "name": "Ticket Output Parser",
+      "position": [
+        736,
+        368
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "YOUR_NOTION_DATABASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "title": "={{ $('Ticket Details Extractor').first().json.output.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Issue Type|select",
+              "selectValue": "={{ $('Ticket Details Extractor').first().json.output.issueType }}"
+            },
+            {
+              "key": "Description|rich_text",
+              "textContent": "={{ $('Ticket Details Extractor').first().json.output.description }}"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "={{ $('Ticket Details Extractor').first().json.output.priority }}"
+            },
+            {
+              "key": "Sprint|select",
+              "selectValue": "={{ $('Ticket Details Extractor').first().json.output.sprint }}"
+            },
+            {
+              "key": "Attachments|files",
+              "fileUrls": {
+                "fileUrl": [
+                  {
+                    "name": "={{ $json.data[0].fileName }}",
+                    "url": "={{ $json?.data[0]?.files_url }}"
+                  },
+                  {
+                    "name": "={{ $json.data[1].fileName }}",
+                    "url": "={{ $json?.data[1]?.files_url }}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c52e12e7-b605-4e96-a109-7d5e22d80259",
+      "name": "Create Ticket in Notion",
+      "position": [
+        1952,
+        -112
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "credentials": {
+        "notionApi": {
+          "id": "iX59bTSxGn3ONmx3",
+          "name": "YOUR_NOTION_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "id": "no-ticket-end",
+      "name": "No Ticket Needed",
+      "position": [
+        320,
+        464
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst outputs = [];\n\nfor (const item of items) {\n  const binaries = item.binary || {};\n\n  for (const [key, binary] of Object.entries(binaries)) {\n    outputs.push({\n      json: {\n        attachmentKey: key,\n        fileName: binary.fileName,\n        mimeType: binary.mimeType,\n        fileSize: binary.fileSize,\n      },\n      binary: {\n        file: binary // standardize binary key as `file`\n      }\n    });\n  }\n}\n\nreturn outputs;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        864
+      ],
+      "id": "2468acef-6eb6-49eb-be9a-d70a93408a82",
+      "name": "fanOut",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://tempfile.org/api/upload/local",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "expiryHours",
+              "value": "24"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -16,
+        864
+      ],
+      "id": "10b57a00-da13-4749-a54c-39d37370e399",
+      "name": "HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092ad40f-de50-4802-82c6-f5c9041c9fa7",
+              "name": "attachmentKey",
+              "value": "={{ $('fanOut').item.json.attachmentKey }}",
+              "type": "string"
+            },
+            {
+              "id": "abc66e18-4d27-4a5a-acaa-a8b88dfe9163",
+              "name": "fileName",
+              "value": "={{ $('fanOut').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "692490e4-7fe7-47f1-92a5-51b27b84f8be",
+              "name": "mimeType",
+              "value": "={{ $('fanOut').item.json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "24d696ed-3a5c-4098-8f03-1e9e6fcc5aa1",
+              "name": "fileSize",
+              "value": "={{ $('fanOut').item.json.fileSize }}",
+              "type": "string"
+            },
+            {
+              "id": "ebd1683f-17fd-484a-9258-4cf33f6a68d3",
+              "name": "file_id",
+              "value": "={{ $json.files[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "43665794-335d-428b-8b17-a98249371d0e",
+              "name": "url",
+              "value": "={{ $json.files[0].url }}",
+              "type": "string"
+            },
+            {
+              "id": "b6b6f258-48ac-4736-b264-57c07f2d98d3",
+              "name": "files_url",
+              "value": "={{ $json.files[0].url }}/download",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        864
+      ],
+      "id": "143a3aa7-287d-4dc3-bf90-d0bc392a3a3d",
+      "name": "Edit Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        400,
+        864
+      ],
+      "id": "6941b823-00d8-410d-a005-d7ec73bbce34",
+      "name": "Aggregate",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        848
+      ],
+      "id": "719fb39a-8d72-4126-971e-cb98cdaaeca4",
+      "name": "Merge",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        -112
+      ],
+      "id": "558fa0bd-2487-461b-9a06-668e4a13aa1e",
+      "name": "Get a message",
+      "webhookId": "d8cc0c0b-1e79-5231-9ad4-a98c945c3d95",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst outputs = [];\n\nfor (const item of items) {\n  const binaries = item.binary || {};\n\n  for (const [key, binary] of Object.entries(binaries)) {\n    outputs.push({\n      json: {\n        attachmentKey: key,\n        fileName: binary.fileName,\n        mimeType: binary.mimeType,\n        fileSize: binary.fileSize,\n      },\n      binary: {\n        file: binary // standardize binary key as `file`\n      }\n    });\n  }\n}\n\nreturn outputs;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -112
+      ],
+      "id": "3903011e-ce60-4c1d-bb2c-6ea1c284be19",
+      "name": "fanOut1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://tempfile.org/api/upload/local",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "expiryHours",
+              "value": "24"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1296,
+        -112
+      ],
+      "id": "aba8b9f2-7c3d-4b8b-a782-528d36810305",
+      "name": "HTTP Request1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092ad40f-de50-4802-82c6-f5c9041c9fa7",
+              "name": "attachmentKey",
+              "value": "={{ $('fanOut1').item.json.attachmentKey }}",
+              "type": "string"
+            },
+            {
+              "id": "abc66e18-4d27-4a5a-acaa-a8b88dfe9163",
+              "name": "fileName",
+              "value": "={{ $('fanOut1').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "692490e4-7fe7-47f1-92a5-51b27b84f8be",
+              "name": "mimeType",
+              "value": "={{ $('fanOut1').item.json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "24d696ed-3a5c-4098-8f03-1e9e6fcc5aa1",
+              "name": "fileSize",
+              "value": "={{ $('fanOut1').item.json.fileSize }}",
+              "type": "string"
+            },
+            {
+              "id": "ebd1683f-17fd-484a-9258-4cf33f6a68d3",
+              "name": "file_id",
+              "value": "={{ $json.files[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "43665794-335d-428b-8b17-a98249371d0e",
+              "name": "url",
+              "value": "={{ $json.files[0].url }}",
+              "type": "string"
+            },
+            {
+              "id": "b6b6f258-48ac-4736-b264-57c07f2d98d3",
+              "name": "files_url",
+              "value": "={{ $json.files[0].url }}download",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        -112
+      ],
+      "id": "f6f5b96b-a0b2-443a-93dc-fc48a8c05e11",
+      "name": "Edit Fields1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        -112
+      ],
+      "id": "cb25354b-355d-4822-8492-572cb35758eb",
+      "name": "Aggregate1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -672,
+        -400
+      ],
+      "id": "3125d52b-63fc-41f9-8e6d-d7dd88b1b00a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.3-chat-latest",
+          "mode": "list",
+          "cachedResultName": "gpt-5.3-chat-latest"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        -944
+      ],
+      "id": "1bf92d5e-d05e-4db5-9fb7-589e22530bee",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "M9QPjwtcVhBIt3qX",
+          "name": "YOUR_OPEN_AI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $json.headers.subject }}\n\nEmail:\n{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a strict email classifier used inside an automation workflow.\n\nYour task:\nDetermine whether the email requires creating a CLIENT TICKET.\n\nA ticket MUST be created (output: true) if the email from a client contains ANY of the following:\n- A bug, error, issue, problem, or something not working\n- A request for a change, update, modification, removal, or addition\n- A task request related to a website, system, checkout, UI, content, or configuration\n- A complaint about incorrect behavior, missing data, broken flow, or visual issue\n\nThis applies to BOTH English and Dutch emails.\n\nDutch indicators include (but are not limited to):\n- probleem / problemen\n- bug\n- fout / foutmelding\n- werkt niet / gaat fout\n- klopt niet\n- wil graag\n- kunnen jullie\n- aanpassen / wijzigen / verwijderen / toevoegen\n- verzoek / vraag\n- issue\n\nEnglish indicators include:\n- bug / issue / problem\n- not working / broken / error\n- please change / update / remove / add\n- request / can you / we need\n\nDO NOT create a ticket (output: false) if the email is:\n- Purely informational\n- A job vacancy or HR message\n- Marketing, sales, newsletters, or announcements\n- Forwarded messages with no actionable request\n- Acknowledgements, thanks, or confirmations only\n\nRules:\n- Ignore email signatures, disclaimers, and contact details\n- Focus on the actual message content\n- If there is ANY actionable work requested, output true\n- If unsure, but it sounds like work is required, output true\n\nOutput format:\n{\"output\": true} or {\"output\": false}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -736,
+        -832
+      ],
+      "id": "a610bbe6-dd2f-4154-9ec3-1b8652432821",
+      "name": "E-mail Classifier Agent v3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('Gmail Trigger1').item.json.headers.subject }}\n\nFrom: {{ $('Gmail Trigger1').item.json.from.value[0].address }}\n\nEmail Body:\n{{ $('Gmail Trigger1').item.json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a ticket data extractor. Your job is to analyze the email and extract structured ticket information.\n\nIMPORTANT: ALL OUTPUT MUST BE IN ENGLISH. If the email is in Dutch or another language, translate the extracted information to English.\n\nExtract the following fields from the email:\n\n1. **title**: A concise, clear title for the ticket in English (max 100 characters). Should summarize the main issue or request.\n\n2. **description**: A detailed description of what the client wants or what the problem is, in English (3-5 sentences). Include relevant context.\n\n3. **goal**: The reason or motivation behind the ticket. Why is this ticket being created? What does the client want to achieve? (1-2 sentences). If unclear, make your best inference from context.\n\n4. **currentSituation**: Describe what is currently happening or what is broken. E.g. \"The checkout button does not work on mobile.\" (1-2 sentences). If not explicitly stated, write \"Not specified.\"\n\n5. **expectedSituation**: Describe what the correct or desired situation should be after the fix or implementation. E.g. \"The checkout button should work correctly on mobile.\" (1-2 sentences). If not explicitly stated, infer it logically from the current situation.\n\n6. **priority**: Determine the priority level based on the email tone and content:\n   - \"Very High\" - Words like urgent, ASAP, critical, blocking, production down\n   - \"High\" - Important, deadline soon, affecting business\n   - \"Medium\" - Normal requests, standard changes needed\n   - \"Low\" - Nice to have, no rush, future improvements\n   - \"Very Low\" - Whenever possible, backlog items\n\n7. **issueType**: Classify the ticket type (use EXACTLY one of these values):\n   - \"Bug\" - Something is broken, not working, error, issue\n   - \"Task\" - General work item, action needed\n   - \"Story\" - New functionality, user story\n   - \"Improvement\" - Enhancement to existing feature\n   - \"Epic\" - Large feature spanning multiple tasks\n   - \"Subtask\" - Part of a larger task\n   - \"Characteristic\" - Property or attribute change\n\n8. **client**: Extract the sender's name or company if available.\n\n9. **sprint**: Set to \"Backlog\" (default value).\n\nOutput ONLY valid JSON in English, no other text."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -64,
+        -1248
+      ],
+      "id": "311704fa-2545-4738-ac50-1fac0cce1893",
+      "name": "Ticket Details Extractor1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3b2d541f-2a79-459a-9175-5ea1ab3e40a0",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        -1040
+      ],
+      "id": "9bfaa361-3449-4bc7-9ed4-1e474c2774a5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "YOUR_NOTION_DATABASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "title": "={{ $('Ticket Details Extractor1').item.json.output.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Issue Type|select",
+              "selectValue": "={{ $('Ticket Details Extractor1').item.json.output.issueType }}"
+            },
+            {
+              "key": "Description|rich_text",
+              "textContent": "={{ $('Ticket Details Extractor1').item.json.output.description }}"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "={{ $('Ticket Details Extractor1').item.json.output.priority }}"
+            },
+            {
+              "key": "Sprint|rich_text",
+              "textContent": "={{ $('Ticket Details Extractor1').item.json.output.sprint }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b7a56d04-9af8-4ba7-9985-93f97f4c0643",
+      "name": "Create Ticket in Notion (Geen Bijlagen)",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        -944
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1408,
+        -832
+      ],
+      "id": "c0ee6f47-18a5-4a61-8d8d-5557baa88c79",
+      "name": "Gmail Trigger1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "file",
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FOLDER_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1056,
+        -1136
+      ],
+      "id": "26cdb571-ddba-41fe-a41c-b3cd73fd9beb",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1280,
+        -1136
+      ],
+      "id": "764747f5-6434-4e78-bcce-4903b61854cc",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const address = $input.first().json.from.value[0].address.toLowerCase();\n\n// Exact email matches first\nconst exactMap = {\n  'your-email@example.com':   'NOTION_DB_ID_CLIENT_B',\n};\n\n// Domain → Notion DB ID\nconst domainMap = {\n  'client-a.example.com':    'NOTION_DB_ID_CLIENT_A',\n  'client-b.example.com':         'NOTION_DB_ID_CLIENT_B',\n  'client-c.example.com':      'NOTION_DB_ID_CLIENT_C',\n  'client-c2.example.com':          'NOTION_DB_ID_CLIENT_C',\n  'client-d.example.com':          'NOTION_DB_ID_CLIENT_D',\n  'client-e2.example.com':        'NOTION_DB_ID_CLIENT_E',\n  'client-e3.example.com': 'NOTION_DB_ID_CLIENT_E',\n  'client-e.example.com': 'NOTION_DB_ID_CLIENT_E',\n  'client-f.example.com':          'NOTION_DB_ID_CLIENT_F',\n  'client-g2.example.com':          'NOTION_DB_ID_CLIENT_G',\n  'client-g.example.com':            'NOTION_DB_ID_CLIENT_G',\n  'client-h.example.com':         'NOTION_DB_ID_CLIENT_H',\n  'client-i.example.com':         'NOTION_DB_ID_CLIENT_I',\n  'client-j.example.com':          'NOTION_DB_ID_CLIENT_J',\n  'client-j2.example.com':         'NOTION_DB_ID_CLIENT_J',\n  'client-k.example.com':            'NOTION_DB_ID_CLIENT_K',\n  'client-l.example.com':              'NOTION_DB_ID_CLIENT_L',\n  'client-l2.example.com':          'NOTION_DB_ID_CLIENT_L',\n  'client-m.example.com':              'NOTION_DB_ID_CLIENT_M',\n  'client-o.example.com':     'NOTION_DB_ID_CLIENT_O',\n  'client-p.example.com':              'NOTION_DB_ID_CLIENT_P',\n  'client-n.example.com':        'NOTION_DB_ID_CLIENT_N',\n};\n\n// Resolve: exact match first, then domain\nconst domain = address.split('@')[1];\nconst notionDatabaseId = exactMap[address] || domainMap[domain] || null;\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    notionDatabaseId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -832
+      ],
+      "id": "39d41a13-cf5c-4112-baf9-41183cbb7634",
+      "name": "DatabaseID"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "YOUR_NOTION_DATABASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "title": "={{ $('Ticket Details Extractor1').item.json.output.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Issue Type|select",
+              "selectValue": "={{ $('Ticket Details Extractor1').item.json.output.issueType }}"
+            },
+            {
+              "key": "Description|rich_text",
+              "textContent": "={{ $('Ticket Details Extractor1').item.json.output.description }}"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "={{ $('Ticket Details Extractor1').item.json.output.priority }}"
+            },
+            {
+              "key": "Sprint|rich_text",
+              "textContent": "={{ $('Ticket Details Extractor1').item.json.output.sprint }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "21dc513d-d50b-4a01-9129-1ab40da0a125",
+      "name": "Create Ticket in Notion (Geen Bijlagen)1",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1920,
+        -1136
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": false
+        }
+      },
+      "id": "d4fc73c7-e16b-43d2-95e5-5e0c806b5d3e",
+      "name": "Gmail Trigger2",
+      "position": [
+        -1408,
+        -400
+      ],
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cd4f7f06-fea5-456e-9bea-5522732bd38c",
+              "leftValue": "={{\n  (() => {\n    const address = $json.from.value[0].address.toLowerCase();\n\n    const exactMatches = [\n      'your-email@example.com',\n      'your-email@example.com'\n    ];\n\n    const domains = [\n      'client-a.example.com','client-b.example.com','client-c.example.com',\n      'client-d.example.com','client-e2.example.com','client-e3.example.com',\n      'client-e.example.com','client-f.example.com','client-g2.example.com',\n      'client-g.example.com','client-h.example.com','client-i.example.com','client-j.example.com',\n      'client-j2.example.com','client-k.example.com','client-l.example.com','client-l2.example.com',\n      'client-m.example.com','client-o.example.com','client-p.example.com','client-n.example.com'\n    ];\n\n    return exactMatches.includes(address) ||\n           domains.some(d => address.endsWith('@' + d));\n  })()\n}}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "34adfe9a-b695-49a8-bc48-84705cacdf36",
+      "name": "clientCheck1",
+      "position": [
+        -1184,
+        -832
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"output\": {\n      \"type\": \"boolean\"\n    }\n  },\n  \"required\": [\"output\"],\n  \"additionalProperties\": false\n}\n",
+        "autoFix": true
+      },
+      "id": "7906c2cf-48e4-40ed-9815-abc81f7339c8",
+      "name": "Classifier Output Parser1",
+      "position": [
+        -656,
+        -608
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "route-ticket-check",
+              "leftValue": "={{ $json.output }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "383677c2-4db5-43dd-a3c7-d98781436269",
+      "name": "Should Create Ticket?1",
+      "position": [
+        -288,
+        -832
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\": \"Concise ticket title in English\"\n    },\n    \"description\": {\n      \"type\": \"string\",\n      \"description\": \"Detailed description of the issue or request in English\"\n    },\n    \"goal\": {\n      \"type\": \"string\",\n      \"description\": \"The reason or motivation behind the ticket\"\n    },\n    \"currentSituation\": {\n      \"type\": \"string\",\n      \"description\": \"What is currently happening or broken. If not specified, write 'Not specified.'\"\n    },\n    \"expectedSituation\": {\n      \"type\": \"string\",\n      \"description\": \"What the correct or desired situation should be after the fix\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\"Very High\", \"High\", \"Medium\", \"Low\", \"Very Low\"],\n      \"description\": \"Priority level\"\n    },\n    \"issueType\": {\n      \"type\": \"string\",\n      \"enum\": [\"Bug\", \"Task\", \"Story\", \"Improvement\", \"Epic\", \"Subtask\", \"Characteristic\"],\n      \"description\": \"Type of issue\"\n    },\n    \"client\": {\n      \"type\": \"string\",\n      \"description\": \"Client name or company\"\n    },\n    \"sprint\": {\n      \"type\": \"string\",\n      \"description\": \"Sprint assignment\"\n    }\n  },\n  \"required\": [\"title\", \"description\", \"goal\", \"currentSituation\", \"expectedSituation\", \"priority\", \"issueType\"],\n  \"additionalProperties\": false\n}",
+        "autoFix": true
+      },
+      "id": "b6836608-1524-494e-b171-5d783e9d0584",
+      "name": "Ticket Output Parser1",
+      "position": [
+        0,
+        -1072
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {},
+      "id": "ef87e65d-4f04-4a45-9213-fe1f966d1da8",
+      "name": "No Ticket Needed1",
+      "position": [
+        48,
+        -640
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $('Gmail Trigger1').item.json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        -1040
+      ],
+      "id": "dc5aa2c9-7aca-4d3e-a3dd-1423421a5b7c",
+      "name": "Get a message1",
+      "webhookId": "d8cc0c0b-1e79-5231-9ad4-a98c945c3d95",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst outputs = [];\n\nfor (const item of items) {\n  const binaries = item.binary || {};\n\n  for (const [key, binary] of Object.entries(binaries)) {\n    outputs.push({\n      json: {\n        attachmentKey: key,\n        fileName: binary.fileName,\n        mimeType: binary.mimeType,\n        fileSize: binary.fileSize,\n      },\n      binary: {\n        file: binary // standardize binary key as `file`\n      }\n    });\n  }\n}\n\nreturn outputs;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -1136
+      ],
+      "id": "a4c6012a-4bc1-4970-bced-84b7dfd16188",
+      "name": "fanOut2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092ad40f-de50-4802-82c6-f5c9041c9fa7",
+              "name": "attachmentKey",
+              "value": "={{ $('fanOut2').item.json.attachmentKey }}",
+              "type": "string"
+            },
+            {
+              "id": "abc66e18-4d27-4a5a-acaa-a8b88dfe9163",
+              "name": "fileName",
+              "value": "={{ $('fanOut2').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "692490e4-7fe7-47f1-92a5-51b27b84f8be",
+              "name": "mimeType",
+              "value": "={{ $('fanOut2').item.json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "24d696ed-3a5c-4098-8f03-1e9e6fcc5aa1",
+              "name": "fileSize",
+              "value": "={{ $('fanOut2').item.json.fileSize }}",
+              "type": "string"
+            },
+            {
+              "id": "ebd1683f-17fd-484a-9258-4cf33f6a68d3",
+              "name": "file_id",
+              "value": "={{ $('Upload file').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "43665794-335d-428b-8b17-a98249371d0e",
+              "name": "url",
+              "value": "={{ $('Upload file').item.json.webViewLink }}",
+              "type": "string"
+            },
+            {
+              "id": "b6b6f258-48ac-4736-b264-57c07f2d98d3",
+              "name": "files_url",
+              "value": "={{ $('Upload file').item.json.webContentLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        -1136
+      ],
+      "id": "d85ee983-90d5-4b61-8281-e53f66272d50",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        -1136
+      ],
+      "id": "85cc3747-d31f-492f-bae7-b27d4af0cb94",
+      "name": "Aggregate2"
+    }
+  ],
+  "connections": {
+    "Classifier Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "index": 0,
+            "node": "Email Classifier Agent",
+            "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "Email Classifier Agent": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Should Create Ticket?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "Email Classifier Agent",
+            "type": "ai_languageModel"
+          },
+          {
+            "node": "Classifier Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model 2": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "Ticket Details Extractor",
+            "type": "ai_languageModel"
+          },
+          {
+            "node": "Ticket Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clientCheck",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Should Create Ticket?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Ticket Details Extractor",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "No Ticket Needed",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Ticket Details Extractor": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "index": 0,
+            "node": "Ticket Details Extractor",
+            "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "clientCheck": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Email Classifier Agent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "fanOut": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "fanOut1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "fanOut1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Create Ticket in Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classifier Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "E-mail Classifier Agent v3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ticket Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Ticket Details Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "E-mail Classifier Agent v3": {
+      "main": [
+        [
+          {
+            "node": "Should Create Ticket?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Details Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Get a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "fanOut2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Ticket in Notion (Geen Bijlagen)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger1": {
+      "main": [
+        [
+          {
+            "node": "clientCheck1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DatabaseID": {
+      "main": [
+        [
+          {
+            "node": "E-mail Classifier Agent v3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clientCheck1": {
+      "main": [
+        [
+          {
+            "node": "DatabaseID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classifier Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "E-mail Classifier Agent v3",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Create Ticket?1": {
+      "main": [
+        [
+          {
+            "node": "Ticket Details Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Ticket Needed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Ticket Details Extractor1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fanOut2": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "tags": []
+}

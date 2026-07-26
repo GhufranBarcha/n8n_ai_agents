@@ -1,0 +1,3415 @@
+{
+  "name": "Cold Email Outreach Machine",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "nwua9Gu5YrADL7ZDj",
+          "mode": "list",
+          "cachedResultName": "Google Maps Scraper (compass/crawler-google-places)",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "customBody": "{\n  \"searchStringsArray\": [\n\"HVAC contractor\",\n\"Air conditioning repair\",\n\"Plumber\",\n\"Plumbing service\",\n\"Trucking company\",\n\"Freight carrier\",\n\"Property management\",\n\"Rental management\"\n],  \n\"locationQuery\": \"Texas\",\n\"scrapeContacts\": true,\n  \"maxCrawledPlacesPerSearch\": 100,\n  \"maximumLeadsEnrichmentRecords\": 50,\n\"includeWebResults\": true\n}\n",
+        "timeout": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -256
+      ],
+      "id": "b0469f62-f9a8-4155-93e2-e6e3e4da1e80",
+      "name": "Run Google Maps Extractor",
+      "credentials": {
+        "apifyApi": {
+          "id": "f4qGUMuYuUUHyXqt",
+          "name": "YOUR_APIFY_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "name": "Wait for Scraping1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -256
+      ],
+      "id": "839e6abc-654a-479b-9c06-5bcd450d1d67",
+      "webhookId": "850ec237-ca7c-5434-83de-5ad95780d6ed"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1b213ee-87ef-48fe-aa88-c96b999dd8ce",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "36abf676-ac03-493f-a7c6-b2f61aec7672",
+              "name": "phone",
+              "value": "={{ $json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "36d7d1a1-5cba-4869-8f19-45243f46a5d4",
+              "name": "phoneUnformatted",
+              "value": "={{ $json.phoneUnformatted }}",
+              "type": "string"
+            },
+            {
+              "id": "74724490-0060-43db-897e-b695c4d15741",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "object"
+            },
+            {
+              "id": "f4a908c9-f284-4e48-a1d0-fc51ba0c8c4b",
+              "name": "placeId",
+              "value": "={{ $json.placeId }}",
+              "type": "string"
+            },
+            {
+              "id": "52b12178-7c93-44ed-8304-11cceceef283",
+              "name": "reviewsCount",
+              "value": "={{ $json.reviewsCount }}",
+              "type": "number"
+            },
+            {
+              "id": "7725814b-89e9-4e0f-91d1-9bbb5de759a4",
+              "name": "searchPageUrl",
+              "value": "={{ $json.searchPageUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "f26a82e2-5902-47b7-8ddd-7afa726b6b1e",
+              "name": "emails",
+              "value": "={{ $json.emails }}",
+              "type": "array"
+            },
+            {
+              "id": "240779f8-f4d4-4e28-abed-a818d89ffb85",
+              "name": "phones",
+              "value": "={{ $json.phones }}",
+              "type": "array"
+            },
+            {
+              "id": "a62d81f0-865a-4a80-b9df-c456ff38a8bf",
+              "name": "phonesUncertain",
+              "value": "={{ $json.phonesUncertain }}",
+              "type": "array"
+            },
+            {
+              "id": "59f1c6f0-738f-4086-b346-5c34fc873ea6",
+              "name": "linkedIns",
+              "value": "={{ $json.linkedIns }}",
+              "type": "array"
+            },
+            {
+              "id": "08dcd7a4-6d9c-4cb8-8b75-0fa0984187e5",
+              "name": "facebooks",
+              "value": "={{ $json.facebooks }}",
+              "type": "array"
+            },
+            {
+              "id": "14149fa8-add1-471c-9ea5-ba69612af1ef",
+              "name": "instagrams",
+              "value": "={{ $json.instagrams }}",
+              "type": "array"
+            },
+            {
+              "id": "c14f68ad-7fee-40e4-b2e0-9cbbbd2dc5cb",
+              "name": "twitters",
+              "value": "={{ $json.twitters }}",
+              "type": "array"
+            },
+            {
+              "id": "c8b58cbe-93bd-4fe5-b7df-21e351d023be",
+              "name": "youtubes",
+              "value": "={{ $json.youtubes }}",
+              "type": "array"
+            },
+            {
+              "id": "bc780b1e-0c4c-4d80-a568-fc8ff4d34dfd",
+              "name": "tiktoks",
+              "value": "={{ $json.tiktoks }}",
+              "type": "array"
+            },
+            {
+              "id": "574baf72-34ec-40b7-b562-2e50001b194f",
+              "name": "leadsEnrichment",
+              "value": "={{ $json.leadsEnrichment }}",
+              "type": "array"
+            },
+            {
+              "id": "7e830df6-aa10-44fc-9c82-4d8d6d7d76da",
+              "name": "domain",
+              "value": "={{ $json.domain }}",
+              "type": "string"
+            },
+            {
+              "id": "3fd8ca99-12ba-4fb9-a3e4-47933fab26aa",
+              "name": "scrapedUrls",
+              "value": "={{ $json.scrapedUrls }}",
+              "type": "string"
+            },
+            {
+              "id": "2482f9b1-18a6-4635-9a80-367c9f22036a",
+              "name": "whatsapps",
+              "value": "={{ $json.whatsapps }}",
+              "type": "string"
+            },
+            {
+              "id": "9d0d67f4-786c-44a1-9068-c9b384585eee",
+              "name": "state",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "4cf3a033-b547-492f-9d38-c91d7a8d0afd",
+              "name": "countryCode",
+              "value": "={{ $json.countryCode }}",
+              "type": "string"
+            },
+            {
+              "id": "8f29f778-fc7e-4389-94e1-5653375a44e8",
+              "name": "city",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "b657338a-fd99-4edd-8090-8e2c59897490",
+              "name": "postalCode",
+              "value": "={{ $json.postalCode }}",
+              "type": "string"
+            },
+            {
+              "id": "d3245b65-725b-400c-87b9-8b5d1b10ae89",
+              "name": "street",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "e3013b67-62a9-4910-a17d-5e417cf2f928",
+              "name": "countryCode",
+              "value": "={{ $json.countryCode }}",
+              "type": "string"
+            },
+            {
+              "id": "2622f0b7-fc14-4d92-bc10-3e02956db053",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "object"
+            },
+            {
+              "id": "94cab7ad-d680-4ca4-be29-68d1b14e8c91",
+              "name": "domain",
+              "value": "={{ $json.domain }}",
+              "type": "string"
+            },
+            {
+              "id": "1544f71a-325e-46be-a5aa-48abce868dff",
+              "name": "additionalOpeningHours",
+              "value": "={{ $json.additionalOpeningHours }}",
+              "type": "string"
+            },
+            {
+              "id": "b85760b4-e27d-43d0-b5bc-8e43aaa43833",
+              "name": "categories",
+              "value": "={{ $json.categories }}",
+              "type": "array"
+            },
+            {
+              "id": "efa9b5b1-4360-4726-8011-db75168b1efa",
+              "name": "reviews",
+              "value": "={{ $json.reviews }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2b6b52-61ba-4de0-a3a4-ec7824101f26",
+              "name": "scrapedUrls",
+              "value": "={{ $json.scrapedUrls }}",
+              "type": "string"
+            },
+            {
+              "id": "da314def-8f4f-4269-b3c4-89b83458d313",
+              "name": "domain",
+              "value": "={{ $json.domain }}",
+              "type": "string"
+            },
+            {
+              "id": "e1672434-71dd-4636-9ce6-907decfcf6ec",
+              "name": "street",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "16b2ad7c-f69b-4003-a78b-74e52985c824",
+              "name": "postalCode",
+              "value": "={{ $json.postalCode }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        -256
+      ],
+      "id": "e39efd1b-d7e8-4665-b29c-7596e680020a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae6fa186-ef0c-45d7-811b-58eddc1cea4b",
+              "name": "Subject",
+              "value": "Fire your Bookkeeper/Accountant",
+              "type": "string"
+            },
+            {
+              "id": "02cb8516-7991-456f-a7f8-53910eba8824",
+              "name": "Body",
+              "value": "=<!DOCTYPE html>\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n  <meta name=\"x-apple-disable-message-reformatting\">\n  <!--[if mso]>\n  <noscript>\n    <xml>\n      <o:OfficeDocumentSettings>\n        <o:PixelsPerInch>96</o:PixelsPerInch>\n      </o:OfficeDocumentSettings>\n    </xml>\n  </noscript>\n  <![endif]-->\n  <title>Bookkeeping &amp; Accounting Services – Your Name Ahmed</title>\n  <style>\n    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }\n    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }\n    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }\n    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }\n    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important; }\n    div[style*=\"margin: 16px 0;\"] { margin: 0 !important; }\n\n    /* ── MOBILE RESPONSIVE ── */\n    @media screen and (max-width: 620px) {\n\n      /* Outer padding */\n      .outer-pad { padding: 16px 8px !important; }\n\n      /* Container width */\n      .email-container { width: 100% !important; max-width: 100% !important; border-radius: 0 !important; }\n\n      /* Header */\n      .header-cell { padding: 28px 20px 24px 20px !important; }\n      .header-title { font-size: 21px !important; }\n\n      /* Section padding */\n      .section-pad { padding: 16px 16px 20px 16px !important; }\n      .section-inner { padding: 14px !important; }\n\n      /* Stats bar */\n      .stats-pad { padding: 16px 16px 0 16px !important; }\n\n      /* Intro */\n      .intro-pad { padding: 20px 16px 14px 16px !important; }\n\n      /* 2-col → 1-col stacking */\n      .col-half {\n        display: block !important;\n        width: 100% !important;\n        padding-right: 0 !important;\n        padding-left: 0 !important;\n      }\n      .col-half-right { padding-top: 2px !important; }\n\n      /* Why cards */\n      .why-card-left {\n        display: block !important;\n        width: 100% !important;\n        padding-right: 0 !important;\n        padding-bottom: 10px !important;\n      }\n      .why-card-right {\n        display: block !important;\n        width: 100% !important;\n        padding-left: 0 !important;\n      }\n      .why-pad { padding: 0 16px 20px 16px !important; }\n\n      /* Testimonial */\n      .testimonial-pad { padding: 0 16px 22px 16px !important; }\n\n      /* CTA footer */\n      .cta-pad { padding: 24px 20px 28px 20px !important; }\n\n      /* Buttons — stack vertically */\n      .btn-cell {\n        display: block !important;\n        padding: 0 0 8px 0 !important;\n      }\n      .btn-link {\n        display: block !important;\n        text-align: center !important;\n        width: 100% !important;\n        box-sizing: border-box !important;\n      }\n      .btn-row { width: 100% !important; }\n\n      /* Stats cells */\n      .stat-cell { padding: 12px 6px !important; }\n      .stat-num { font-size: 18px !important; }\n    }\n  </style>\n</head>\n<body style=\"background-color:#f0f4f8; margin:0; padding:0; font-family:Arial,sans-serif;\">\n\n<!-- Outer wrapper -->\n<table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f0f4f8;\">\n  <tr>\n    <td align=\"center\" class=\"outer-pad\" style=\"padding:30px 10px;\">\n\n      <!-- Email container -->\n      <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" class=\"email-container\" style=\"max-width:600px; width:100%; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08);\">\n\n        <!-- HEADER -->\n        <tr>\n          <td class=\"header-cell\" style=\"background-color:#1a3c5e; padding:40px 40px 32px 40px; text-align:left;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td>\n                  <p style=\"margin:0 0 6px 0; font-size:11px; font-weight:bold; color:#7fb3e8; letter-spacing:2px; text-transform:uppercase; font-family:Arial,sans-serif;\">Certified QuickBooks &middot; Xero &middot; Wave &middot; Zoho Advisor</p>\n                  <h1 class=\"header-title\" style=\"margin:0 0 8px 0; font-size:26px; font-weight:bold; color:#ffffff; line-height:1.3; font-family:Arial,sans-serif;\">Full-Cycle Bookkeeping<br>&amp; Accounting Services</h1>\n                  <p style=\"margin:0; font-size:14px; color:#b8d4f0; font-family:Arial,sans-serif;\">Quality, accurate &amp; affordable &#8212; cut costs up to <strong style=\"color:#ffffff;\">4&times;</strong> or reclaim hours every week</p>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- STATS BAR -->\n        <tr>\n          <td class=\"stats-pad\" style=\"padding:28px 40px 0 40px;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f0f7ff; border-radius:8px; border:1px solid #dbeafe;\">\n              <tr>\n                <td width=\"33%\" align=\"center\" class=\"stat-cell\" style=\"padding:16px 10px; border-right:1px solid #dbeafe;\">\n                  <p class=\"stat-num\" style=\"margin:0; font-size:22px; font-weight:bold; color:#2563a8; font-family:Arial,sans-serif;\">5+</p>\n                  <p style=\"margin:4px 0 0 0; font-size:10px; color:#6b7280; font-family:Arial,sans-serif; text-transform:uppercase; letter-spacing:0.5px;\">Years Experience</p>\n                </td>\n                <td width=\"33%\" align=\"center\" class=\"stat-cell\" style=\"padding:16px 10px; border-right:1px solid #dbeafe;\">\n                  <p class=\"stat-num\" style=\"margin:0; font-size:22px; font-weight:bold; color:#2563a8; font-family:Arial,sans-serif;\">6</p>\n                  <p style=\"margin:4px 0 0 0; font-size:10px; color:#6b7280; font-family:Arial,sans-serif; text-transform:uppercase; letter-spacing:0.5px;\">Countries Served</p>\n                </td>\n                <td width=\"33%\" align=\"center\" class=\"stat-cell\" style=\"padding:16px 10px;\">\n                  <p class=\"stat-num\" style=\"margin:0; font-size:22px; font-weight:bold; color:#2563a8; font-family:Arial,sans-serif;\">4&times;</p>\n                  <p style=\"margin:4px 0 0 0; font-size:10px; color:#6b7280; font-family:Arial,sans-serif; text-transform:uppercase; letter-spacing:0.5px;\">Cost Savings</p>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- INTRO -->\n        <tr>\n          <td class=\"intro-pad\" style=\"padding:24px 40px 20px 40px;\">\n            <p style=\"margin:0 0 12px 0; font-size:14px; color:#374151; line-height:1.7; font-family:Arial,sans-serif;\">Hi,</p>\n            <p style=\"margin:0; font-size:14px; color:#374151; line-height:1.7; font-family:Arial,sans-serif;\">My name is <strong style=\"color:#1a3c5e;\">Your Name Ahmed</strong>, and I provide full-cycle bookkeeping and accounting services to small and medium-sized businesses. I offer quality, accurate, and affordable bookkeeping that can <strong>cut your current costs by up to 4&times;</strong>, or save you hours every week if you're managing the books yourself.</p>\n          </td>\n        </tr>\n\n        <!-- SECTION 1: GENERAL BOOKKEEPING -->\n        <tr>\n          <td class=\"section-pad\" style=\"padding:8px 40px 24px 40px;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td style=\"background-color:#1a3c5e; border-radius:8px 8px 0 0; padding:13px 18px;\">\n                  <p style=\"margin:0; font-size:14px; font-weight:bold; color:#ffffff; font-family:Arial,sans-serif;\">&#x1F4D2; &nbsp;General Bookkeeping Services</p>\n                </td>\n              </tr>\n              <tr>\n                <td class=\"section-inner\" style=\"background-color:#f8fafc; border:1px solid #e2e8f0; border-top:none; border-radius:0 0 8px 8px; padding:18px;\">\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half\" style=\"padding-right:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Monthly / Weekly Bookkeeping</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Cleanup &amp; Catch-Up Bookkeeping</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Bank &amp; Credit Card Reconciliation</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Accounts Payable &amp; Receivable</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Payroll Processing</p>\n                      </td>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half col-half-right\" style=\"padding-left:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;W-9 &amp; 1099 Contractor Management</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Chart of Accounts Setup</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Financial Statements (P&amp;L, BS, CF)</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Budgeting &amp; Forecasting</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Year-End Preparation</p>\n                      </td>\n                    </tr>\n                  </table>\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td style=\"padding-top:12px; border-top:1px solid #e2e8f0;\">\n                        <p style=\"margin:0; font-size:11px; color:#6b7280; font-family:Arial,sans-serif;\"><strong style=\"color:#1a3c5e;\">Platforms:</strong> &nbsp;QuickBooks Online &nbsp;|&nbsp; Xero &nbsp;|&nbsp; Wave &nbsp;|&nbsp; Zoho Books &nbsp;|&nbsp; FreshBooks &nbsp;|&nbsp; Odoo &nbsp;|&nbsp; Sage &nbsp;|&nbsp; NetSuite</p>\n                      </td>\n                    </tr>\n                  </table>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- SECTION 2: eCOMMERCE -->\n        <tr>\n          <td class=\"section-pad\" style=\"padding:0 40px 24px 40px;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td style=\"background-color:#1a3c5e; border-radius:8px 8px 0 0; padding:13px 18px;\">\n                  <p style=\"margin:0; font-size:14px; font-weight:bold; color:#ffffff; font-family:Arial,sans-serif;\">&#x1F6D2; &nbsp;eCommerce Bookkeeping Services</p>\n                </td>\n              </tr>\n              <tr>\n                <td class=\"section-inner\" style=\"background-color:#f8fafc; border:1px solid #e2e8f0; border-top:none; border-radius:0 0 8px 8px; padding:18px;\">\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half\" style=\"padding-right:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Shopify &amp; Amazon Reconciliation</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Multi-Channel Revenue Tracking</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Payment Processor Reconciliation</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Inventory &amp; COGS Tracking</p>\n                      </td>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half col-half-right\" style=\"padding-left:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Sales Tax Tracking by State/Region</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Monthly P&amp;L by Sales Channel</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Cleanup &amp; Catch-Up</p>\n                      </td>\n                    </tr>\n                  </table>\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td style=\"padding-top:12px; border-top:1px solid #e2e8f0;\">\n                        <p style=\"margin:0; font-size:11px; color:#6b7280; font-family:Arial,sans-serif;\"><strong style=\"color:#1a3c5e;\">Platforms:</strong> &nbsp;Shopify &nbsp;|&nbsp; Amazon Seller Central &nbsp;|&nbsp; Etsy &nbsp;|&nbsp; WooCommerce &nbsp;|&nbsp; Stripe &nbsp;|&nbsp; PayPal &nbsp;|&nbsp; Square &nbsp;|&nbsp; QBO &nbsp;|&nbsp; Xero &nbsp;|&nbsp; Wave</p>\n                      </td>\n                    </tr>\n                  </table>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- SECTION 3: REAL ESTATE -->\n        <tr>\n          <td class=\"section-pad\" style=\"padding:0 40px 24px 40px;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td style=\"background-color:#1a3c5e; border-radius:8px 8px 0 0; padding:13px 18px;\">\n                  <p style=\"margin:0; font-size:14px; font-weight:bold; color:#ffffff; font-family:Arial,sans-serif;\">&#x1F3E0; &nbsp;Real Estate &amp; Property Management Bookkeeping</p>\n                </td>\n              </tr>\n              <tr>\n                <td class=\"section-inner\" style=\"background-color:#f8fafc; border:1px solid #e2e8f0; border-top:none; border-radius:0 0 8px 8px; padding:18px;\">\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half\" style=\"padding-right:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Trust Accounting</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Rent Roll Reconciliation</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Owner Statements &amp; Investor Reporting</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Accounts Payable &amp; Receivable</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Bank &amp; Credit Card Reconciliation</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Chart of Accounts for Real Estate</p>\n                      </td>\n                      <td width=\"50%\" valign=\"top\" class=\"col-half col-half-right\" style=\"padding-left:8px;\">\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;General Ledger Maintenance</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;STR &amp; LTR Bookkeeping (Airbnb, VRBO)</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;PMS Integration (Guesty &amp; Hostaway)</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Cleanup &amp; Catch-Up</p>\n                        <p style=\"margin:0 0 7px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;1099-MISC &amp; 1099-NEC Preparation</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#10003; &nbsp;Monthly, Quarterly &amp; Year-End Closing</p>\n                      </td>\n                    </tr>\n                  </table>\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                    <tr>\n                      <td style=\"padding-top:12px; border-top:1px solid #e2e8f0;\">\n                        <p style=\"margin:0; font-size:11px; color:#6b7280; font-family:Arial,sans-serif;\"><strong style=\"color:#1a3c5e;\">Platforms:</strong> &nbsp;AppFolio &nbsp;|&nbsp; Buildium &nbsp;|&nbsp; Rent Manager &nbsp;|&nbsp; Rentvine &nbsp;|&nbsp; DoorLoop &nbsp;|&nbsp; Clearing &nbsp;|&nbsp; PropertyWare &nbsp;|&nbsp; Guesty &nbsp;|&nbsp; Hostaway &nbsp;|&nbsp; QuickBooks Online</p>\n                      </td>\n                    </tr>\n                  </table>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- WHY WORK WITH ME -->\n        <tr>\n          <td class=\"why-pad\" style=\"padding:0 40px 24px 40px;\">\n            <h2 style=\"margin:0 0 14px 0; font-size:16px; font-weight:bold; color:#1a3c5e; font-family:Arial,sans-serif;\">&#x1F4BC; &nbsp;Why Work With Me?</h2>\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td width=\"50%\" valign=\"top\" class=\"why-card-left\" style=\"padding-right:8px;\">\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f0f7ff; border-radius:8px; border:1px solid #dbeafe;\">\n                    <tr>\n                      <td style=\"padding:14px 16px;\">\n                        <p style=\"margin:0 0 9px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>Flat-rate affordable pricing</strong></p>\n                        <p style=\"margin:0 0 9px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>Exclusivity contract</strong> &#8212; 100% confidential</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>5+ years</strong> across US, CA, AU, UAE &amp; EU</p>\n                      </td>\n                    </tr>\n                  </table>\n                </td>\n                <td width=\"50%\" valign=\"top\" class=\"why-card-right\" style=\"padding-left:8px;\">\n                  <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f0f7ff; border-radius:8px; border:1px solid #dbeafe;\">\n                    <tr>\n                      <td style=\"padding:14px 16px;\">\n                        <p style=\"margin:0 0 9px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>100% accuracy</strong> and attention to detail</p>\n                        <p style=\"margin:0 0 9px 0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>Fast turnaround</strong> &amp; consistent communication</p>\n                        <p style=\"margin:0; font-size:13px; color:#374151; font-family:Arial,sans-serif;\">&#x2714; &nbsp;<strong>Free 1-hour consultation</strong> &#8212; no commitment</p>\n                      </td>\n                    </tr>\n                  </table>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- TESTIMONIAL -->\n        <tr>\n          <td class=\"testimonial-pad\" style=\"padding:0 40px 28px 40px;\">\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f0f7ff; border-radius:8px; border-left:4px solid #2563a8; border-top:1px solid #dbeafe; border-right:1px solid #dbeafe; border-bottom:1px solid #dbeafe;\">\n              <tr>\n                <td style=\"padding:18px 20px;\">\n                  <p style=\"margin:0 0 12px 0; font-size:13px; color:#374151; line-height:1.75; font-style:italic; font-family:Arial,sans-serif;\">\"Working with Your Name has been an excellent experience. He's professional, responsive, and highly engaged in supporting our bookkeeping and accounting operations. Your Name consistently delivers accurate work and is quick to tackle any issue that arises. What stands out most is his initiative &#8212; he took the time to learn and integrate a new platform, Clearing, alongside QuickBooks to streamline our property management trust accounting system. His attention to detail and commitment to getting things right have made him a valuable part of our team's financial process.\"</p>\n                  <p style=\"margin:0; font-size:13px; font-weight:bold; color:#1a3c5e; font-family:Arial,sans-serif;\">&#8212; Client, ExampleCo Inc. <span style=\"font-weight:normal; color:#6b7280;\">(Real Estate &amp; Property Management)</span></p>\n                </td>\n              </tr>\n            </table>\n          </td>\n        </tr>\n\n        <!-- CTA FOOTER -->\n        <tr>\n          <td class=\"cta-pad\" style=\"background-color:#1a3c5e; padding:30px 40px 36px 40px;\">\n            <h2 style=\"margin:0 0 8px 0; font-size:17px; font-weight:bold; color:#ffffff; font-family:Arial,sans-serif;\">&#x1F4E9; &nbsp;Ready to Get Started?</h2>\n            <p style=\"margin:0 0 20px 0; font-size:13px; color:#b8d4f0; line-height:1.7; font-family:Arial,sans-serif;\">If anything here is relevant to your business, I'd love to have a quick conversation. Reach out to schedule your <strong style=\"color:#ffffff;\">free 30-minute consultation</strong> &#8212; no obligation, just a chance to see if we're a good fit.</p>\n\n            <!-- Buttons -->\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn-row\">\n              <tr>\n                <td class=\"btn-cell\" style=\"padding-right:10px;\">\n                  <a href=\"mailto:your-email@example.com\" class=\"btn-link\" style=\"display:inline-block; background-color:#ffffff; color:#1a3c5e; font-size:13px; font-weight:bold; padding:11px 20px; border-radius:6px; text-decoration:none; font-family:Arial,sans-serif;\">&#x2709; &nbsp;Email Me</a>\n                </td>\n                <td class=\"btn-cell\" style=\"padding-right:10px;\">\n                  <a href=\"https://wa.me/YOUR_WHATSAPP_NUMBER\" class=\"btn-link\" style=\"display:inline-block; background-color:#25D366; color:#ffffff; font-size:13px; font-weight:bold; padding:11px 20px; border-radius:6px; text-decoration:none; font-family:Arial,sans-serif;\">&#x1F4F1; &nbsp;WhatsApp</a>\n                </td>\n                <td class=\"btn-cell\" style=\"padding-right:0;\">\n                  <a href=\"https://www.upwork.com/freelancers/~your-upwork-profile-id\" class=\"btn-link\" style=\"display:inline-block; background-color:transparent; color:#ffffff; font-size:13px; font-weight:bold; padding:10px 20px; border-radius:6px; text-decoration:none; border:1px solid rgba(255,255,255,0.4); font-family:Arial,sans-serif;\">&#x1F517; &nbsp;Upwork Profile</a>\n                </td>\n              </tr>\n            </table>\n\n            <!-- Divider -->\n            <table role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n              <tr>\n                <td style=\"padding-top:22px; border-top:1px solid rgba(255,255,255,0.2); margin-top:22px;\">\n                  <p style=\"margin:0 0 3px 0; font-size:14px; font-weight:bold; color:#ffffff; font-family:Arial,sans-serif;\">Your Name</p>\n                  <p style=\"margin:0 0 3px 0; font-size:13px; color:#b8d4f0; font-family:Arial,sans-serif;\">\n                    <a href=\"mailto:your-email@example.com\" style=\"color:#b8d4f0; text-decoration:none;\">your-email@example.com</a>\n                    &nbsp;&nbsp;|&nbsp;&nbsp;\n                    <a href=\"tel:+YOUR_WHATSAPP_NUMBER\" style=\"color:#b8d4f0; text-decoration:none;\">+00 000 000 0000</a>\n                  </p>\n                  <p style=\"margin:4px 0 0 0; font-size:12px; color:#7fb3e8; font-family:Arial,sans-serif;\">\n                    <a href=\"https://www.linkedin.com/in/your-linkedin-profile/\" style=\"color:#7fb3e8; text-decoration:underline;\">LinkedIn</a>\n                    &nbsp;&nbsp;|&nbsp;&nbsp;\n                    <a href=\"https://www.upwork.com/freelancers/~your-upwork-profile-id\" style=\"color:#7fb3e8; text-decoration:underline;\">Upwork / Fiverr</a>\n                  </p>\n                </td>\n              </tr>\n            </table>\n\n          </td>\n        </tr>\n\n      </table>\n      <!-- /Email container -->\n\n    </td>\n  </tr>\n</table>\n<!-- /Outer wrapper -->\n\n</body>\n</html>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3920,
+        176
+      ],
+      "id": "a28c4cfd-babb-4092-9e20-6359edac9fd9",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3664,
+        240
+      ],
+      "id": "437ba489-49e7-4427-ab1d-1212994881c2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "sendTo": "=your-email@example.com",
+        "subject": "={{ $json.Subject }}",
+        "message": "={{ $json.Body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3920,
+        432
+      ],
+      "id": "e27ca685-3dea-4dc2-b1d8-01b6dcbf1537",
+      "name": "Send a message",
+      "webhookId": "085cbcf8-fd1e-534a-bd24-5ac4a173ab2c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "leadsEnrichment",
+        "options": {}
+      },
+      "name": "Split Leads",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -1616
+      ],
+      "id": "e7dd70a9-eeb0-482d-803b-ed6041ceff9d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae6fa186-ef0c-45d7-811b-58eddc1cea4b",
+              "name": "Subject",
+              "value": "Fire your Bookkeeper/Accountant",
+              "type": "string"
+            },
+            {
+              "id": "02cb8516-7991-456f-a7f8-53910eba8824",
+              "name": "Body",
+              "value": "=<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #000; line-height: 1.6;\">\n\n<p>Sorry for the weird subject. It is just to get you to read this email. To get to the point, my name is Your Name and I provide bookkeeping and accounting services to international businesses and am emailing businesses to see if they require any of my services. I know I am coming out of nowhere and just saying this but let me be straight — I will provide you flat rate cheap bookkeeping services. You can cut costs 4x of your current bookkeeper or if you are doing those yourself then save that time.</p>\n\n<p>I know trusting me might be a bit difficult but let me introduce myself a bit more. I am Your Name with over 5 years of experience in bookkeeping and accounting. I mainly provide services to international clients through Upwork and Fiverr. I will also add a link to my LinkedIn profile below so you can check I am a real person and not some random bot.</p>\n\n<p>Now the second question is how would you trust me — well I will be adding my profile and personal portfolio where you will be able to see I really do what I say. Also I do an exclusivity contract with each of my clients so you don't need to worry about anything in terms of security.</p>\n\n<p>Now let's say you are interested — what's next? Well first you can reply to my email and I will follow up on you. I will also add my WhatsApp, you can contact me there and get a free 1 hour consultation or inquiry meeting where I will explain all my services, respond to all your questions and if you feel like I am your guy, then maybe we can work together and that's it. If you don't think I am a good fit then no worries — you are not going to get charged anyway so it's more of a free consultation of sorts. But if we click together you will be able to save hours of time and thousands of dollars which you are wasting right now.</p>\n\n<p>Well I am at the end of the email. After reading this if you still think my offer is uninteresting then I can't do anything anyway. Bye, but do check my profile to see I am real though.</p>\n\n<p>Best Regards<br>\nYour Name<br>\nWhatsApp: YOUR_PHONE_NUMBER<br>\n<a href=\"https://www.linkedin.com/in/your-username/\" style=\"color: #000;\">https://www.linkedin.com/in/your-username/</a><br>\n<a href=\"https://www.fiverr.com/users/your-username\" style=\"color: #000;\">https://www.fiverr.com/users/your-username</a><br>\n<a href=\"https://upwork.com/freelancers/your-username\" style=\"color: #000;\">https://upwork.com/freelancers/your-username</a>\n</p>\n\n</div>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -1504
+      ],
+      "id": "441b6ea0-b297-49fc-a6c4-4ece7fc472df",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -288,
+        -1616
+      ],
+      "id": "a8fe8cc2-dd7b-4588-bfb4-c2bc7916150d",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "sendTo": "=your-email@example.com",
+        "subject": "={{ $json.Subject }}",
+        "message": "={{ $json.Body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        -1504
+      ],
+      "id": "28ed4a5f-5e21-43ec-bad5-d0f8bd6e3ff1",
+      "name": "Send a message1",
+      "webhookId": "085cbcf8-fd1e-534a-bd24-5ac4a173ab2c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Google Rating": "=",
+            "id": "={{ $json.placeId }}",
+            "Business Name": "={{ $json.title }}",
+            "Phone": "={{ $json.phone }}",
+            "Business Email": "={{ $json.emails }}",
+            "Website": "={{ $json.domain }}",
+            "City": "={{ $json.city }}",
+            "State": "={{ $json.state }}",
+            "Review Count": "={{ $json.reviewsCount }}",
+            "Enrichment Raw JSON": "={{ $json.leadsEnrichment }}",
+            "All Phones": "={{ $json.phones }}",
+            "All Emails": "={{ $json.emails }}",
+            "Twitter": "={{ $json.twitters }}",
+            "Place ID": "={{ $json.placeId }}",
+            "Contacts": "={{ $json.phonesUncertain }}",
+            "Facebook": "={{ $json.facebooks }}",
+            "Instagram": "={{ $json.instagrams }}",
+            "LinkedIn": "={{ $json.linkedIns }}",
+            "Search Term": "={{ $('Run Google Maps Extractor').item.json.searchString }}",
+            "Source": "={{ $json.scrapedUrls }}",
+            "Date Added": "={{ $now.format('yyyy-MM-dd') }}",
+            "Industry": "={{ $json.categories }}",
+            "Country": "US",
+            "Status": "New Lead"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Business Email",
+              "displayName": "Business Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "US",
+                  "value": "US"
+                },
+                {
+                  "name": "UK",
+                  "value": "UK"
+                },
+                {
+                  "name": "Canada",
+                  "value": "Canada"
+                },
+                {
+                  "name": "Australia",
+                  "value": "Australia"
+                },
+                {
+                  "name": "Other",
+                  "value": "Other"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Google Rating",
+              "displayName": "Google Rating",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Review Count",
+              "displayName": "Review Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Search Term",
+              "displayName": "Search Term",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New Lead",
+                  "value": "New Lead"
+                },
+                {
+                  "name": "Email Sent",
+                  "value": "Email Sent"
+                },
+                {
+                  "name": "Replied",
+                  "value": "Replied"
+                },
+                {
+                  "name": "Call Booked",
+                  "value": "Call Booked"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Not Interested",
+                  "value": "Not Interested"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contacts",
+              "displayName": "Contacts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Place ID",
+              "displayName": "Place ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Twitter",
+              "displayName": "Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "All Emails",
+              "displayName": "All Emails",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "All Phones",
+              "displayName": "All Phones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Enrichment Raw JSON",
+              "displayName": "Enrichment Raw JSON",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scrapped_data",
+              "displayName": "scrapped_data",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "_unused_2",
+              "displayName": "_unused_2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "_unused_3",
+              "displayName": "_unused_3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        -656
+      ],
+      "id": "c41a851c-559b-4fbd-afed-998d4e9c8e24",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "leadsEnrichment",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "title, phone, placeId, domain",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -928
+      ],
+      "id": "e3b1b4f0-8e91-4b53-ace4-28f63f930e41",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email Sent": false,
+            "Full Name": "={{ $json.leadsEnrichment.fullName }}",
+            "First Name": "={{ $json.leadsEnrichment.firstName }}",
+            "Last Name": "={{ $json.leadsEnrichment.lastName }}",
+            "Email": "={{ $json.leadsEnrichment.email }}",
+            "LinkedIn Profile": "={{ $json.leadsEnrichment.linkedinProfile }}",
+            "Company Website": "={{ $json.leadsEnrichment.companyWebsite }}",
+            "Company Name": "={{ $json.leadsEnrichment.companyName }}",
+            "Country": "={{ $json.leadsEnrichment.country }}",
+            "State": "={{ $json.leadsEnrichment.state }}",
+            "City": "={{ $json.leadsEnrichment.city }}",
+            "Job Title": "={{ $json.leadsEnrichment.jobTitle }}",
+            "Email Status": "Not Sent",
+            "Place ID": "={{ $json.placeId }}",
+            "PersonID": "={{ $json.leadsEnrichment.personId }}",
+            "Department": "={{ $json.leadsEnrichment.departments }}",
+            "Date Added": "={{ $now.format('yyyy-MM-dd') }}"
+          },
+          "matchingColumns": [
+            "PersonID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Owner",
+                  "value": "Owner"
+                },
+                {
+                  "name": "Founder",
+                  "value": "Founder"
+                },
+                {
+                  "name": "C-Suite",
+                  "value": "C-Suite"
+                },
+                {
+                  "name": "Director",
+                  "value": "Director"
+                },
+                {
+                  "name": "VP",
+                  "value": "VP"
+                },
+                {
+                  "name": "Manager",
+                  "value": "Manager"
+                },
+                {
+                  "name": "Entry",
+                  "value": "Entry"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn Profile",
+              "displayName": "LinkedIn Profile",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Linked Business",
+              "displayName": "Linked Business",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not Sent",
+                  "value": "Not Sent"
+                },
+                {
+                  "name": "Sent",
+                  "value": "Sent"
+                },
+                {
+                  "name": "Opened",
+                  "value": "Opened"
+                },
+                {
+                  "name": "Replied",
+                  "value": "Replied"
+                },
+                {
+                  "name": "Bounced",
+                  "value": "Bounced"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Sent",
+              "displayName": "Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "High",
+                  "value": "High"
+                },
+                {
+                  "name": "Medium",
+                  "value": "Medium"
+                },
+                {
+                  "name": "Low",
+                  "value": "Low"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Place ID",
+              "displayName": "Place ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PersonID",
+              "displayName": "PersonID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        496,
+        -928
+      ],
+      "id": "57b7978e-30b3-4151-8839-5f54cdd8dcce",
+      "name": "Create or update a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        -592
+      ],
+      "id": "316b14e7-eb6e-4e74-8619-aad1afe2268f",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "operation": "scrape",
+        "url": "={{ $json.Website }}",
+        "scrapeOptions": {
+          "options": {
+            "formats": {
+              "format": [
+                {}
+              ]
+            },
+            "onlyMainContent": false,
+            "headers": {}
+          }
+        },
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -448
+      ],
+      "id": "e369a2c7-d472-43bd-87dd-22bfcb27b971",
+      "name": "/scrape",
+      "credentials": {
+        "firecrawlApi": {
+          "id": "0M8qFyhQXZppHLFJ",
+          "name": "YOUR_FIRECRAWL_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b6913c15-ad78-46e4-bab2-18cb8d81c4c4",
+              "leftValue": "={{ $json.Website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5caac2bf-a183-425e-a39d-fbd9165ebbad",
+              "leftValue": "={{ $json.scrapped_data }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        912,
+        -480
+      ],
+      "id": "2fcdc60d-8f86-4e20-b678-c99d5761ba4a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Place ID": "={{ $('If').item.json['Place ID'] }}",
+            "scrapped_data": "={{ $json.data.markdown }}",
+            "website_metadata": "={{ JSON.stringify($json.data.metadata) }}"
+          },
+          "matchingColumns": [
+            "Place ID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Business Email",
+              "displayName": "Business Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "US",
+                  "value": "US"
+                },
+                {
+                  "name": "UK",
+                  "value": "UK"
+                },
+                {
+                  "name": "Canada",
+                  "value": "Canada"
+                },
+                {
+                  "name": "Australia",
+                  "value": "Australia"
+                },
+                {
+                  "name": "Other",
+                  "value": "Other"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Google Rating",
+              "displayName": "Google Rating",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Review Count",
+              "displayName": "Review Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Search Term",
+              "displayName": "Search Term",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New Lead",
+                  "value": "New Lead"
+                },
+                {
+                  "name": "Email Sent",
+                  "value": "Email Sent"
+                },
+                {
+                  "name": "Replied",
+                  "value": "Replied"
+                },
+                {
+                  "name": "Call Booked",
+                  "value": "Call Booked"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Not Interested",
+                  "value": "Not Interested"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacts",
+              "displayName": "Contacts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Place ID",
+              "displayName": "Place ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Twitter",
+              "displayName": "Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "All Emails",
+              "displayName": "All Emails",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "All Phones",
+              "displayName": "All Phones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Enrichment Raw JSON",
+              "displayName": "Enrichment Raw JSON",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "scrapped_data",
+              "displayName": "scrapped_data",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_metadata",
+              "displayName": "website_metadata",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "_unused_3",
+              "displayName": "_unused_3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        -384
+      ],
+      "id": "9b32b7dd-917a-43b6-9e6e-5af707a7fec4",
+      "name": "Update record",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "id": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        -656
+      ],
+      "id": "8f605bb1-ece0-4f04-991e-9efd2714faf0",
+      "name": "Get a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1776,
+        -432
+      ],
+      "id": "7c524b7f-5ffa-49b8-9d17-470610b97dab",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "name": "🕘 Daily Trigger (9AM Mon-Fri)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        416
+      ],
+      "id": "109cf3f2-0614-4900-8223-6e47eb723a46"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "filterByFormula": "AND({Email Status} = 'Not Sent', {Email} != '', {Email Sent} = FALSE())",
+        "options": {}
+      },
+      "name": "📋 Fetch Unsent Contacts",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        416
+      ],
+      "id": "3f8bdf86-0687-40c4-b450-794c1c265034",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "filterByFormula": "={Place ID} = '{{ $json['Place ID'] }}'",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "name": "🏢 Fetch Linked Business",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        416
+      ],
+      "id": "0c6d2e00-607c-4c33-a93a-51a1084938c3",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "contactRecordId",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "firstName",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json['First Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "lastName",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json['Last Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "contactEmail",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "jobTitle",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json['Job Title'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "seniority",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "7",
+              "name": "businessName",
+              "value": "={{ $json['Business Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8",
+              "name": "industry",
+              "value": "={{ $json?.Industry || $('🔁 Loop Over Contacts').item.json.fields['Department'] || 'your industry' }}",
+              "type": "string"
+            },
+            {
+              "id": "9",
+              "name": "city",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json.City }}",
+              "type": "string"
+            },
+            {
+              "id": "10",
+              "name": "state",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json.State }}",
+              "type": "string"
+            },
+            {
+              "id": "11",
+              "name": "reviewCount",
+              "value": "={{ $json['Review Count'] }}",
+              "type": "number"
+            },
+            {
+              "id": "12",
+              "name": "googleRating",
+              "value": "={{ $json.records?.[0]?.fields?.['Google Rating'] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "13",
+              "name": "website",
+              "value": "={{ $json.Website }}",
+              "type": "string"
+            },
+            {
+              "id": "14",
+              "name": "searchTerm",
+              "value": "={{ $json.records?.[0]?.fields?.['Search Term'] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "15",
+              "name": "linkedIn",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json['LinkedIn Profile'] }}",
+              "type": "string"
+            },
+            {
+              "id": "829ec215-6342-478e-ae9c-bb9140c0f99a",
+              "name": "Place ID",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json['Place ID'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bf3660a6-8e8b-4daa-900e-6cf222003af6",
+              "name": "PersonID",
+              "value": "={{ $('📋 Fetch Unsent Contacts').item.json.PersonID }}",
+              "type": "string"
+            },
+            {
+              "id": "8cde5644-ae09-4fa4-bd47-a09de3258076",
+              "name": "scrapped_data",
+              "value": "={{ $json.scrapped_data }}",
+              "type": "string"
+            },
+            {
+              "id": "800e11bf-47cc-47c2-8f98-d8a75aa944bb",
+              "name": "website_metadata",
+              "value": "={{ $json.website_metadata }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "🗂️ Merge Contact + Business Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        416
+      ],
+      "id": "528fbb6c-878a-4520-80ed-8fab8fb184a3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "emailBody",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "emailSubject",
+              "value": "=Quick question about {{ $('Loop Over Items3').item.json.businessName }}'s bookkeeping",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "toEmail",
+              "value": "={{ $('Loop Over Items3').item.json.contactEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "PersonID",
+              "value": "={{ $('Loop Over Items3').item.json.PersonID }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "businessName",
+              "value": "={{ $('Loop Over Items3').item.json.businessName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "✏️ Extract Email Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        544
+      ],
+      "id": "7e79f186-ea98-4e8a-ad57-2b43b33cb357"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('✏️ Extract Email Content').item.json.toEmail }}",
+        "subject": "={{ $('✏️ Extract Email Content').item.json.emailSubject }}",
+        "message": "={{ $json.output.html_email }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "name": "📧 Send Personalized Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        608
+      ],
+      "id": "5464de39-dc3b-41fa-b989-147b65fd6109",
+      "webhookId": "6ff9ed7d-b757-505f-b0e4-4ff5393e0347",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email Status": "Sent",
+            "Email Sent": true,
+            "PersonID": "={{ $('✏️ Extract Email Content').item.json.PersonID }}",
+            "Date Added": "={{ $now.format('yyyy-MM-dd') }}",
+            "EmailBody": "={{ $('✏️ Extract Email Content').item.json.emailBody }}",
+            "HtmlBody": "={{ $('AI Agent1').item.json.output.html_email }}"
+          },
+          "matchingColumns": [
+            "PersonID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Owner",
+                  "value": "Owner"
+                },
+                {
+                  "name": "Founder",
+                  "value": "Founder"
+                },
+                {
+                  "name": "C-Suite",
+                  "value": "C-Suite"
+                },
+                {
+                  "name": "Director",
+                  "value": "Director"
+                },
+                {
+                  "name": "VP",
+                  "value": "VP"
+                },
+                {
+                  "name": "Manager",
+                  "value": "Manager"
+                },
+                {
+                  "name": "Entry",
+                  "value": "Entry"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Profile",
+              "displayName": "LinkedIn Profile",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Linked Business",
+              "displayName": "Linked Business",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not Sent",
+                  "value": "Not Sent"
+                },
+                {
+                  "name": "Sent",
+                  "value": "Sent"
+                },
+                {
+                  "name": "Opened",
+                  "value": "Opened"
+                },
+                {
+                  "name": "Replied",
+                  "value": "Replied"
+                },
+                {
+                  "name": "Bounced",
+                  "value": "Bounced"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Sent",
+              "displayName": "Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "High",
+                  "value": "High"
+                },
+                {
+                  "name": "Medium",
+                  "value": "Medium"
+                },
+                {
+                  "name": "Low",
+                  "value": "Low"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "EmailBody",
+              "displayName": "EmailBody",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Place ID",
+              "displayName": "Place ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "PersonID",
+              "displayName": "PersonID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "HtmlBody",
+              "displayName": "HtmlBody",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "name": "✅ Mark as Sent in Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1776,
+        864
+      ],
+      "id": "9023b7d6-3b24-4426-b018-1ac59c17dc13",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 90,
+        "unit": "seconds"
+      },
+      "name": "⏱️ Wait 90s Between Emails",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        976,
+        368
+      ],
+      "id": "3ccc0c6a-b76c-4dd9-8d10-4f603409fc5c",
+      "webhookId": "fd2f707a-007c-5581-bfa3-3f0820515583"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=First Name: {{ $json.firstName }}\nLast Name: {{ $json.lastName }}\n\nEmail: {{ $json.contactEmail }}\nJob Title: {{ $json.jobTitle }}\n\nBusiness Name: {{ $json.businessName }}\nIndustry:{{ $json.industry }}\n\nCity: {{ $json.city }}\nState: {{ $json.state }}\nWebsite: {{ $json.website }}\n\nWebsite Scrapped Data: {{ $json.scrapped_data }}\nWebsite Meta Data: {{ $json.website_metadata }}\n\n\n",
+        "options": {
+          "systemMessage": "=You are Your Name, a professional bookkeeper and accountant writing personalized cold outreach emails to small business owners in the United States to discuss a business opportunity.\n\n## WHO YOU ARE\n- Name: Your Name\n- Service: Full-cycle bookkeeping and accounting for small and medium businesses\n- Experience: 5+ years serving US, UK, and European clients\n- Platforms: QuickBooks, Xero, Wave, Zoho Books, FreshBooks, Sage, NetSuite, Rent Manager\n- Profiles: https://www.linkedin.com/in/your-linkedin-profile/ | https://www.upwork.com/freelancers/~your-upwork-profile-id\n- WhatsApp: +YOUR_WHATSAPP_NUMBER\n- Email: your-email@example.com\n\n## YOUR TASK\nWrite a short, plain, conversational cold email to the business contact using the data provided. The email must feel like a real person typed it — NOT a marketing campaign. It should read like Your Name personally sat down and wrote this specific email to this specific business.\n\n## STRICT FORMATTING RULES\n- NO bold text\n- NO bullet points or lists\n- NO HTML tags\n- NO headers or sections\n- Plain paragraphs only, separated by a blank line\n- Start with: Hi [First Name],\n- End with the forwarding line, then the sign-off block\n- Keep it conversational but informative — not too short, not too long\n\n## PERSONALIZATION LOGIC — USE THE DATA PROVIDED\n\nUse First Name for the greeting. If unavailable, use \"there\".\n\nUse Business Name naturally in the opening line — mention you came across them or looked at their business.\n\nUse Website Scraped Data — if scrapped_data or website_metadata is available, extract ONE specific detail about their business (a service they offer, something from their about page, a product they mention) and reference it naturally. This is your strongest personalization tool.\nExamples:\n- \"I noticed you offer emergency HVAC repairs around the clock\"\n- \"I saw you have been expanding your fleet this year\"\n- \"I came across your home care services page and noticed you work with Medicare patients\"\n\nUse Industry to insert ONE relevant pain point naturally:\n- HVAC / Air Conditioning → seasonal cash flow, parts inventory tracking, subcontractor 1099s\n- Plumber / Plumbing → job costing, vendor payments, subcontractor management\n- Trucking / Logistics / Transportation → IFTA filings, fuel expense tracking, per diem, depreciation\n- Home Healthcare / Health Care → payroll compliance, caregiver hours tracking, billing reconciliation\n- Roofing / Construction → job costing, material costs, subcontractor 1099 filings\n- Landscaping / Lawn Care → seasonal income fluctuations, equipment depreciation, crew payroll\n- Auto Repair → parts inventory, labor tracking, vendor payments\n- Cleaning / Janitorial → crew payroll, supply costs, recurring client billing\n- General / Unknown → time saved on bookkeeping, accurate financials, tax preparation\n\nUse Review Count as a signal:\n- Under 20 reviews → mention getting books set up correctly from the start as a newer business\n- 20 to 100 reviews → mention they are growing and clean books support that growth\n- Over 100 reviews → mention established businesses often overpay for bookkeeping\n\nUse Job Title and Seniority:\n- Owner / Founder / C-Suite → lead with cost savings and time savings\n- Manager / Director → lead with accuracy, reporting, and reducing their workload\n- Entry / Unknown → keep it general, lean on the free consultation and no-risk angle\n\nUse City and State to add a local touch if it fits naturally. Not mandatory every time.\n\n## EMAIL STRUCTURE — follow this order every time\n\nParagraph 1 — Personal opening\nGreet by first name. Mention the specific business by name. If scraped data is available, reference one specific thing you noticed about their business. One or two sentences maximum.\n\nParagraph 2 — Who you are (Add All the software - Mostly same for all business)\nIntroduce yourself naturally. Say your name is Your Name. Mention you are an experienced senior bookkeeper and accountant with over 5 years of experience working with US, UK, and European clients on platforms like QuickBooks, Xero, Wave, Zoho Books, FreshBooks, Sage, and NetSuite. Mention that you mainly work through Freelance plateform like Upwork but are now expanding outside those platforms to build direct working relationships with businesses. Say you will include your profile links below so they can verify your expertise and identity. Keep this natural and conversational, not like a resume.\n\nParagraph 3 — The relevant pain point\nConnect one specific pain point to their industry. Keep it one sentence — this is not the main pitch, it is just the hook to show you understand their business.\n\nParagraph 4 — How this benefits them (THIS IS THE MOST IMPORTANT PARAGRAPH)\nWrite this section in your own voice, conversationally. Cover all of the following naturally in flowing sentences — do not list them:\n\n- You are very flexible with rates and there is no fixed definite rate\n- They only pay for the amount of work done — if they only have one week of work, they only pay for that one week\n- There are also fixed monthly rate options based on the amount of work, ranging from $50 per month up to $1,000 per month\n- If they want an exclusive dedicated bookkeeper or accountant, you provide that as well\n- They will get guaranteed quality work — you can assure this because you work with US client books and have the exact experience required\n- If they are unsure whether you are a good fit, you can have a meeting where you explain more about what you do and what services you offer\n- If they decide to go with you, you will do a full analysis of their books and accounts and give a flat rate or hourly estimate completely free, no cost for that analysis\n\nParagraph 5 — Call to action\nKeep it simple and warm. Invite them to reply or message on WhatsApp. One or two sentences.\n\nParagraph 6 — Forwarding line (ALWAYS include this, word for word, every single email)\nAlso, if you are not the right person for this, I would really appreciate it if you could forward this email to the owner or decision maker. Or if you can just share their email here, I would love to reach out to them directly.\n\nSign-off block\n\n## SIGN-OFF BLOCK (use exactly this format every time)\nYour Name\nEmail: your-email@example.com\nWhatsApp: +YOUR_WHATSAPP_NUMBER\nLinkedIn: https://www.linkedin.com/in/your-linkedin-profile/\nUpwork: https://www.upwork.com/freelancers/~your-upwork-profile-id\n\n## TONE\n- Conversational, honest, and direct — like a real person writing an individual email\n- Confident but not pushy or salesy\n- Transparent about pricing and process — this builds trust\n- Never use corporate phrases like \"I hope this email finds you well\" or \"I wanted to reach out\"\n- Never start with \"I\" — always start with \"Hi [Name],\"\n- The forwarding line should feel polite and natural, not desperate\n\n## WHAT TO DO IF DATA IS MISSING\n- No scraped data → skip the specific business detail, go straight to industry pain point\n- No first name → use \"Hi there,\"\n- No industry → write a general email focused on saving time and money\n- No city → skip the location reference entirely\n\n## EXAMPLE OUTPUT (for reference only — never copy this, always write a fresh unique email)\n\nHi Carlos,\n\nI came across Home Health Solutions Group while looking at healthcare businesses in Miami and noticed your team has built a solid in-home care operation focused on elder care.\n\nMy name is Your Name and I am a senior bookkeeper and accountant with over 5 years of experience working with US, UK, and European clients on QuickBooks, Xero, Wave, Zoho Books, FreshBooks, Sage, NetSuite, Rent Manager and more. I mainly work through Freelance plateform like Upwork to offer my services but I am now expanding outside those platforms to build direct working relationships with businesses. I have added my profile links at the bottom so you can verify my experience and see real client reviews.\n\nManaging caregiver payroll, tracking hours accurately, and keeping billing reconciliation clean is one of the most common pain points in home healthcare — that is exactly the kind of work I handle.\n\nSo how can this benefit you? First, I am very flexible with rates and there is no definite fixed price — you only pay for the amount of work done. If you only have one week of work, you only pay for that week. There are also fixed monthly rate options based on the volume of work, ranging from $50 a month up to $1,000 a month. If you want an exclusive dedicated bookkeeper, I offer that as well. And I can guarantee quality work because I work with US client books regularly and have the exact experience your business needs. If you are unsure whether I am a good fit, we can have a meeting where I walk you through everything I do. And if you do decide to go with me, I will do a full analysis of your books and give you a flat rate or hourly estimate completely free — no cost for that analysis at all.\n\nIf any of this sounds interesting, just reply here or message me on WhatsApp at +YOUR_WHATSAPP_NUMBER and we can set up a quick call.\n\nAlso, if you are not the right person for this, I would really appreciate it if you could forward this email to the owner or decision maker. Or if you can just share their email here, I would love to reach out to them directly.\n\nYour Name\nEmail: your-email@example.com\nWhatsApp: +YOUR_WHATSAPP_NUMBER\nLinkedIn: https://www.linkedin.com/in/your-linkedin-profile/\nUpwork: https://www.upwork.com/freelancers/~your-upwork-profile-id\n\n---\n\nReturn ONLY the email body. No subject line. No labels. No explanation. Just the plain text email starting with Hi [Name].\n\nCRITICAL: Try to mention all the software in paragraph too, Just change parts of the mail depending on business"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        880,
+        544
+      ],
+      "id": "003bb9d7-a972-4875-9a86-637ff3f3809b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "z-ai/glm-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        848,
+        848
+      ],
+      "id": "adb4c166-8fbc-4bbc-8506-b25a671d5109",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        624,
+        400
+      ],
+      "id": "4b028010-3afb-46cd-aef7-5616e26545e1",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bb6e9fc6-b5f0-415b-bcfb-693a795e3cdd",
+              "leftValue": "={{ $json.contactEmail }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        112,
+        416
+      ],
+      "id": "1732bbe9-83ae-48ca-836d-4d8db5c3d487",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1664,
+        1088
+      ],
+      "id": "01e236ce-690d-45b1-982d-8605d702385c",
+      "name": "Wait",
+      "webhookId": "4730c58c-e8cb-54ad-b57c-45c9bc43f2f2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.emailBody }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an HTML email formatter. Your only job is to take a plain text cold email and convert it into clean, professional HTML that renders correctly in Gmail and all major email clients.\n\n## WHAT YOU RECEIVE\nA plain text cold email from Your Name. It will have multiple paragraphs, a forwarding line, and a sign-off block with links.\n\n## WHAT YOU OUTPUT\nReturn ONLY the raw HTML. No explanation. No markdown. No code fences. No backticks. Just the HTML starting with <!DOCTYPE html> and ending with </html>.\n\n\n## EXAMPLE STRUCTURE (skeleton only)\n\n<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin:0; padding:0; font-family: Arial, sans-serif; color:#333333; line-height:1.6; background-color:#ffffff;\">\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\" style=\"max-width:600px; margin:0 auto;\">\n<tr>\n<td style=\"padding:20px 0;\">\n\n<p style=\"margin:0 0 16px 0;\">Hi [Name],</p>\n\n<p style=\"margin:0 0 16px 0;\">\nParagraph text \n</p>\n\n<p style=\"margin:0 0 16px 0;\">\nNext paragraph text here\n</p>\n\n<p style=\"margin:0 0 16px 0;\">\nNext paragraph text here\n</p>\n\n<p style=\"margin:0 0 16px 0;\">\nNext paragraph text here\n</p>\n\n<p style=\"margin:0 0 16px 0;\">\nNext paragraph text here\n</p>\n\n<p style=\"margin:0 0 16px 0;\">\nCall to action paragraph\n</p>\n\n<p style=\"margin:0 0 24px 0;\">\nForwarding line\n</p>\n\n<p style=\"margin:0 0 8px 0;\">Best Regards,</p>\n\n<p style=\"margin:0 0 8px 0;\">\n<strong>Your Name</strong>\n</p>\n\n<p style=\"margin:0 0 1px 0;\">\nEmail: <a href=\"mailto:your-email@example.com\" style=\"color:#1a3c5e; text-decoration:none;\">your-email@example.com</a>\n</p>\n\n<p style=\"margin:0 0 1px 0;\">\nWhatsApp: <a href=\"tel:+YOUR_WHATSAPP_NUMBER\" style=\"color:#1a3c5e; text-decoration:none;\">+00 000 000 0000</a>\n</p>\n\n<p style=\"margin:0 0 1px 0;\">\nLinkedIn: <a href=\"https://www.linkedin.com/in/your-linkedin-profile/\" style=\"color:#1a3c5e; text-decoration:none;\">linkedin.com/in/your-linkedin-profile</a>\n</p>\n\n<p style=\"margin:0;\">\nUpwork: <a href=\"https://www.upwork.com/freelancers/~your-upwork-profile-id\" style=\"color:#1a3c5e; text-decoration:none;\">https://www.upwork.com/freelancers/~your-upwork-profile-id</a>\n</p>\n\n</td>\n</tr>\n</table>\n</body>\n</html>\n\nReturn ONLY the complete HTML. Nothing else."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1328,
+        544
+      ],
+      "id": "286d39a3-a70b-44bb-9de0-dedd9a0dbade",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"html_email\": {\n      \"type\": \"string\",\n      \"description\": \"The complete HTML email as a single string, starting with <!DOCTYPE html> and ending with </html>. No markdown, no code fences, no explanation.\"\n    }\n  },\n  \"required\": [\"html_email\"]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        816
+      ],
+      "id": "a8bd5966-1afc-4139-98a6-13c7254a5a17",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        -560
+      ],
+      "id": "2a9c1545-f5cf-48f3-aa1e-34367938af53",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "maxItems": 200
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        320,
+        416
+      ],
+      "id": "62c99b34-d5d5-44d5-923a-17020ebc32a8",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        -1680
+      ],
+      "id": "39b44c12-f9ce-40fb-b23f-71a1d484d7d8",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Contact",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "City": "={{ $json.City }}",
+            "State": "={{ $json.State }}",
+            "Country": "={{ $json.Country }}",
+            "Place ID": "={{ $json['Place ID'] }}",
+            "Full Name": "={{ $json['Full Name'] }}",
+            "First Name": "={{ $json['First Name'] }}",
+            "Last Name": "={{ $json['Last Name'] }}",
+            "Email": "={{ $json.Email }}",
+            "Job Title": "={{ $json['Job Title'] }}",
+            "Department": "={{ $json.Department }}",
+            "LinkedIn Profile": "={{ $json['LinkedIn Profile'] }}",
+            "Company Name": "={{ $json['Company Name'] }}",
+            "Company Website": "={{ $json['Company Website'] }}",
+            "Linked Business": "={{ $json['Linked Business'] }}",
+            "Email Status": "={{ $json['Email Status'] }}",
+            "Email Sent": "={{ $json['Email Sent'] }}",
+            "Priority": "={{ $json.Priority }}",
+            "Date Added": "={{ $json['Date Added'] }}",
+            "PersonID": "={{ $json.PersonID }}",
+            "HtmlBody": "={{ $json.HtmlBody }}",
+            "EmailBody": "={{ $json.EmailBody }}",
+            "Seniority": "={{ $json.Seniority }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn Profile",
+              "displayName": "LinkedIn Profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Linked Business",
+              "displayName": "Linked Business",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Sent",
+              "displayName": "Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EmailBody",
+              "displayName": "EmailBody",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Place ID",
+              "displayName": "Place ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PersonID",
+              "displayName": "PersonID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HtmlBody",
+              "displayName": "HtmlBody",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1504,
+        -1680
+      ],
+      "id": "aca2a1ca-27ae-4b7e-870d-31fad4eac423",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -1696
+      ],
+      "id": "1213128e-174c-4613-8053-eac04ad77ea1",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Run Google Maps Extractor": {
+      "main": [
+        [
+          {
+            "node": "Wait for Scraping1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Scraping1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Leads": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update a record": {
+      "main": [
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/scrape": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "/scrape",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update a record1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "🕘 Daily Trigger (9AM Mon-Fri)": {
+      "main": [
+        [
+          {
+            "node": "📋 Fetch Unsent Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Fetch Unsent Contacts": {
+      "main": [
+        [
+          {
+            "node": "🏢 Fetch Linked Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🏢 Fetch Linked Business": {
+      "main": [
+        [
+          {
+            "node": "🗂️ Merge Contact + Business Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗂️ Merge Contact + Business Data": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✏️ Extract Email Content": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📧 Send Personalized Email": {
+      "main": [
+        [
+          {
+            "node": "✅ Mark as Sent in Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Mark as Sent in Airtable": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏱️ Wait 90s Between Emails": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "✏️ Extract Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [
+          {
+            "node": "⏱️ Wait 90s Between Emails",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "📧 Send Personalized Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Run Google Maps Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

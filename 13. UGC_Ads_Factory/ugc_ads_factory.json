@@ -1,0 +1,3383 @@
+{
+  "name": "UGC Ads Factory",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7808,
+        480
+      ],
+      "id": "d89322eb-8d39-4e43-81a6-5c5e851ba92b",
+      "name": "Get Video Ideas",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": {{ JSON.stringify($json.SCRIPT.parseJson()) }},\n  \"imageUrls\": [\"{{ $json['IMAGE URL'] }}\",\"{{ $json['IMAGE URL'] }}\" ],\n  \"model\": \"veo3_fast\",\n  \"aspect_ratio\": \"Auto\",\n  \"generationType\": \"FIRST_AND_LAST_FRAMES_2_VIDEO\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -7552,
+        1728
+      ],
+      "id": "6994d18f-8ffb-4f78-9f24-ff172b73fca7",
+      "name": "HTTP Request12",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/veo/record-info?taskId={{ $json.data.taskId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -7376,
+        1728
+      ],
+      "id": "8652d395-55d2-42a9-a379-68c14272c501",
+      "name": "HTTP Request13",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -7200,
+        1888
+      ],
+      "id": "0148cb0b-b080-46dd-9b60-e055dcb1388e",
+      "name": "Wait6",
+      "webhookId": "efe21e83-1377-50a3-8f54-bc16b0e681bf"
+    },
+    {
+      "parameters": {
+        "content": "                                                                                                                                                           \n  # UGC Ads Factory                                                                                                                                                                                                                         \n  **Automated AI pipeline for UGC-style video ads**                                                                                                                                                                                           \n                                                                                                                                                                                                                                              \n  `Create row → Reference image → Scene plan → Scene clips → Stitch final video → Publish links`                                                                                                                                              \n                                                                                                                                                                                                                                              \n  ### How it works                                                                                                                                                                                                                            \n  - The trigger reads rows in **Videos** where `LAUNCH CREATION = Create`, normalizes fields, and marks each row `Processing`.                                                                                                              \n  - Kie creates a reference image. The workflow polls until completion, then uploads and shares the image in Google Drive.                                                                                                                    \n  - Claude-4o-mini analyzes visual details. Claude Opus converts the script into ordered 8-second scenes with consistent visual context and movement prompts.                                                                                 \n  - Each scene is appended to **Video Data** using `VIDEO ID`, `SCENE NO`, `SCRIPT`, and `TOTAL SCENES`.                                                                                                                                      \n  - VEO3 generates one clip per scene. Successful clips are uploaded and linked; failures are logged with error state.                                                                                                                        \n  - After all scenes complete, clips are sorted and merged via fal.ai FFmpeg.                                                                                                                                                                 \n  - Final video links are written back to **Videos**, and campaign status becomes `Completed`.                                                                                                                                                \n                                                                                                                                                                                                                                              \n  ### Setup                                                                                                                                                                                                                                   \n  - Configure credentials: Google Sheets, Google Drive, Kie, OpenRouter, OpenAI, fal.ai.                                                                                                                                                      \n  - Confirm sheet/tab names and column headers exactly match workflow mapping.                                                                                                                                                                \n  - Set destination folder IDs for image clips and final stitched videos.                                                                                                                                                                     \n                                                                                                                                                                                                                                              \n  ### Customization                                                                                                                                                                                                                           \n  - Tune scene length, polling intervals, model defaults, retry policy, and failure-routing behavior. ",
+        "height": 816,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8960,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "fe407dbe-fa9f-4d53-a4df-106be370ccd9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "vid-poll-success-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 1
+                  },
+                  {
+                    "id": "vid-poll-success-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "success"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "vid-poll-failed-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "gte",
+                      "type": "number"
+                    },
+                    "rightValue": 2
+                  },
+                  {
+                    "id": "vid-poll-failed-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "failed"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "vid-poll-processing-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 0
+                  },
+                  {
+                    "id": "vid-poll-waiting",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "waiting"
+                  },
+                  {
+                    "id": "vid-poll-processing",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "processing"
+                  },
+                  {
+                    "id": "vid-poll-generating",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "generating"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Processing"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown Status"
+        }
+      },
+      "id": "0559e237-00ff-4efe-a47e-36c8af909baf",
+      "name": "Video Status Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -7200,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-opus-4.5",
+        "options": {}
+      },
+      "id": "4b470e1c-d761-4d7d-b1be-b52222135c20",
+      "name": "Prompt Agent LLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -7488,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"prompt\": { \"type\": \"string\" },\n    \"model\": { \"type\": \"string\" },\n    \"aspectRatio\": { \"type\": \"string\" },\n    \"resolution\": { \"type\": \"string\" }\n  },\n  \"required\": [\"prompt\", \"model\", \"aspectRatio\",\"resolution\"]\n}"
+      },
+      "id": "5c6d334c-8555-4459-812e-b495955719c7",
+      "name": "Prompt Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -7344,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Image generation API failed. Code: {{ $json.code }}. Message: {{ $json.msg }}"
+      },
+      "id": "0b88243e-35a0-48ed-8642-7eb2fd553a23",
+      "name": "Image Gen Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -5696,
+        1904
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-opus-4.5",
+        "options": {}
+      },
+      "id": "757ee7c8-04b1-44a2-bdc5-2bc952ea21e8",
+      "name": "Script Agent LLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -5456,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"scenes\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"scene_number\": { \"type\": \"number\" },\n          \"script\": { \"type\": \"string\" },\n          \"visual_description\": { \"type\": \"string\" },\n          \"audio_description\": { \"type\": \"string\" },\n          \"movement\": { \"type\": \"string\" },\n          \"duration_seconds\": { \"type\": \"number\" }\n        },\n        \"required\": [\"scene_number\", \"script\", \"visual_description\", \"movement\", \"duration_seconds\"]\n      }\n    }\n  },\n  \"required\": [\"scenes\"]\n}\n"
+      },
+      "id": "f5fdbb5e-0f2d-4d74-a869-c86aa65fe6b2",
+      "name": "Scene Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -5280,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Character Description:\n{{ $('Input').item.json.character_description }}\n\nVideo Script image reference:\n{{ $('Input').item.json.demo_script }}\n\nAspect_ratio:\n{{ $json.aspect_ratio }}\n\nGenerate the complete JSON for Nano Banana Pro API.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert at crafting photorealistic AI image prompts for authentic UGC (User Generated Content) videos.\n\nTASK: Convert the user's character description and setting into a complete Nano Banana Pro API JSON body that generates an ultra-realistic raw mobile selfie photo. Use input details to ger\n\nSTRUCTURED PROMPT ELEMENTS (include ALL in your prompt string):\n\n1. CAMERA & COMPOSITION:\n   - \"iPhone 15 Pro front camera selfie\"\n   - \"9:16/169 vertical/Horizontal portrait orientation\"\n   - \"close-up/Medium close up head and shoulders shot\"\n   - \"35mm lens look, f/2.0 aperture\"\n   - \"EXTREME shallow depth of field, heavy soft bokeh background\" (CRITICAL: The background must be blurred into soft shapes to hide details for later video generation, regardless of the setting)\n\n2. SETTING & POSTURE (Analyze user input and adapt dynamically):\n   - IF CAR: \"Subject sitting in driver's seat of a car, phone positioned like a dash-mount or held casually, car interior and window, character looking toward camera.\"\n   - IF WALKING (Indoors/Outdoors): \"Subject walking, holding camera at arm's length (vlog style), dynamic posture, background elements completely blurred to conceal movement. \"\n   - IF ROOM (Bedroom, Office, Bathroom): \"Casual indoor environment, relaxed posture (sitting or standing),  character looking toward camera.\"\n   - IF OTHER: Apply natural UGC-style framing appropriate for the requested environment.\n\n3. LIGHTING (critical for realism):\n   - \"Natural soft window light\" OR \"soft diffused daylight\"\n   - \"Subtle rim light, no harsh shadows\"\n   - AVOID: \"studio lighting\", \"flash\", \"ring light\"\n\n4. SUBJECT REALISM (anti-AI detection):\n   - \"Realistic skin texture with visible pores, subtle skin imperfections\"\n   - \"Authentic facial expression, mid-conversation, natural hair\"\n5. IMPORTANT:\n   - No iphone or mobile should be visible in the video.\n\nOUTPUT: Return ONLY valid JSON (no markdown, no explanation):\n{\n  \"prompt\": \"[Comprehensive prompt combining all elements above with the user's character description]\",\n  \"model\": \"nano_banana_pro\",\n  \"aspectRatio\": \"9:16\",\n  \"resolution\": \"2k\"\n}"
+        }
+      },
+      "id": "a40e50b2-5f5c-4b7b-9e94-e3730408f4e3",
+      "name": "Nano Banana Prompt Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -7488,
+        480
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"nano-banana-2\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": {{ JSON.stringify($json.output.prompt) }},\n    \"aspect_ratio\": \"{{ $('Input').item.json.aspect_ratio }}\",\n    \"resolution\": \"2K\",\n    \"output_format\": \"png\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -7104,
+        480
+      ],
+      "id": "087b06f3-bed6-4e82-9c49-2652143803bd",
+      "name": "Generate UGC Image",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "img-gen-success",
+                    "leftValue": "={{ $json.code }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 200
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "img-gen-error",
+                    "leftValue": "={{ $json.code }}",
+                    "operator": {
+                      "operation": "notEquals",
+                      "type": "number"
+                    },
+                    "rightValue": 200
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Error"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unexpected"
+        }
+      },
+      "id": "c0d40d1a-ad66-4c7a-a1bb-ebe2e6c589d5",
+      "name": "Image Gen Response Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6912,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ee37300-28a6-4426-85c8-1b23dab144ea",
+              "name": "referenceImage",
+              "value": "={{ $('Upload file').item.json.webViewLink }}",
+              "type": "string"
+            },
+            {
+              "id": "ref-img",
+              "name": "download_image",
+              "value": "={{ $('Upload file').item.json.webContentLink }}",
+              "type": "string"
+            },
+            {
+              "id": "21a05480-dd91-4a05-a824-e260a621e4f6",
+              "name": "character_description",
+              "value": "={{ $('Input').item.json.character_description }}",
+              "type": "string"
+            },
+            {
+              "id": "demo-script",
+              "name": "demo_script",
+              "value": "={{ $('Input').item.json.demo_script }}",
+              "type": "string"
+            },
+            {
+              "id": "aspect-ratio",
+              "name": "aspect_ratio",
+              "value": "={{ $('Input').item.json.aspect_ratio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e9040eb0-e298-4cb5-b8a2-e021476905a3",
+      "name": "Workflow Configuration3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5792,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "id": "3f7fdefa-aefa-40f1-b2cc-3d7a97a35655",
+      "name": "Split Scenes",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -5168,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "Analyze this UGC image in detail. Describe the subject's appearance (age, ethnicity, hair, clothing), setting, lighting, mood, and composition. Focus on details needed for video generation consistency.",
+        "imageUrls": "={{ $json.download_image }}",
+        "options": {
+          "detail": "high"
+        }
+      },
+      "id": "fe848a2d-d4ef-4015-839c-2107b9ad6250",
+      "name": "Analyze UGC Image3",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -5600,
+        400
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Image Prompt:\n{{ $('Workflow Configuration3').item.json.character_description }}\n\nGenerated Image Analysis:\n{{ $json['0'].content[0].text }}\n\nUser Script:\n{{ $('Workflow Configuration3').item.json.demo_script }}\n\nCreate video scenes from this script.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert Creative Director and Scriptwriter for AI-generated \"talking photo\" video sequences. \n\nCRITICAL GOAL\nYour task is to take a reference image analysis and user instructions (script/requirements) and turn them into a structured series of video scenes.\n\nVISUAL CONSISTENCY (Non-negotiable)\n1. The entire video is generated from ONE static reference image. \n2. The `visual_description` for EVERY scene must be IDENTICAL. \n3. Use the provided image analysis to create a concise (max 300 characters) static visual description. Add: \"iPhone UGC style, slightly grainy, authentic speaking gestures\".\n\nSCENE GENERATION LOGIC\n1. Split the script into logical segments of approximately 20 - 27 words (roughly 8 seconds of speech).\n2. Output a JSON object containing a \"scenes\" array.\n\nSCENE STRUCTURE RULES\nEach object in the `scenes` array must include:\n- `scene_number`: Sequential integer starting at 1.\n- `script`: The spoken text for that specific 8-second segment.\n- `visual_description`: The identical string described above.\n- `duration_seconds`: Always 8.\n\nDYNAMIC MOVEMENT LOGIC (Crucial for Video AI):\nAnalyze the setting from the image analysis and assign the appropriate `movement` string for EVERY scene:\n- IF CAR INTERIOR: \"natural head movements while talking, slight camera vibration from car idling, blurred scenery passing subtly in the windows.\"\n- IF WALKING (Outdoors/Indoors): \"continuous forward walking motion, subject holding camera vlog-style, natural camera bounce matching footsteps, heavily blurred background passing by smoothly.\"\n- IF STATIC ROOM (Bedroom/Office/Couch): \"natural subtle body movement, slight handheld camera drift, expressive facial gestures, static blurred background.\"\n- IF OTHER: Deduce the natural physics of the scene (is the camera static or moving? is the background static or moving?) and write a brief, cohesive motion prompt.\n\nSCRIPT RULES FOR AUTHENTICITY:\n- Don't include pauses: \"And I couldn't believe it\"\n- Conversational tone, not salesy\n- NO stage directions like [smiles] or [nods] in the script text.\n\nOUTPUT: Return ONLY valid JSON:\n{\n  \"scenes\": [\n    {\n      \"scene_number\": 1,\n      \"script\": \"The spoken text...\",\n      \"visual_description\": \"Static description of the person...\",\n      \"audio_description\": \"No background noice\",\n      \"movement\": \"Dynamic motion instructions based on the identified environment...\",\n      \"duration_seconds\": 8\n    }\n  ]\n}\n"
+        }
+      },
+      "id": "eef8c19c-57b7-4b3b-995d-f642cfa394fe",
+      "name": "Generate Scene Scripts3",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -5456,
+        400
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8117b31c-6433-447e-89d0-1ae00d8bd3a5",
+              "name": "character_description",
+              "value": "={{ $json['CHARACTER/SETTING DESCRIPTION'] }}",
+              "type": "string"
+            },
+            {
+              "id": "711643da-17f7-46bc-8c66-294843d4a2b9",
+              "name": "demo_script",
+              "value": "={{ $json.SCRIPT }}",
+              "type": "string"
+            },
+            {
+              "id": "fb55afcc-a21b-49bb-b4b2-e9e504b7bc13",
+              "name": "aspect_ratio",
+              "value": "={{ $json['ASPECT RATIO'] || \"9:16\" }}",
+              "type": "string"
+            },
+            {
+              "id": "23dcda06-c268-4fcd-9e5f-4d8813dcbde7",
+              "name": "id",
+              "value": "={{ $execution.id + '_' + Date.now().toString() + Math.random().toString(36).substring(2, 10) }}",
+              "type": "string"
+            },
+            {
+              "id": "e30c7c90-87e9-47d5-b001-5062a3c7e678",
+              "name": "row_number",
+              "value": "={{ $json.row_number }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7648,
+        480
+      ],
+      "id": "5307f0e6-a123-43b9-8d77-b4fbb75cb652",
+      "name": "Input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "94515e20-338a-425c-838d-f77c802c5266",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "aa02ee83-02aa-4aee-9e7b-2eb98bcdc902",
+              "name": "VIDEO ID",
+              "value": "={{ $json['VIDEO ID'] }}",
+              "type": "string"
+            },
+            {
+              "id": "cbda8d7e-3f8b-4b3c-8029-7564002e4068",
+              "name": "SCRIPT",
+              "value": "={{ $json.SCRIPT }}",
+              "type": "string"
+            },
+            {
+              "id": "e6a0442e-46b0-4226-a1f5-07e3fa9105a1",
+              "name": "IMAGE URL",
+              "value": "={{ $json['IMAGE URL'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7728,
+        1728
+      ],
+      "id": "8dc23647-0633-47cf-942c-755cc4b9f94c",
+      "name": "videoInput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Video Status Check').item.json.data.response.resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -6960,
+        1680
+      ],
+      "id": "160418ac-08be-4a9d-beb2-cd1074379038",
+      "name": "HTTP Request1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "id": "79ed8983-c1ca-4b49-aa0f-742f443de5b4",
+      "name": "Wait 10s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -6480,
+        608
+      ],
+      "webhookId": "ea8eaa0a-72ac-5a5b-9595-01724ba61473"
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Image generation failed permanently. State: {{ $json.data.state }}. SuccessFlag: {{ $json.data.successFlag }}. Error: {{ $json.data.errorMessage || 'Unknown error' }}. TaskId: {{ $json.data.taskId }}"
+      },
+      "id": "d9a1c791-c535-4cd2-a6e5-a878aa144df3",
+      "name": "Image Poll Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -6480,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/jobs/recordInfo?taskId={{ $json.data.taskId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "210cb9ec-6c71-4673-8818-14fa28cb34c3",
+      "name": "Poll Image Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -6640,
+        448
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-success-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 1
+                  },
+                  {
+                    "id": "img-poll-success-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "success"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-failed-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "gte",
+                      "type": "number"
+                    },
+                    "rightValue": 2
+                  },
+                  {
+                    "id": "img-poll-failed-state",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "failed"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Failed"
+            },
+            {
+              "conditions": {
+                "combinator": "or",
+                "conditions": [
+                  {
+                    "id": "img-poll-processing-flag",
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "number"
+                    },
+                    "rightValue": 0
+                  },
+                  {
+                    "id": "img-poll-waiting",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "waiting"
+                  },
+                  {
+                    "id": "img-poll-processing",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "processing"
+                  },
+                  {
+                    "id": "img-poll-generating",
+                    "leftValue": "={{ $json.data.state }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "generating"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "Processing"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown Status"
+        }
+      },
+      "id": "06526cb8-8aba-47bb-aefe-6553420fe5b1",
+      "name": "Image Status Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6480,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Input').item.json.id }}.png",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FOLDER_ID",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6080,
+        400
+      ],
+      "id": "9ece6252-e993-493b-9dea-6e4dd721e6b9",
+      "name": "Upload file"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.resultJson.parseJson().resultUrls[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -6208,
+        400
+      ],
+      "id": "99701b3a-4f09-4071-b787-1643a5353309",
+      "name": "Download Image"
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -5952,
+        400
+      ],
+      "id": "dc6b25d5-23de-4609-b1c6-7f3f83065d75",
+      "name": "Share file"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Input').first().json.id }}",
+            "VIDEO ID": "={{ $('Input').first().json.id }}_{{ $itemIndex }}",
+            "IMAGE URL": "={{ $('Workflow Configuration3').first().json.download_image }}",
+            "SCENE NO": "={{ $json.scene_number }}",
+            "SCRIPT": "={{ JSON.stringify($json) }}",
+            "LAUNCH": "Processing",
+            "TOTAL SCENES": "={{ $('Generate Scene Scripts3').first().json.output.scenes.length }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VIDEO ID",
+              "displayName": "VIDEO ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IMAGE URL",
+              "displayName": "IMAGE URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TOTAL SCENES",
+              "displayName": "TOTAL SCENES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SCENE NO",
+              "displayName": "SCENE NO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VIDEO VIEW CLIP",
+              "displayName": "VIDEO VIEW CLIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO CLIP LINK",
+              "displayName": "VIDEO CLIP LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH",
+              "displayName": "LAUNCH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5008,
+        400
+      ],
+      "id": "a24f13cb-c7af-4452-8c90-28d2d8ba7bdb",
+      "name": "UpdateSheet",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Input').first().json.id }}",
+            "LAUNCH CREATION": "Processing",
+            "SCRIPT": "={{ $('Input').item.json.demo_script }}",
+            "row_number": "={{ $('Input').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SCRIPT NAME",
+              "displayName": "SCRIPT NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CHARACTER/SETTING DESCRIPTION",
+              "displayName": "CHARACTER/SETTING DESCRIPTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ASPECT RATIO",
+              "displayName": "ASPECT RATIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW LINK",
+              "displayName": "VIDEO VIEW LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO LINK",
+              "displayName": "VIDEO LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH CREATION",
+              "displayName": "LAUNCH CREATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4720,
+        864
+      ],
+      "id": "ebb29036-8a05-4fce-8bb5-d233b87de2e2",
+      "name": "UpdateSheet1",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $('Input').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7872,
+        1728
+      ],
+      "id": "dca509d8-8d78-4be5-aefb-9addf3debc47",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('videoInput').item.json['VIDEO ID'] }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FOLDER_ID",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6784,
+        1680
+      ],
+      "id": "cdcd3e51-a210-4a4d-8b58-d6a095fc85eb",
+      "name": "Upload file1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6640,
+        1680
+      ],
+      "id": "3bda72be-7bf7-425b-8fa0-e262c5452cb1",
+      "name": "Share file1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "VIDEO ID": "={{ $('videoInput').item.json['VIDEO ID'] }}",
+            "LAUNCH": "Completed",
+            "VIDEO CLIP LINK": "={{ $('Upload file1').item.json.webContentLink }}",
+            "Error": "No Error",
+            "VIDEO VIEW CLIP": "={{ $('Upload file1').item.json.webViewLink.split(\"?\")[0] }}"
+          },
+          "matchingColumns": [
+            "VIDEO ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO ID",
+              "displayName": "VIDEO ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IMAGE URL",
+              "displayName": "IMAGE URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TOTAL SCENES",
+              "displayName": "TOTAL SCENES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCENE NO",
+              "displayName": "SCENE NO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW CLIP",
+              "displayName": "VIDEO VIEW CLIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "VIDEO CLIP LINK",
+              "displayName": "VIDEO CLIP LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LAUNCH",
+              "displayName": "LAUNCH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -6464,
+        1680
+      ],
+      "id": "6aee447c-c1f3-418d-9c3b-eb661161f707",
+      "name": "UpdateSheet2",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $('videoInput').item.json.ID }}"
+            },
+            {
+              "lookupColumn": "LAUNCH",
+              "lookupValue": "Completed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -6272,
+        1680
+      ],
+      "id": "98e90d5c-382b-4017-b8e7-b8a958360bd2",
+      "name": "Get row(s) for Stitch",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "SCENE NO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -5696,
+        1600
+      ],
+      "id": "09d31ad8-e2fb-47d9-9bc4-7c7f72346821",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst totalItems = items.length;\n\n// Assuming TOTAL SCENES is same for all items (usually from sheet row)\nconst totalScenes = Number(items[0].json[\"TOTAL SCENES\"]);\n\nconst isComplete = totalItems >= totalScenes;\n\nfor (const item of items) {\n  item.json.isComplete = isComplete;\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6080,
+        1680
+      ],
+      "id": "a44712c4-c5b4-4915-a42e-6bbecbf150c7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0b05360c-9abf-4e3d-ba2a-f3ae3627932b",
+              "leftValue": "={{ $json.isComplete }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5872,
+        1680
+      ],
+      "id": "9e26a0ce-0a75-41d3-92e0-e774afccf9a6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -5104,
+        1600
+      ],
+      "id": "81261d3e-c2d1-44c4-a396-54c225b9a9a2",
+      "name": "download-video8",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "name": "={{ $('videoInput').item.json.ID }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FOLDER_ID",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -4864,
+        1600
+      ],
+      "id": "65fc1067-2502-460a-aad9-0f4f4afb930d",
+      "name": "Upload file2",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -4720,
+        1600
+      ],
+      "id": "6ad7af35-7562-448c-a703-80194c105b5e",
+      "name": "Share file2",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "LAUNCH CREATION": "Completed",
+            "ID": "={{ $('videoInput').first().json.ID }}",
+            "VIDEO LINK": "={{ $('Upload file2').item.json.webContentLink }}",
+            "VIDEO VIEW LINK": "={{ $('Upload file2').item.json.webViewLink.split(\"?\")[0] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SCRIPT NAME",
+              "displayName": "SCRIPT NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CHARACTER/SETTING DESCRIPTION",
+              "displayName": "CHARACTER/SETTING DESCRIPTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ASPECT RATIO",
+              "displayName": "ASPECT RATIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW LINK",
+              "displayName": "VIDEO VIEW LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "VIDEO LINK",
+              "displayName": "VIDEO LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LAUNCH CREATION",
+              "displayName": "LAUNCH CREATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4544,
+        1600
+      ],
+      "id": "fdcb362c-2d19-40b6-9fb4-7eb3368668e0",
+      "name": "UpdateSheet3",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "VIDEO ID": "={{ $('videoInput').item.json['VIDEO ID'] }}",
+            "LAUNCH": "Failed",
+            "Error": "={{ $json.data.errorMessage }}"
+          },
+          "matchingColumns": [
+            "VIDEO ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO ID",
+              "displayName": "VIDEO ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IMAGE URL",
+              "displayName": "IMAGE URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TOTAL SCENES",
+              "displayName": "TOTAL SCENES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCENE NO",
+              "displayName": "SCENE NO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW CLIP",
+              "displayName": "VIDEO VIEW CLIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO CLIP LINK",
+              "displayName": "VIDEO CLIP LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH",
+              "displayName": "LAUNCH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7024,
+        1536
+      ],
+      "id": "3485451a-578b-44d9-8d40-1285ffc9efae",
+      "name": "UpdateSheet4",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Input').first().json.id }}",
+            "LAUNCH CREATION": "Failed"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SCRIPT NAME",
+              "displayName": "SCRIPT NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CHARACTER/SETTING DESCRIPTION",
+              "displayName": "CHARACTER/SETTING DESCRIPTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ASPECT RATIO",
+              "displayName": "ASPECT RATIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW LINK",
+              "displayName": "VIDEO VIEW LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO LINK",
+              "displayName": "VIDEO LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH CREATION",
+              "displayName": "LAUNCH CREATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -6640,
+        864
+      ],
+      "id": "620a7998-2728-493f-bc9d-1d47cec9b75a",
+      "name": "UpdateSheet5",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7808,
+        2128
+      ],
+      "id": "51ca2822-d0f9-4765-bc22-9b550b5b890e",
+      "name": "Get row(s) in sheet1",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('videoInput').item.json['VIDEO ID'].slice(0, -2) }}",
+            "LAUNCH CREATION": "Failed"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SCRIPT NAME",
+              "displayName": "SCRIPT NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CHARACTER/SETTING DESCRIPTION",
+              "displayName": "CHARACTER/SETTING DESCRIPTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ASPECT RATIO",
+              "displayName": "ASPECT RATIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW LINK",
+              "displayName": "VIDEO VIEW LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO LINK",
+              "displayName": "VIDEO LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH CREATION",
+              "displayName": "LAUNCH CREATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -6752,
+        1536
+      ],
+      "id": "484a7936-49f2-4cee-9fe5-e124e85d0ccf",
+      "name": "UpdateSheet9",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 419137619,
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "VIDEO ID": "={{ $json['VIDEO ID'] }}",
+            "LAUNCH": "Processing"
+          },
+          "matchingColumns": [
+            "VIDEO ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO ID",
+              "displayName": "VIDEO ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IMAGE URL",
+              "displayName": "IMAGE URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "TOTAL SCENES",
+              "displayName": "TOTAL SCENES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCENE NO",
+              "displayName": "SCENE NO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW CLIP",
+              "displayName": "VIDEO VIEW CLIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO CLIP LINK",
+              "displayName": "VIDEO CLIP LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH",
+              "displayName": "LAUNCH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7552,
+        1584
+      ],
+      "id": "066c8865-8258-455c-8d19-d29c1baf1344",
+      "name": "UpdateSheet10",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node\nconst items = $input.all();\n\n// Step 1: Group items by ID\nconst groups = {};\nfor (const item of items) {\n  const id = item.json.ID;\n  if (!groups[id]) groups[id] = [];\n  groups[id].push(item);\n}\n\nconst uniqueIds = Object.keys(groups);\n\n// Step 2: If all items share the same ID, return all\nif (uniqueIds.length === 1) {\n  return items;\n}\n\n// Step 3: Find the minimum group size\nconst minCount = Math.min(...uniqueIds.map(id => groups[id].length));\n\n// Step 4: Return only the group(s) with the minimum entry count\nconst result = [];\nfor (const id of uniqueIds) {\n  if (groups[id].length === minCount) {\n    result.push(...groups[id]);\n  }\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7664,
+        2128
+      ],
+      "id": "682390d8-a9fd-432d-bc98-fc99740f9e80",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -7968,
+        2128
+      ],
+      "id": "39e38150-6ceb-41b8-a587-f79001f5170e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -8032,
+        592
+      ],
+      "id": "f13aa6a8-8294-492c-b8e6-04c6fa0453c4",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "fal-ai/ffmpeg-api/merge-videos",
+          "mode": "list",
+          "cachedResultName": "Ffmpeg Api [video-to-video]"
+        },
+        "modelParameters": {
+          "parameters": [
+            {
+              "parameter": "video_urls",
+              "value": "={{ JSON.stringify($json['VIDEO CLIP LINK']) }}"
+            }
+          ]
+        },
+        "options": {
+          "waitForCompletion": true,
+          "pollInterval": 5,
+          "maxWaitTime": 600
+        }
+      },
+      "type": "@fal-ai/n8n-nodes-fal.falAi",
+      "typeVersion": 1,
+      "position": [
+        -5312,
+        1600
+      ],
+      "id": "fa732387-c0cb-430e-95f9-a740a0c6f899",
+      "name": "Generate media using AI model1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "VIDEO CLIP LINK"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -5520,
+        1600
+      ],
+      "id": "bbb382bb-50c6-4313-8db2-cd7a9e25f081",
+      "name": "Aggregate Tempfile URLs2"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -4848,
+        400
+      ],
+      "id": "5672a358-6193-4b7e-8533-f5fda2d35a3c",
+      "name": "Wait",
+      "webhookId": "68d28e82-f79d-51b3-a512-abe25990db51"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -6896,
+        1536
+      ],
+      "id": "f6f9ffab-6f78-4abb-b179-67c75b6d611c",
+      "name": "Wait1",
+      "webhookId": "4c06cf7e-2da8-5af0-bcd8-1181ef283dcd"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -8032,
+        384
+      ],
+      "id": "708b799d-c34b-4382-b31f-05dcad8d9e89",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Videos",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "LAUNCH CREATION": "Processing",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT NAME",
+              "displayName": "SCRIPT NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SCRIPT",
+              "displayName": "SCRIPT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CHARACTER/SETTING DESCRIPTION",
+              "displayName": "CHARACTER/SETTING DESCRIPTION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ASPECT RATIO",
+              "displayName": "ASPECT RATIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO VIEW LINK",
+              "displayName": "VIDEO VIEW LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VIDEO LINK",
+              "displayName": "VIDEO LINK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LAUNCH CREATION",
+              "displayName": "LAUNCH CREATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7648,
+        352
+      ],
+      "id": "0ef2e4d2-3760-47f1-a842-c5b6562a9882",
+      "name": "UpdateSheet6",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "  ## Intake + Image Generation                                                                                                                                                                                                                \n  Pulls `Create` rows from **Videos**, normalizes inputs, assigns run IDs, and sets `LAUNCH CREATION` to `Processing`. Builds Nano Banana prompt, submits Kie image task, polls status, and stores a shared Drive image URL for downstream    \n  nodes. ",
+        "height": 208,
+        "width": 1856,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8112,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "c973625b-0e07-4728-97f8-d262ac6b3f35",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "  ## Script Generation                                                                                                                                                                                                                        \n  Analyzes the reference image for visual consistency, then uses Claude Opus to split the source script into ordered 8-second scenes. Each scene includes speech text, fixed visual description, movement guidance, and scene metadata for    \n  tracking. ",
+        "height": 192,
+        "width": 1344,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -6032,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "c2f80dcd-3fc2-42d2-afbf-d7d51a96f2fc",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Video Generation                                                                                                                                                                                                                         \n  Writes scenes to **Video Data** and generates one VEO3 clip per scene using `VIDEO ID` and scene JSON. Polls until terminal status, uploads completed clips to Drive, and updates each scene row with clip links, state, or error details.  \n                            ",
+        "height": 256,
+        "width": 1920,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8080,
+        1472
+      ],
+      "typeVersion": 1,
+      "id": "725a758a-dfa9-420e-bc86-cb3065364d76",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Video Generation                                                                                                                                                                                                                         \n  Writes scenes to **Video Data** and generates one VEO3 clip per scene using `VIDEO ID` and scene JSON. Polls until terminal status, uploads completed clips to Drive, and updates each scene row with clip links, state, or error details.  \n                            ",
+        "height": 208,
+        "width": 1488,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5952,
+        1424
+      ],
+      "typeVersion": 1,
+      "id": "c8d6f7f0-59fb-470e-87cd-2ddb9c29665d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Regeneration of the video",
+        "height": 80,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8000,
+        2368
+      ],
+      "typeVersion": 1,
+      "id": "b713101c-0a0d-4730-b60d-482f96472960",
+      "name": "Sticky Note5"
+    }
+  ],
+  "connections": {
+    "Get Video Ideas": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "UpdateSheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request12": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request13": {
+      "main": [
+        [
+          {
+            "node": "Video Status Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Status Check": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Agent LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Nano Banana Prompt Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Nano Banana Prompt Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script Agent LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Scene Scripts3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scene Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Scene Scripts3",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano Banana Prompt Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate UGC Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate UGC Image": {
+      "main": [
+        [
+          {
+            "node": "Image Gen Response Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Gen Response Check": {
+      "main": [
+        [
+          {
+            "node": "Poll Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration3": {
+      "main": [
+        [
+          {
+            "node": "Analyze UGC Image3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Scenes": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze UGC Image3": {
+      "main": [
+        [
+          {
+            "node": "Generate Scene Scripts3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Scene Scripts3": {
+      "main": [
+        [
+          {
+            "node": "Split Scenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "Nano Banana Prompt Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "videoInput": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "UpdateSheet10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s": {
+      "main": [
+        [
+          {
+            "node": "Poll Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Image Status": {
+      "main": [
+        [
+          {
+            "node": "Image Status Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Status Check": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 10s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateSheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "videoInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Share file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file1": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) for Stitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) for Stitch": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Tempfile URLs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Gen Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download-video8": {
+      "main": [
+        [
+          {
+            "node": "Upload file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file2": {
+      "main": [
+        [
+          {
+            "node": "Share file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file2": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet4": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateSheet5": {
+      "main": [
+        [
+          {
+            "node": "Image Poll Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "videoInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get Video Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate media using AI model1": {
+      "main": [
+        [
+          {
+            "node": "download-video8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Tempfile URLs2": {
+      "main": [
+        [
+          {
+            "node": "Generate media using AI model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "UpdateSheet9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Video Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

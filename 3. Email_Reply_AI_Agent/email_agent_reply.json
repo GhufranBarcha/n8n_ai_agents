@@ -35,15 +35,15 @@
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "e5zfr95A5FyDbdis",
-          "name": "Groq account"
+          "id": "IEFIH8RCmlwzcVIC",
+          "name": "YOUR_GROQ_API_CREDENTIAL"
         }
       }
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Please make sure to not output any text except the body\n\nI want to reply to a personalized email. Write a reply email accordingly:\n\n    If the sender’s identity is unknown, start the reply without using \"Dear.\"\n\n    Acknowledge that I have received the email and will update them soon.\n\n    If it seems like an offer, decline politely.\n\n    If it seems like an advertisement, politely reject it and say I’m not interested.\n\n    If it is an order opportunity, respond by saying that I will think about it and update them soon.\n\nMy name is Ghufran Ahmed Barcha.\n\nI only want the email body — no additional text and no subject line.\n\nThe main email content is:\n{{ $json.snippet }}",
+        "text": "=Please make sure to not output any text except the body\n\nI want to reply to a personalized email. Write a reply email accordingly:\n\n    If the sender’s identity is unknown, start the reply without using \"Dear.\"\n\n    Acknowledge that I have received the email and will update them soon.\n\n    If it seems like an offer, decline politely.\n\n    If it seems like an advertisement, politely reject it and say I’m not interested.\n\n    If it is an order opportunity, respond by saying that I will think about it and update them soon.\n\nMy name is Your Name.\n\nI only want the email body — no additional text and no subject line.\n\nThe main email content is:\n{{ $json.snippet }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -71,11 +71,11 @@
       ],
       "id": "9b52a311-f6ca-4a02-a38a-65ebec97f194",
       "name": "Gmail2",
-      "webhookId": "5843d95d-5bbf-43bd-9b27-373226e39897",
+      "webhookId": "ff6ad607-a864-5ded-9e94-47d52eb99e95",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     },
@@ -84,17 +84,17 @@
         "operation": "create",
         "base": {
           "__rl": true,
-          "value": "appU7obdskZFsOX53",
+          "value": "YOUR_AIRTABLE_BASE_ID",
           "mode": "list",
-          "cachedResultName": "tesing_n8n",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "table": {
           "__rl": true,
-          "value": "tbl9xRxWo6r6S7HTA",
+          "value": "YOUR_AIRTABLE_TABLE_ID",
           "mode": "list",
-          "cachedResultName": "email_table",
-          "cachedResultUrl": "https://airtable.com/appU7obdskZFsOX53/tbl9xRxWo6r6S7HTA"
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -166,8 +166,8 @@
       "name": "Airtable",
       "credentials": {
         "airtableTokenApi": {
-          "id": "oMDJ3Eeptpn7T0cf",
-          "name": "Airtable Personal Access Token account"
+          "id": "clT59PzVNGTNLB5V",
+          "name": "YOUR_AIRTABLE_TOKEN_API_CREDENTIAL"
         }
       }
     },
@@ -187,11 +187,11 @@
       ],
       "id": "d1040695-9bd6-413a-bc3b-87ac654d32ba",
       "name": "Gmail AII Mails",
-      "webhookId": "0684f357-d699-4e1c-b91e-25e26c32e467",
+      "webhookId": "fc4037eb-0d7c-52fe-a991-50b3a287fde6",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     },
@@ -208,11 +208,11 @@
       ],
       "id": "3c6db209-1287-4c1c-808c-6ada59a0d698",
       "name": "Gmail Mail Details",
-      "webhookId": "0541edab-0873-4951-873e-4add8036c171",
+      "webhookId": "2d761733-5e3e-5370-a1bd-f293a9d011d9",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     },
@@ -229,16 +229,15 @@
       ],
       "id": "c0e4b540-7143-4925-a8b9-b477a698b322",
       "name": "Gmail",
-      "webhookId": "feecac75-7b1b-46c9-9e54-98ef00048ae1",
+      "webhookId": "0d32b576-a573-5807-9619-03cb6f254e75",
       "credentials": {
         "gmailOAuth2": {
-          "id": "zkay8TnWuMUzb1G2",
-          "name": "Gmail account 2"
+          "id": "uCWoki6mAbZ7lyT0",
+          "name": "YOUR_GMAIL_OAUTH2_CREDENTIAL"
         }
       }
     }
   ],
-  "pinData": {},
   "connections": {
     "Schedule Trigger": {
       "main": [
@@ -322,11 +321,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "db94b26b-742a-44a9-b32f-641f3d415493",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "5c3cc1df1e131540372bb2ccef4a623fa751f1881ad7621acc07cc7adaf384a9"
-  },
-  "id": "v3yavOXwSVNzTuYW",
   "tags": []
 }

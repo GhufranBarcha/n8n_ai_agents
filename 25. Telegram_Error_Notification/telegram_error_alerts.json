@@ -1,0 +1,111 @@
+{
+  "name": "Telegram Error Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Error In Workflow: \n{{ JSON.stringify($('Error Trigger').item.json.workflow.name) }}\n\nError Code: \n{{ JSON.stringify($('Error Trigger').item.json.execution.error.httpCode) }}\n\nError Message: \n{{ JSON.stringify($('Error Trigger').item.json.execution.error.message) }}\n\nError Node: \n{{ JSON.stringify($('Error Trigger').item.json.execution.error.node.type) }}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        240
+      ],
+      "id": "01484924-5146-42f9-ad9e-7b04d5a2aa76",
+      "name": "Send a text message",
+      "webhookId": "4ca2e39b-86ff-58a1-8336-0189df7634d1",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        240
+      ],
+      "id": "ba68e7ac-6c5e-42eb-9329-f533ad403871",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## Telegram Error Node",
+        "height": 96,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "53071510-5344-4313-97f8-4585106a6638",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Error In Workflow: \n{{ JSON.stringify($('Error Trigger').item.json.workflow.name) }}\n\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        336
+      ],
+      "id": "64026dae-0adb-4251-b815-1c75321b8e98",
+      "name": "Send a text message1",
+      "webhookId": "4ca2e39b-86ff-58a1-8336-0189df7634d1",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

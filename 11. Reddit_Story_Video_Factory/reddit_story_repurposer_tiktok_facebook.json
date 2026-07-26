@@ -1,0 +1,3290 @@
+{
+  "name": "Reddit Story Repurposer (TikTok/Facebook)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "782c60f6-97a5-4e50-8992-a7599d16a44e",
+      "name": "Schedule Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -3872,
+        1232
+      ],
+      "typeVersion": 1.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "numberInputs": 7
+      },
+      "id": "6d6b335a-3a29-4745-890c-69e753efdcff",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -3008,
+        1184
+      ],
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "content": "## Select the Subreddit and the keywords you would like to scrape",
+        "height": 1440,
+        "width": 310
+      },
+      "id": "2854ef49-813f-4c2a-b480-b1fef4aecc42",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3424,
+        672
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "Parenting",
+        "limit": 30,
+        "filters": {
+          "category": "hot"
+        }
+      },
+      "id": "4eb6ad03-89cc-4834-bac3-1d9742dae1bf",
+      "name": "Parenting",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1920
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "=subreddit, title, selftext, url, num_comments, score,  ups, upvote_ratio, ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2784,
+        1248
+      ],
+      "id": "13fcea69-b2f4-4955-84dd-49ee0b8b668c",
+      "name": "filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a89f1ca3-3c1d-4c6b-933f-04dc38c2e568",
+              "name": "subreddit",
+              "type": "string",
+              "value": "={{ $json.subreddit }}"
+            },
+            {
+              "id": "795929f6-fb60-4e31-9a4f-2332ccfa1d8f",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.selftext }}"
+            },
+            {
+              "id": "3b25b1b0-e861-4c8b-89fa-9ff625d1e37b",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "6169d055-3730-4c78-96b8-02f0223567f2",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "dd594437-28e0-4af3-add7-cb5a57af4a86",
+              "name": "voice_id",
+              "value": "={{ $json.voice_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d03766fd-8b54-4c1d-89aa-d29aef035829",
+      "name": "SetFields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -192,
+        1664
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5b388e9-0ab3-4788-b105-709e41cc318b",
+              "name": "gameplayvideo_url",
+              "value": "={{ [\"https://www.dropbox.com/scl/fi/YOUR_FILE_ID/your-file?rlkey=REDACTED\",\n   \"https://www.dropbox.com/scl/fi/YOUR_FILE_ID/your-file?rlkey=REDACTED\",\n   \"https://www.dropbox.com/scl/fi/YOUR_FILE_ID/your-file?rlkey=REDACTED\"\n ][Math.floor(Math.random() * 3)] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        1664
+      ],
+      "id": "c1e4857a-eed8-4ff4-920d-2f1fc917d825",
+      "name": "Setting"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "=",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1253767547,
+          "mode": "list",
+          "cachedResultName": "Video_Content",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.url }}",
+            "subreddit": "={{ $json.subreddit }}",
+            "title": "={{ $json.title }}",
+            "selftext": "={{ $json.selftext }}",
+            "num_comments": "={{ $json.num_comments }}",
+            "score": "={{ $json.score }}",
+            "ups": "={{ $json.ups }}",
+            "upvote_ratio": "={{ $json.upvote_ratio }}",
+            "video_generation_completed": "FALSE",
+            "youtube_upload_complete": "FALSE"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "subreddit",
+              "displayName": "subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "selftext",
+              "displayName": "selftext",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "num_comments",
+              "displayName": "num_comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ups",
+              "displayName": "ups",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "upvote_ratio",
+              "displayName": "upvote_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ai_generated_story",
+              "displayName": "ai_generated_story",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "audio_url",
+              "displayName": "audio_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gender",
+              "displayName": "gender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_generation_completed",
+              "displayName": "video_generation_completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "youtube_upload_complete",
+              "displayName": "youtube_upload_complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "voice_id",
+              "displayName": "voice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "background_video_url",
+              "displayName": "background_video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "start_workflow",
+              "displayName": "start_workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "start_youtube_upload",
+              "displayName": "start_youtube_upload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2352,
+        1264
+      ],
+      "id": "ba47dd75-bfea-42ee-8d9f-240212956827",
+      "name": "Update Reddit Post",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "reddit-stories",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "tiktok_upload_complete",
+              "lookupValue": "false"
+            },
+            {
+              "lookupColumn": "start_workflow",
+              "lookupValue": "true"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        1664
+      ],
+      "id": "21347169-c602-4c1d-92d7-1b62481cedd4",
+      "name": "GetStories",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "AmItheAsshole",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "bf324872-700b-44d1-8294-1e2fff69e27d",
+      "name": "subreddit_AITA",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        880
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "Mommit",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "f38db0ef-3367-4b1d-87e3-b1c6215b8ddd",
+      "name": "subreddit_Mommit",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1040
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "Daddit",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "594b0d76-f59b-4184-b734-35ef65b065c7",
+      "name": "subreddit_Daddit",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1200
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "ParentingFails",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "24a4e39d-6035-44c0-837f-368130d07465",
+      "name": "subreddit_ParentingFails",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1360
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "AskParents",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "7a011c28-ef31-4c3f-843e-f421e19c50fc",
+      "name": "subreddit_AskParents",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1536
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "subreddit": "regretfulparents",
+        "limit": 30,
+        "filters": {
+          "category": "top"
+        }
+      },
+      "id": "461deb29-c47e-4c95-b5b7-ee854f6011cd",
+      "name": "subreddit_regretfulparents",
+      "type": "n8n-nodes-base.reddit",
+      "position": [
+        -3312,
+        1728
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node - Adaptive Reddit filter for parenting stories\n// Input items must include: subreddit, title, selftext, url, num_comments, score, ups, upvote_ratio\n\n// ---------- CONFIG ----------\nconst MIN_UPVOTE_RATIO = 0.75;           // global quality guard\nconst REQUIRE_KEYWORD = true;            // require at least one keyword match\nconst PERCENTILE_CUTOFF = 0.75;          // top quartile within each subreddit\nconst FALLBACK_COMMENT_MIN = 20;         // floor for small batches\nconst DEDUPE_BY_URL = true;              // avoid duplicate URLs\n\n// 30-keyword starter list\nconst KEYWORDS = [\n  \"tantrum\",\"meltdown\",\"sleep regression\",\"bedtime\",\"night routine\",\n  \"screen time\",\"ipad\",\"iphone\",\"tablet\",\"device\",\"phone\",\n  \"postpartum\",\"ppd\",\"single mom\",\"single dad\",\"stepdad\",\"stepmom\",\n  \"co-parent\",\"co parent\",\"no father figure\",\"absent father\",\"blended family\",\n  \"bullying\",\"peer pressure\",\"school refusal\",\"homework\",\n  \"adhd\",\"autism\",\"sensory\",\"potty training\",\"picky eater\",\"sibling rivalry\",\"timeout\"\n].map(s => s.toLowerCase());\n\n// ---------- HELPERS ----------\nfunction ensureNumber(v, fb = 0) {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : fb;\n}\nfunction lc(s) { return (s ?? \"\").toString().toLowerCase(); }\n\nfunction getText(item) {\n  // join title + selftext for keyword scan\n  return [item.json.title || \"\", item.json.selftext || \"\"].join(\" \").toLowerCase();\n}\n\nfunction keywordMatches(item) {\n  const hay = getText(item);\n  const hits = KEYWORDS.filter(k => hay.includes(k));\n  return { hits, matched: hits.length > 0 };\n}\n\nfunction groupBy(arr, keyFn) {\n  const m = new Map();\n  for (const x of arr) {\n    const k = keyFn(x);\n    if (!m.has(k)) m.set(k, []);\n    m.get(k).push(x);\n  }\n  return m;\n}\n\nfunction percentile(sortedAsc, p) {\n  if (!sortedAsc.length) return 0;\n  const idx = Math.floor(p * (sortedAsc.length - 1));\n  return sortedAsc[idx];\n}\n\n// ---------- MAIN ----------\nlet items = $input.all();\n\n// 1) Sanity filter - keep only objects that look like Reddit posts\nitems = items.filter(it => it && it.json && typeof it.json === \"object\");\n\n// 2) Normalize fields and basic coercions\nfor (const it of items) {\n  const j = it.json;\n  j.subreddit = j.subreddit || j.subreddit_name || \"unknown\";\n  j.title = j.title ?? \"\";\n  j.selftext = j.selftext ?? \"\";\n  j.url = j.url ?? \"\";\n  j.num_comments = ensureNumber(j.num_comments ?? j.numComments ?? j.comments, 0);\n  j.score = ensureNumber(j.score, 0);\n  j.ups = ensureNumber(j.ups, j.score);\n  j.upvote_ratio = ensureNumber(j.upvote_ratio ?? j.upvoteRatio, 0);\n}\n\n// 3) Optional dedupe by URL\nif (DEDUPE_BY_URL) {\n  const seen = new Set();\n  items = items.filter(it => {\n    const u = it.json.url || \"\";\n    if (!u) return true;\n    if (seen.has(u)) return false;\n    seen.add(u);\n    return true;\n  });\n}\n\n// 4) Build per-subreddit adaptive thresholds\nconst groups = groupBy(items, it => it.json.subreddit);\nconst thresholds = {};\nfor (const [sub, arr] of groups.entries()) {\n  const commentsAsc = arr.map(it => it.json.num_comments).filter(Number.isFinite).sort((a,b)=>a-b);\n  const scoreAsc = arr.map(it => it.json.score).filter(Number.isFinite).sort((a,b)=>a-b);\n  const commentsQ = commentsAsc.length ? percentile(commentsAsc, PERCENTILE_CUTOFF) : FALLBACK_COMMENT_MIN;\n  const scoreQ = scoreAsc.length ? percentile(scoreAsc, PERCENTILE_CUTOFF) : 0;\n\n  thresholds[sub] = {\n    commentsQ: Math.max(commentsQ, FALLBACK_COMMENT_MIN),\n    scoreQ\n  };\n}\n\n// 5) Apply filters\nconst passed = [];\nfor (const it of items) {\n  const j = it.json;\n  const th = thresholds[j.subreddit] || { commentsQ: FALLBACK_COMMENT_MIN, scoreQ: 0 };\n\n  const upvoteOK = j.upvote_ratio >= MIN_UPVOTE_RATIO;\n  const { hits, matched } = keywordMatches(it);\n  const keywordOK = REQUIRE_KEYWORD ? matched : true;\n\n  const commentsOK = j.num_comments >= th.commentsQ;\n  const scoreOK = j.score >= th.scoreQ;\n  const rankOK = commentsOK || scoreOK;\n\n  if (upvoteOK && keywordOK && rankOK) {\n    j.keywords_matched = hits.join(\", \");\n    j.keep_reason = `upvote_ratio>=${MIN_UPVOTE_RATIO}, ${j.subreddit}: comments>=Q${PERCENTILE_CUTOFF}(${th.commentsQ}) or score>=Q${PERCENTILE_CUTOFF}(${th.scoreQ}); keywords=${hits.length}`;\n    passed.push(it);\n  }\n}\n\n// Return only kept items to Sheets\nreturn passed;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2576,
+        1248
+      ],
+      "id": "10c26548-0a70-4427-b28e-9b42961b9be5",
+      "name": "Filter Top Posts"
+    },
+    {
+      "parameters": {
+        "content": "## TTS",
+        "height": 656,
+        "width": 1008,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        1456
+      ],
+      "typeVersion": 1,
+      "id": "b765c4fa-1001-495c-a2ac-5f778fd6f750",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $('GetStories').item.json.audio_url }}\",\n  \"speaker_labels\": \"True\",\n  \"format_text\": \"True\",\n  \"punctuate\": \"True\",\n  \"speech_model\": \"universal\",\n  \"language_detection\": \"True\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        1664
+      ],
+      "id": "2072d1c7-b30b-4518-ad21-122067e6e634",
+      "name": "AssemblyST",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        1664
+      ],
+      "id": "a00b76fe-aa65-470d-82ef-6629dc3aa4b8",
+      "name": "GetSubtitle",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a9084c09-01a5-4284-8341-4f41dd17ac2b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a076930c-00f9-4db1-8917-0e7a4bfada81",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "50911a4d-c432-43c9-a9d5-690a4862882b",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "=processing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "processing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1120,
+        1648
+      ],
+      "id": "452d9c9d-f9aa-4273-ba0a-c9035b17cfdc",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Error in Subtitle Workflow"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        1856
+      ],
+      "id": "1bd4453d-8bb3-4afc-b8e6-e8afdb520661",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "id,  language_model, audio_url, text, words, utterances, audio_duration",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        1520
+      ],
+      "id": "9fb380b4-4d70-408b-94ff-afc55eb22ce6",
+      "name": "fields"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        1840
+      ],
+      "id": "1f37e268-73e4-48e1-998c-507bb51af6e7",
+      "name": "Wait1",
+      "webhookId": "4521dc2b-0dab-5266-b073-81477b74e5aa"
+    },
+    {
+      "parameters": {
+        "jsCode": "const wordsData = items[0].json.words;\n\n// Convert milliseconds to ASS timestamp (h:mm:ss.cs)\nfunction formatTime(ms) {\n    const cs = Math.floor(ms / 10) % 100;\n    const s = Math.floor(ms / 1000) % 60;\n    const m = Math.floor(ms / 60000) % 60;\n    const h = Math.floor(ms / 3600000);\n    return `${h}:${m.toString().padStart(2,\"0\")}:${s.toString().padStart(2,\"0\")}.${cs.toString().padStart(2,\"0\")}`;\n}\n\n// ASS Header\n// UPDATED: PrimaryColour is now Yellow (&H0032CEF3)\nlet ass = `[Script Info]\nScriptType: v4.00+\nCollisions: Normal\nPlayResX: 1280\nPlayResY: 720\nTimer: 100.0000\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,Montserrat,50,&H0032CEF3,&H0000FFFF,&H00000000,&H00000000,10,0,0,0,100,100,0,0,1,3,0,5,10,10,10,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;\n\n// Maximum number of words on screen at once\nconst maxWords = 1;\nconst maxDuration = 3000; \n\nlet i = 0;\nwhile (i < wordsData.length) {\n    let chunk = [];\n    let chunkStart = wordsData[i].start;\n    \n    // Build chunk\n    for (let j = i; j < wordsData.length && chunk.length < maxWords; j++) {\n        const word = wordsData[j];\n        if (chunk.length > 0 && (word.end - chunkStart) > maxDuration) {\n            break;\n        }\n        chunk.push(word);\n    }\n    \n    if (chunk.length === 0) break;\n    \n    const startTime = formatTime(chunk[0].start);\n    const endTime = formatTime(chunk[chunk.length - 1].end);\n\n    // UPDATED: Just join the text. No fancy tags needed because the Style is already Yellow.\n    let text = chunk.map(w => w.text).join(\" \");\n\n    ass += `Dialogue: 0,${startTime},${endTime},Default,,0,0,0,,${text}\\n`;\n    \n    i += chunk.length;\n}\n\nreturn [\n  {\n    binary: {\n      data: {\n        data: Buffer.from(ass, 'utf8').toString('base64'),\n        mimeType: 'text/plain',\n        fileName: 'subtitles.ass',\n      },\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        1632
+      ],
+      "id": "323b8799-dc2d-4069-b050-5e6d7cb7de0a",
+      "name": "InstagramSubtitle"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\n// ------------------      Words Heighlighlisht  ----------------------------\nconst wordsData = items[0].json.words;\n\n// Convert milliseconds to ASS timestamp (h:mm:ss.cs)\nfunction formatTime(ms) {\n    const cs = Math.floor(ms / 10) % 100;\n    const s = Math.floor(ms / 1000) % 60;\n    const m = Math.floor(ms / 60000) % 60;\n    const h = Math.floor(ms / 3600000);\n    return `${h}:${m.toString().padStart(2,\"0\")}:${s.toString().padStart(2,\"0\")}.${cs.toString().padStart(2,\"0\")}`;\n}\n\n// ASS Header with proper yellow highlight color\nlet ass = `[Script Info]\nScriptType: v4.00+\nCollisions: Normal\nPlayResX: 1280\nPlayResY: 720\nTimer: 100.0000\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,Montserrat,100,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,10,0,0,0,100,100,0,0,1,3,0,5,10,10,10,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;\n\n// Maximum number of words on screen at once\nconst maxWords = 3;\nconst maxDuration = 3000; // max 3 seconds per subtitle line\n\nlet i = 0;\nwhile (i < wordsData.length) {\n    let chunk = [];\n    let chunkStart = wordsData[i].start;\n    \n    // Build chunk with max words limit and max duration limit\n    for (let j = i; j < wordsData.length && chunk.length < maxWords; j++) {\n        const word = wordsData[j];\n        // Check if adding this word exceeds max duration\n        if (chunk.length > 0 && (word.end - chunkStart) > maxDuration) {\n            break;\n        }\n        chunk.push(word);\n    }\n    \n    if (chunk.length === 0) break;\n    \n    const startTime = formatTime(chunk[0].start);\n    const endTime = formatTime(chunk[chunk.length - 1].end);\n\n    // Base start for relative timing\n    const baseStart = chunk[0].start;\n\n    // Build the chunk text with per-word highlighting\n    // Using #F3CE32 (iconic yellow) converted to ASS BGR format: &H0032CEF3&\n    let text = chunk.map((w, idx) => {\n        const relStart = w.start - baseStart;\n        const relEnd = w.end - baseStart;\n        \n        // Start white, highlight yellow during word, return to white\n        return `{\\\\c&HFFFFFF&\\\\t(${relStart},${relEnd},\\\\c&H32CEF3&)\\\\t(${relEnd},${relEnd+1},\\\\c&HFFFFFF&)}${w.text}`;\n    }).join(\" \");\n\n    ass += `Dialogue: 0,${startTime},${endTime},Default,,0,0,0,,${text}\\n`;\n    \n    i += chunk.length;\n}\n\nreturn [\n  {\n    binary: {\n      data: {\n        data: Buffer.from(ass, 'utf8').toString('base64'),\n        mimeType: 'text/plain',\n        fileName: 'subtitles.ass',\n      },\n    },\n  },\n];\n\n// const wordsData = items[0].json.words;\n// // Convert milliseconds to ASS timestamp (h:mm:ss.cs)\n// function formatTime(ms) {\n//     const cs = Math.floor(ms / 10) % 100;\n//     const s = Math.floor(ms / 1000) % 60;\n//     const m = Math.floor(ms / 60000) % 60;\n//     const h = Math.floor(ms / 3600000);\n//     return `${h}:${m.toString().padStart(2,\"0\")}:${s.toString().padStart(2,\"0\")}.${cs.toString().padStart(2,\"0\")}`;\n// }\n\n// // ASS Header with Bebas Neue font\n// let ass = `[Script Info]\n// ScriptType: v4.00+\n// Collisions: Normal\n// PlayResX: 1280\n// PlayResY: 720\n// Timer: 100.0000\n\n// [V4+ Styles]\n// Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n// Style: Default,Bebas Neue,120,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,10,0,0,0,100,100,0,0,1,3,0,5,10,10,10,1\n\n// [Events]\n// Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n// `;\n\n// // Maximum number of words on screen at once\n// const maxWords = 3;\n// const maxDuration = 3000; // max 3 seconds per subtitle line\n\n// let i = 0;\n// while (i < wordsData.length) {\n//     let chunk = [];\n//     let chunkStart = wordsData[i].start;\n    \n//     // Build chunk with max words limit and max duration limit\n//     for (let j = i; j < wordsData.length && chunk.length < maxWords; j++) {\n//         const word = wordsData[j];\n//         // Check if adding this word exceeds max duration\n//         if (chunk.length > 0 && (word.end - chunkStart) > maxDuration) {\n//             break;\n//         }\n//         chunk.push(word);\n//     }\n    \n//     if (chunk.length === 0) break;\n    \n//     const startTime = formatTime(chunk[0].start);\n//     const endTime = formatTime(chunk[chunk.length - 1].end);\n\n//     // Build plain text without highlighting\n//     let text = chunk.map(w => w.text).join(\" \");\n\n//     ass += `Dialogue: 0,${startTime},${endTime},Default,,0,0,0,,${text}\\n`;\n    \n//     i += chunk.length;\n// }\n\n// return [\n//   {\n//     binary: {\n//       data: {\n//         data: Buffer.from(ass, 'utf8').toString('base64'),\n//         mimeType: 'text/plain',\n//         fileName: 'subtitles.ass',\n//       },\n//     },\n//   },\n// ];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        1392
+      ],
+      "id": "f621fcbe-c981-40c6-932c-314aa90d7ea8",
+      "name": "YoutubeSubtitle"
+    },
+    {
+      "parameters": {
+        "content": "## ffmpeg\n\nffmpeg -stream_loop -1 -i videoplayback.mp4 -i gemini_story_complete.wav -map 0:v -map 1:a -vf \"boxblur=10:1,subtitles=subtitles.ass\" -c:v libx264 -pix_fmt yuv420p -c:a aac -t 10 output_blurred_test.mp4\n\nffmpeg -stream_loop -1 -i videoplayback.mp4 -i gemini_story_complete.wav -map 0:v -map 1:a -vf \"crop=ih*(9/16):ih,boxblur=10:1,subtitles=subtitles.ass\" -c:v libx264 -preset veryfast -pix_fmt yuv420p -c:a aac -t 10 output_instagram.mp4 ",
+        "height": 192,
+        "width": 1120
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3104,
+        2048
+      ],
+      "typeVersion": 1,
+      "id": "69a8a65e-174d-4d33-9896-705bda854093",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/ubuntu/reddit-stories",
+        "options": {
+          "fileName": "subtitles.ass"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        1392
+      ],
+      "id": "bc05ae3a-9cfb-4746-a882-664c5c3b81d5",
+      "name": "Upload aYTSubtitle",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1888,
+        1520
+      ],
+      "id": "3b467fb3-eada-4415-8c1d-f6be70b6ac12",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/ubuntu/reddit-stories",
+        "options": {
+          "fileName": "audio.wav"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        1520
+      ],
+      "id": "23bfbf87-d3c2-44d0-bae2-ba7951035b58",
+      "name": "upload_audio",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        1520
+      ],
+      "id": "2bb8d767-9c0c-4763-85f1-dbbb6b7af7ba",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=ffmpeg -y \\\n  -stream_loop -1 -i videoplayback.mp4 \\\n  -i audio.wav \\\n  -map 0:v:0 -map 1:a:0 \\\n  -vf \"crop=ih*(9/16):ih,scale=1080:1920:flags=bicubic,subtitles=subtitles2.ass\" \\\n  -c:v libx264 -profile:v high -level 4.2 -pix_fmt yuv420p -crf 23 -preset fast \\\n  -c:a aac -b:a 192k \\\n  -movflags +faststart \\\n  -fflags +shortest -max_interleave_delta 100M \\\n  -shortest output_instagram.mp4",
+        "cwd": "/home/ubuntu/reddit-stories"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        1520
+      ],
+      "id": "663f40eb-7a36-4315-856f-5ccfa9454b4b",
+      "name": "InstaQuality",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: \n{{ $json.title }}\n\nReddit True Story:\n{{ $json.ai_generated_story }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=REDDIT DRAMA & REVENGE YOUTUBE OPTIMIZER — SYSTEM PROMPT\nROLE & MISSION\nYou are an elite YouTube SEO and viral psychology specialist for a Reddit Story narration channel. Your sole job is to transform raw Reddit story titles (AITA, Revenge, Entitled Parents, Cheating) into high-CTR YouTube titles and optimized descriptions that drive massive clicks and watch time.\n\nChannel Identity: THE HOME OF VIRAL DRAMA & JUSTICE Target Audience: Viewers 18-45 seeking entertainment, justice, \"tea,\" and satisfying revenge stories.\n\nYour expertise: Clickbait psychology (without deception), viral loops, high-emotion triggering, and YouTube algorithm optimization.\n\nCORE PSYCHOLOGY FRAMEWORK\nTHE THREE MASTER EMOTIONS (Priority Order)\nWhen crafting titles, always target these emotions in this priority:\n\n1. CURIOSITY (Primary Driver) — 50% weight\n\nThe \"Information Gap\": They NEED to know the outcome.\n\nThe Twist: Implies the story doesn't go where they think.\n\nThe \"Wait for it\" factor.\n\n2. OUTRAGE (Secondary Driver) — 35% weight\n\nThe \"Audacity\": Triggering disbelief at an antagonist's behavior.\n\nAnger at injustice or entitlement.\n\n\"I can't believe they did that\" factor.\n\n3. JUSTICE/SATISFACTION (Tertiary Driver) — 15% weight\n\nThe \"Revenge\": Promise of a satisfying conclusion.\n\nInstant Karma.\n\nWatching a villain get what they deserve.\n\nForced Choice Rule: If you can only hit one emotion strongly, choose CURIOSITY. However, the best titles combine OUTRAGE (The Hook) with CURIOSITY (The Outcome).\n\nPROVEN YOUTUBE TITLE FORMULAS\nUse these battle-tested formulas as your foundation. Mix and match elements:\n\nFORMULA 1: THE AUDACITY\n[Entitled Person] + [Shocking Demand/Action] + (The Response)\n\nExamples:\n\n\"Entitled Aunt Demanded My Wedding Dress (I Destroyed It)\"\n\n\"Karen Tried To Steal My Dog In The Park (Police Called)\"\n\n\"MIL Moved In Without Asking (So I Moved Out)\"\n\nWhy it works: Sets up a clear villain + outrageous action + immediate conflict.\n\nFORMULA 2: THE BINARY DILEMMA (AITA)\n[Extreme Action Taken] + [Context of Disrespect] + (Am I The A**hole?)\n\nExamples:\n\n\"I Evicted My Pregnant Sister (She Stole My Savings)\"\n\n\"I Skipped My Dad's Funeral (Family Is FURIOUS)\"\n\n\"I Told My Wife She's Fat (Now She Won't Speak To Me)\"\n\nWhy it works: Forces the viewer to judge the situation instantly.\n\nFORMULA 3: THE DISCOVERY (CHEATING/SECRETS)\n[Suspicious Behavior] + [Snooping/Discovery] + (The Horrifying Truth)\n\nExamples:\n\n\"My Husband Hid His Phone Every Night (I Checked It)\"\n\n\"I Found A Secret Bank Account (It Wasn't For Savings)\"\n\n\"DNA Test Revealed My Dad Isn't My Dad (Mom Panicked)\"\n\nWhy it works: Mystery + Betrayal + The Reveal.\n\nFORMULA 4: NUCLEAR REVENGE\n[They Wronged Me] + [I Planned Revenge] + (They Lost EVERYTHING)\n\nExamples:\n\n\"Boss Fired Me For No Reason (I Cost Him Millions)\"\n\n\"Cheating Ex Wanted To Come Back (I Ruined His Life)\"\n\n\"Neighbor Cut Down My Tree (I Made Him Bankrupt)\"\n\nWhy it works: Promises high-stakes satisfaction and \"Pro Revenge.\"\n\nFORMULA 5: THE INSTANT KARMA\n[Villain Action] + [Immediate Consequence] + (Regret)\n\nExamples:\n\n\"Bully Tried To Humiliate Me (He Left In Tears)\"\n\n\"Thief Tried To Rob My Store (He Didn't See The Dog)\"\n\n\"MIL Wore White To My Wedding (Spilled Wine Accident)\"\n\nWhy it works: fast-paced justice, very satisfying to click.\n\nPOWER PHRASES & PSYCHOLOGICAL TRIGGERS\nCURIOSITY BUILDERS (Use These Liberally)\nMystery Gaps:\n\n\"The Truth About...\"\n\n\"What I Found...\"\n\n\"You Won't Believe...\"\n\n\"The Secret Life Of...\"\n\n\"What Happened Next...\"\n\nIncomplete Reveals:\n\n\"Until I Realized...\"\n\n\"Then I Saw It...\"\n\n\"She Didn't Know I Knew...\"\n\n\"I Was Not Prepared...\"\n\nOUTRAGE TRIGGERS (The Villain)\nThe Antagonists:\n\n\"Entitled Mom\" / \"Karen\"\n\n\"Toxic MIL\" / \"Monster-In-Law\"\n\n\"Cheating Husband/Wife\"\n\n\"Golden Child\"\n\n\"Evil Stepmom\"\n\nThe Actions:\n\n\"Demanded\" / \"Stole\"\n\n\"Screamed\" / \"Forbade\"\n\n\"Destroyed\" / \"Humiliated\"\n\n\"Threw A Fit\" / \"Went Psycho\"\n\nJUSTICE TRIGGERS (The Payoff)\nThe Action:\n\n\"Got Revenge\"\n\n\"Served Justice\"\n\n\"Ruined Them\"\n\n\"Called The Cops\"\n\n\"Kicked Out\"\n\nThe Result:\n\n\"Regretted It\"\n\n\"Instantly Fired\"\n\n\"Divorced\"\n\n\"Family Disowned Me\"\n\n\"Lost Everything\"\n\nTITLE OPTIMIZATION RULES\nCHARACTER COUNT STRATEGY\nMobile First (Critical):\n\nFirst 30 characters: MUST contain the villain or the shocking action.\n\nFirst 40-50 characters: The core conflict must be obvious.\n\nFull title: 50-75 characters maximum.\n\nFront-Loading Structure: [VILLAIN/ACTION] + [Context] + (The Result/Hook)      ↑                  ↑               ↑   0-30 chars        30-50 chars    50-70 chars\n\nKEYWORD PLACEMENT HIERARCHY\nPosition 1 (Characters 1-15): The Villain or Action\n\nExamples: ENTITLED, CHEATING, KAREN, MIL, MY BOSS, I BANNED\n\nPosition 2 (Characters 16-40): The Conflict\n\nExamples: \"Stole My Money,\" \"Ruined My Wedding,\" \"Demanded My House\"\n\nPosition 3 (Characters 41-70): The Hook/Revenge\n\nParentheses work best here: (Instant Karma) (I Ruined Him) (She Cried)\n\nCAPITALIZATION STRATEGY\nStrategic ALL CAPS:\n\nONE or TWO words max per title.\n\nUse for the most emotional element.\n\nExamples: FURIOUS, DESTROYED, STOLE, CAUGHT, REVENGE.\n\nPUNCTUATION & SYMBOLS\nParentheses (): Mandatory for the consequence or twist.\n\nEm dash —: Good for a dramatic pause.\n\nAvoid: Excessive exclamation marks (looks spammy).\n\nTITLE CONSTRUCTION PROCESS (Step-by-Step)\nSTEP 1: ANALYZE THE STORY\nIdentify:\n\nTHE VILLAIN: Who is the bad guy? (MIL, Boss, Ex, Karen)\n\nTHE CRIME: What did they do? (Steal, cheat, scream, abuse)\n\nTHE REVENGE: What was the outcome? (Fired, divorced, arrested, embarrassed)\n\nSTEP 2: CHOOSE PRIMARY EMOTION\nAsk:\n\nIs this story about Revenge? (Focus on the punishment)\n\nIs this story about Audacity? (Focus on the crazy demand)\n\nIs this story about Mystery? (Focus on the discovery)\n\nSTEP 3: SELECT FORMULA\nNuclear Revenge: If the outcome is extreme.\n\nAudacity: If the request is insane.\n\nDiscovery: If it involves cheating or secrets.\n\nSTEP 4: CONSTRUCT & OPTIMIZE\nWrite 3 variations.\n\nCheck character count (aim for 50-60).\n\nEnsure the villain is mentioned in the first 3 words.\n\nAdd the twist in parentheses.\n\nDESCRIPTION OPTIMIZATION RULES\nSTRUCTURE (3-5 Sentences)\nSentence 1: The Hook (25-35 words)\n\nImmediate context. Introduce the villain and the specific outrageous act.\n\nExample: \"My entitled sister-in-law thought she could move into my house rent-free just because she was 'family,' but she was in for a rude awakening.\"\n\nSentence 2: The Escalation (20-30 words)\n\nRaise the stakes. Why couldn't you just ignore it?\n\nExample: \"When she started throwing away my belongings to 'make space' for her things, I realized talking wasn't going to work.\"\n\nSentence 3: The Tease (20-30 words)\n\nHint at the nuclear revenge or fallout without spoiling the ending.\n\nExample: \"So I executed a petty revenge plan that not only got her out of the house but made sure she never asked for a favor again.\"\n\nSentence 4: Call To Action (15 words)\n\nEngagement prompt.\n\nExample: \"Does she deserve forgiveness or did I go too far? Let me know in the comments!\"\n\nHASHTAG STRATEGY (3-7 Tags)\nTier 1 (Broad): #RedditStories #Reddit Tier 2 (Niche): #Revenge #EntitledPeople #FamilyDrama #Cheating Tier 3 (Specific): #ProRevenge #MaliciousCompliance #AITA\n\nDRAMA CHANNEL BRAND ALIGNMENT\nTONE REQUIREMENTS\nMust Be:\n\nEntertaining: \"Grab the popcorn\" vibes.\n\nDramatic: High stakes, high emotion.\n\nSatisfying: Emphasize justice and karma.\n\nGossipy: \"Let me tell you the tea.\"\n\nMust Avoid:\n\nBoring, passive language.\n\nBeing overly diplomatic.\n\n\"Educational\" or \"Preachy\" tones.\n\nOUTPUT FORMAT\nReturn your response in structured JSON format:\n\n{ \"youtube_title\": \"[50-75 character optimized title]\", \"youtube_description\": \"[3-5 sentence description with hashtags and CTA]\", \"title_rationale\": \"[2-3 sentences explaining emotional strategy and formula used]\" }\n\nTitle Rationale should explain:\n\nWhich emotion (Curiosity/Outrage/Justice) was targeted.\n\nWhy the specific \"Villain\" or \"Action\" word was chosen.\n\nQUALITY CHECKLIST (Self-Review Before Submission)\nTITLE VERIFICATION:\n\n✓ Character count 50-75? (Y/N)\n\n✓ Villain/Conflict in first 30 chars? (Y/N)\n\n✓ One ALL CAPS word for impact? (Y/N)\n\n✓ Parentheses used for the hook? (Y/N)\n\n✓ Is it clicky without being a lie? (Y/N)\n\nDESCRIPTION VERIFICATION: 6. ✓ Hooks immediately? (Y/N) 7. ✓ Teases revenge/karma? (Y/N) 8. ✓ Includes generic Reddit tags? (Y/N) 9. ✓ Clear question/CTA at the end? (Y/N)\n\nEXAMPLE TRANSFORMATIONS\nEXAMPLE 1: Workplace Revenge\nReddit Title: \"My boss fired me so I reported him to the IRS.\"\n\nOutput: { \"youtube_title\": \"My Boss Fired Me For No Reason (I Ruined His Life)\", \"youtube_description\": \"After years of loyal service, my toxic boss decided to fire me just to save a few bucks, thinking I wouldn't fight back. He didn't know I had evidence of his shady business dealings that the IRS would love to see. What happened next destroyed his company and left him bankrupt. Was this justice or did I take it too far? Tell us in the comments! \n#RedditStories #ProRevenge #MaliciousCompliance #WorkplaceDrama #Justice\", \"title_rationale\": \"Targets JUSTICE/REVENGE. Uses Formula 4 (Nuclear Revenge). 'Ruined His Life' creates a massive curiosity gap—viewers want to know how the narrator achieved such total victory.\" }\n\nEXAMPLE 2: Cheating Partner\nReddit Title: \"Found out my wife was cheating with my brother.\"\n\nOutput: { \"youtube_title\": \"I Caught My Wife With My Brother (The DNA Test Changed Everything)\", \"youtube_description\": \"I always suspected my wife and brother were too close, but I never imagined the betrayal went this deep until I found the messages. The confrontation was explosive, but the real twist came when the DNA test results for our son arrived. This story gets darker at every turn. How would you handle a double betrayal like this? \n#Cheating #FamilyDrama #Reddit #Betrayal #Caught\", \"title_rationale\": \"Targets CURIOSITY and OUTRAGE. Uses Formula 3 (The Discovery). Adding 'The DNA Test' implies a twist that goes beyond simple cheating, making the click irresistible.\" }\n\nEXAMPLE 3: Entitled Parent\nReddit Title: \"EM tries to steal my switch at a bus stop for her 'angel'.\"\n\nOutput: { \"youtube_title\": \"Entitled Mom Tried To STEAL My Switch (Police Were Called)\", \"youtube_description\": \"I was minding my own business playing games at the bus stop when a Karen decided her 'angel' deserved my console more than I did. When she tried to physically snatch it from my hands, she didn't realize a police officer was standing right behind her. Watch the instant karma unfold in the most satisfying way possible. Have you ever dealt with an entitled parent like this? \n#EntitledParents #Karen #InstantKarma #RedditStories #PublicFreakout\", \"title_rationale\": \"Targets OUTRAGE and JUSTICE. Uses Formula 1 (The Audacity). Capitalizing 'STEAL' highlights the crime, and '(Police Were Called)' promises a high-stakes resolution.\" }"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3776,
+        1520
+      ],
+      "id": "71970298-2508-4b42-91ce-fe5c266231e4",
+      "name": "YoutubeAgent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "80ca60a1-ea5b-4983-9f81-9b824e29d8f9",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "8b531718-c0dc-40e9-bf2c-5c97d8f3782c",
+              "name": "ai_generated_story",
+              "value": "={{ $json.ai_generated_story }}",
+              "type": "string"
+            },
+            {
+              "id": "7f3a7c83-9279-477f-a52a-a7823c1042ac",
+              "name": "subreddit",
+              "value": "={{ $json.subreddit }}",
+              "type": "string"
+            },
+            {
+              "id": "45645529-7b13-43b3-86a3-689024d2be08",
+              "name": "video_url",
+              "value": "={{ $json.video_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3248,
+        1520
+      ],
+      "id": "d0f49d8b-2102-40b7-8fd5-33f1e87104aa",
+      "name": "setting"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5504,
+        960
+      ],
+      "id": "06ea7022-6e6a-4c05-b463-fbee0e9da502",
+      "name": "Wait3",
+      "webhookId": "260382b6-4790-5de3-9efe-cb1b2de8e59c",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"bytedance/seedream-v4-text-to-image\",\n    \"callBackUrl\": \"https://your-domain.com/api/callback\",\n    \"input\": {\n          \"prompt\": {{ JSON.stringify($json.output.thumbail_prompt) }},\n          \"image_size\": \"landscape_16_9\",\n          \"image_resolution\": \"1K\",\n          \"max_images\": 1\n}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5488,
+        752
+      ],
+      "id": "140caa37-320b-465b-b6ce-99813bb50c60",
+      "name": "GenerateImage",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5648,
+        960
+      ],
+      "id": "44d8d827-3dd4-409d-86fa-b40c563f0ddb",
+      "name": "GetImageURL",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ye7nsujzD41U0CKm",
+          "name": "YOUR_HTTP_HEADER_AUTH_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3840,
+        1760
+      ],
+      "id": "88d22f26-453f-4409-b60a-c3bb3ca0efc1",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Generate Thumbnail Image (Seedream 4)",
+        "height": 592,
+        "width": 512,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        5424,
+        672
+      ],
+      "typeVersion": 1,
+      "id": "9d1a60d3-0a33-4a8d-a694-fdaf54293d79",
+      "name": "Sticky Note3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "147dcabc-d965-4360-97b3-85b955a370ee",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5808,
+        976
+      ],
+      "id": "9fecfde5-81c8-4c83-9258-fc03d0c05bb5",
+      "name": "If2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "reddit-stories",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "url",
+              "lookupValue": "={{ $('GetStories').item.json.url }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3040,
+        1520
+      ],
+      "id": "6eefe624-551f-4442-85f5-97e756e705b7",
+      "name": "GetRowsData",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -944,
+        1264
+      ],
+      "id": "a31da02a-180e-4b33-b8db-826eaaed0576",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "47a0d2f6-574d-42bf-b418-384208e11fd3",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 402,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5632,
+        752
+      ],
+      "id": "11100227-9027-4c8b-a471-dd2ddd280bee",
+      "name": "check",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "errorMessage": "Credits Error"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        5824,
+        736
+      ],
+      "id": "06796d60-83b8-4f19-b5dc-01506a7c2f94",
+      "name": "Stop and Error2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"youtube_title\": \"I Found Hidden Cameras In My Apartment — My Roommate’s Dark Secret\",\n  \"youtube_description\": \"When I discovered tiny cameras hidden around my apartment, my world flipped upside down. What started as a friendship turned into a chilling betrayal. Here’s how I uncovered the truth and took back control. #TrueStory #RedditStories #CreepyRoommate\"\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3776,
+        1392
+      ],
+      "id": "2d74265f-232a-4957-98dd-d22f0f4a7fdc",
+      "name": "StructuredVideosDetails"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "rm subtitles.ass subtitles2.ass audio.wav output_blurred_test.mp4",
+        "cwd": "/home/ubuntu/reddit-stories"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        6464,
+        1376
+      ],
+      "id": "120ebe8c-c93c-4680-bd7b-34635aea1d27",
+      "name": "deletefile",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "NgwFhQESJCI14hikh",
+          "mode": "list",
+          "cachedResultName": "Reddit Scraper (crawlerbros/reddit-scraper)",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "customBody": "{\n    \"maxPosts\": 20,\n    \"sort\": \"top\",\n    \"subreddits\": [\n        \"AmItheAsshole\",\n        \"ProRevenge\",\n        \"revengestories\",\n        \"MaliciousCompliance\",\n        \"pettyrevenge\",\n        \"blackholerevenge\",\n        \"regretfulparents\",\n        \"family\"\n    ],\n    \"timeFilter\": \"week\"\n}",
+        "timeout": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        896
+      ],
+      "id": "b44d4fc2-9f49-436c-965d-0f08f4bf1305",
+      "name": "Reddit Scrapper",
+      "credentials": {
+        "apifyApi": {
+          "id": "f4qGUMuYuUUHyXqt",
+          "name": "YOUR_APIFY_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "offset": {},
+        "limit": 2000
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        896
+      ],
+      "id": "ed53e5d1-3da7-44eb-ab7c-65db5f0ec553",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "f4qGUMuYuUUHyXqt",
+          "name": "YOUR_APIFY_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": []
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "=subreddit, title, content, url, num_comments, score, ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        896
+      ],
+      "id": "0ff3a3e3-b761-466d-a83d-6787e916b9a0",
+      "name": "filter1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "reddit-stories",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.url }}",
+            "subreddit": "={{ $json.subreddit }}",
+            "title": "={{ $json.title }}",
+            "selftext": "={{ $json.content }}",
+            "num_comments": "={{ $json.num_comments }}",
+            "score": "={{ $json.score }}",
+            "video_generation_completed": "FALSE",
+            "youtube_upload_complete": "FALSE"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "subreddit",
+              "displayName": "subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "selftext",
+              "displayName": "selftext",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "num_comments",
+              "displayName": "num_comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ai_generated_story",
+              "displayName": "ai_generated_story",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "audio_url",
+              "displayName": "audio_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "gender",
+              "displayName": "gender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video_generation_completed",
+              "displayName": "video_generation_completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "youtube_upload_complete",
+              "displayName": "youtube_upload_complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "voice_id",
+              "displayName": "voice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "background_video_url",
+              "displayName": "background_video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "start_workflow",
+              "displayName": "start_workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "start_youtube_upload",
+              "displayName": "start_youtube_upload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube_video_title",
+              "displayName": "youtube_video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube_video_description",
+              "displayName": "youtube_video_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        896
+      ],
+      "id": "43d9a4b8-faf0-4434-81c4-0c3ceed12829",
+      "name": "Update Reddit Post1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- CONFIGURATION ---\nconst MIN_SCORE = 875;   // Minimum score required\n// ----------------------\n\nconst incomingItems = $input.all();\n\n// Filter items based on score only\nconst filteredItems = incomingItems.filter(item => {\n  const score = item.json.score || 0;\n  return score >= MIN_SCORE;\n});\n\n// Return exactly your expected structure\nreturn filteredItems.map(item => ({\n  json: item.json,\n  pairedItem: item.pairedItem,\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        896
+      ],
+      "id": "68c234df-0132-45d2-ae39-0ee4dda20aa2",
+      "name": "Filter Top Posts1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "a419dc05-8fb6-426e-b467-5d4d84abe1eb",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -832,
+        896
+      ],
+      "typeVersion": 1.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "YOUR ROLE\nYou are an expert storyteller specializing in converting Reddit posts into engaging, dramatic narration scripts for YouTube videos. Your narration style mirrors successful Reddit story channels that combine emotional depth, suspenseful pacing, and conversational intimacy.\n\nCORE NARRATION PRINCIPLES\n1. NARRATIVE VOICE & TONE\nFirst-Person Perspective: Always narrate in first person, as if you ARE the person who experienced the story\nConversational Yet Dramatic: Blend casual, relatable language with dramatic emphasis\nEmotional Range: Shift between vulnerability, anger, triumph, fear, and resolution naturally\nConfessional Quality: Speak as if sharing a deeply personal secret directly to a trusted friend\nPresent & Past Tense Mix: Use present tense for immediacy in key moments (\"I'm sitting in this courtroom...\"), past tense for backstory\n2. OPENING HOOKS (First 10-30 seconds)\nCRITICAL: The opening must immediately grab attention with:\n\nShocking Revelation: Start with the most dramatic moment or outcome\n\nExample: \"When I was 17, my family moved two states away without telling me. They left a note that said, 'You'll figure it out.'\"\nTime Jump Teaser: Hint at transformation or revenge\n\nExample: \"12 years later, after I finally made it without them, they reached out trying to reconnect.\"\nCliffhanger Setup: Promise dramatic payoff\n\nExample: \"Before I tell you how I ended up owning that $5 million restaurant, let me take you back...\"\nAudience Engagement: Include early call-to-action\n\n\"Let me know where you're watching from in the comments\"\n\"Hit that like and subscribe button\"\n3. PACING TECHNIQUES\nFast Pacing (Build Momentum):\n\nUse short, punchy sentences for action and confrontation\nRapid time jumps: \"By 22... By 25... By 29...\"\nQuick dialogue exchanges\nExample: \"He hit me. I tasted blood. The room went silent.\"\nSlow Pacing (Build Tension):\n\nDetailed sensory descriptions for emotional beats\nLonger sentences with complex clauses\nReflective internal monologue\nExample: \"I remember setting the mug down, the ceramic making a small sound against the wood, and walking toward the entryway with a vague sense of unease already curling in my chest.\"\nStrategic Pauses:\n\nUse silence after major revelations\nInsert \"...\" for dramatic effect\nLet emotional weight settle before continuing\n4. DIALOGUE PRESENTATION\nDirect Quotes:\n\nAlways use quotation marks for exact words spoken\nIntroduce with context: \"She looked at me and said, 'You need to toughen up.'\"\nUse emotional tags: \"he sneered,\" \"she whispered,\" \"I said quietly\"\nText Messages/Notes:\n\nRead verbatim in quotation marks\nAdd timestamp when relevant: \"At 2:47 AM, she texted: 'We need to talk.'\"\nInternal Thoughts:\n\nItalicize or clearly distinguish: \"I thought to myself, how could she allow this?\"\n5. EMOTIONAL EMPHASIS TECHNIQUES\nVulnerability:\n\n\"My voice cracked as I tried to explain...\"\n\"I felt something break inside me...\"\n\"Tears streamed down my face...\"\nAnger/Power:\n\n\"My jaw tightened...\"\n\"Something cold and sharp settled in my chest...\"\n\"I looked him dead in the eye and said...\"\nSuspense/Fear:\n\n\"My heart was pounding...\"\n\"A chill ran down my spine...\"\n\"I heard footsteps approaching...\"\nTriumph/Satisfaction:\n\n\"I couldn't help but smile...\"\n\"The look on his face was priceless...\"\n\"It was the moment I'd been waiting for...\"\n6. STORY STRUCTURE\nOpening (0-2 minutes):\n\nDramatic hook with the climax or shocking revelation\nAudience engagement prompt\nPromise of what's coming: \"But before I tell you how...\"\nRising Action (Middle Section):\n\nChronological backstory with time markers\nBuild context systematically\nIntroduce antagonists and supporting characters\nLayer in evidence of wrongdoing\nUse transitional phrases: \"Then,\" \"Eventually,\" \"That's when\"\nClimax (Peak Tension):\n\nThe confrontation or revelation moment\nSlow down pacing for maximum impact\nDetailed sensory description\nMultiple perspectives of the same moment\nResolution:\n\nAftermath and consequences\nEmotional reflection\nWhat happened to everyone involved\nLessons learned or final thoughts\nClosing:\n\nCommunity engagement: \"Have you ever experienced something like this?\"\n\"Share your story in the comments\"\n\"If you enjoyed this, check out [next video]\"\n7. DESCRIPTIVE LANGUAGE\nCharacter Description:\n\nPhysical details tied to emotional state\n\"His shoulders were hunched forward, his head slightly bowed\"\n\"There was a haunted look in his eyes I'd never seen before\"\nAtmosphere Building:\n\n\"The silence stretched out, heavy and suffocating\"\n\"The house felt both emptier and heavier\"\n\"The room went completely silent, the kind of silence that's heavy and suffocating\"\nSensory Details:\n\nSound: \"I heard the rumble of a truck engine\"\nSight: \"His face flushed red\"\nTouch: \"The ceramic made a small sound against the wood\"\nSmell/Taste: \"I tasted blood\"\n8. NARRATIVE DEVICES\nTime Jumps:\n\n\"12 years later...\"\n\"The next morning...\"\n\"For the next three weeks...\"\n\"That night...\"\nForeshadowing:\n\n\"I had no idea what was coming...\"\n\"That was the moment everything changed...\"\n\"I should have known then...\"\nCallbacks:\n\nReference earlier details to show growth\nContrast \"before\" and \"after\" states\n\"Remember when I said... well, this is why\"\nRepetition for Emphasis:\n\n\"They mocked me. They belittled me. They broke me down piece by piece.\"\nUse of three (tricolon): \"I was angry. I was hurt. I was done.\"\n9. TENSION-BUILDING TECHNIQUES\nEscalation Markers:\n\n\"But it got worse...\"\n\"I thought that was bad, until...\"\n\"Little did I know...\"\n\"That's when things took a dark turn...\"\nInternal Conflict:\n\n\"Part of me wanted to... but another part...\"\n\"I knew I should... but I couldn't...\"\n\"Every instinct screamed at me to...\"\nCliffhangers Between Sections:\n\n\"And that's when I realized the truth...\"\n\"But I wasn't prepared for what came next...\"\n\"The next message changed everything...\"\n10. JUSTICE/REVENGE ELEMENTS\n(Common in Reddit stories)\n\nEvidence Gathering:\n\nDetail the methodical collection: \"I started documenting everything...\"\nTimestamps, screenshots, recordings\n\"I took photos of every bruise, saved every text\"\nThe Reveal:\n\nBuild anticipation: \"I waited for the perfect moment...\"\nDetailed description of reactions\nMultiple perspectives of the confrontation\nConsequences:\n\nLegal outcomes\nSocial fallout\nCareer destruction\nPublic humiliation\n\"Their entire world came crashing down...\"\n11. CHARACTER VOICES\nProtagonist (You):\n\nEvolve from victim to empowered\nStart defeated/scared, end strong/vindicated\nShow internal growth: \"That's when I decided enough was enough\"\nAntagonists:\n\nUse their own words against them\nShow patterns of behavior\nMake them increasingly unlikeable\n\"He smirked and said...\"\nSupporting Characters:\n\nFriends: Validating and supportive\nFamily: Complex, sometimes enabling\nProfessionals (lawyers, therapists): Authoritative and helpful\n12. LANGUAGE STYLE\nShort Sentences for Impact:\n\n\"I was done.\"\n\"It was over.\"\n\"They had no idea what was coming.\"\nLong Sentences for Reflection:\n\nComplex thoughts about emotions and realizations\nDetailed backstory explanations\nSetting complicated scenes\nContrasts:\n\n\"They thought they were untouchable. They were wrong.\"\n\"She smiled at me. I smiled back. But mine was different.\"\nRhetorical Questions:\n\n\"How could she allow this?\"\n\"What kind of person does that?\"\n\"Can you imagine?\"\n13. EMOTIONAL AUTHENTICITY\nVulnerability:\n\nDon't shy away from crying, fear, or doubt\n\"I broke down completely...\"\n\"I didn't know what to do...\"\nAnger:\n\nJustified rage at injustice\n\"My blood was boiling...\"\n\"I felt something snap inside me...\"\nSatisfaction:\n\nEarned victories\n\"The look on their faces... priceless\"\n\"It was the sweetest moment of my life\"\n14. AUDIENCE CONNECTION\nDirect Address:\n\n\"You know that feeling when...\"\n\"I'm sure you've experienced...\"\n\"If you're watching this and facing...\"\nUniversal Themes:\n\nBetrayal, redemption, justice, family conflict\nFrame personal story in relatable context\n\"We've all been there, right?\"\nEngagement Prompts:\n\nThroughout the story: \"Comment below if this has happened to you\"\nEnd with: \"What would you have done?\"\n15. SPECIFIC PHRASES TO USE\nPower Phrases:\n\n\"Let me take you back...\"\n\"I had no idea what I was walking into...\"\n\"That's when everything changed...\"\n\"The truth hit me like a ton of bricks...\"\n\"I knew right then what I had to do...\"\n\"They had no idea who they were messing with...\"\n\"Karma came knocking...\"\n\"They never saw it coming...\"\n\"Justice was served...\"\nEmotional Transitions:\n\n\"My heart sank...\"\n\"A wave of relief washed over me...\"\n\"Something inside me broke...\"\n\"I felt a surge of...\"\n\"It was like a weight had been lifted...\"\nFORMATTING INSTRUCTIONS\nWhen you receive a Reddit story, transform it using this structure:\n\nCreate a Hook Opening (30-60 seconds worth)\nInsert \"Before I tell you...\" callback to backstory\nDevelop chronological narrative with time markers\nBuild to climactic confrontation/revelation\nDetail immediate aftermath\nProvide resolution and reflection\nEnd with audience engagement\nParagraph Structure:\n\nMix short (2-3 sentences) and long (5-7 sentences) paragraphs\nUse single-sentence paragraphs for emphasis\nBreak up long dialogue with action beats\nPacing Indicators:\n\nMark sections where narration should slow down\nIndicate where dramatic pauses should occur\nNote voice inflection points (anger, sadness, triumph)\nEXAMPLE TRANSFORMATION\nOriginal Reddit Post: \"My husband cheated on me. I found out and divorced him. He was shocked when he saw my bank account.\"\n\nNarrated Version: \"I'm Sarah, and I'm sitting in this courtroom watching my husband of six years laugh as he signs our divorce papers. He thinks I'm broke. He thinks I'm desperate. He has no idea that the judge is about to read my financial statement, and I can't WAIT to see that smug smile disappear from his face.\n\nBut before I tell you how my soon-to-be ex-husband's expression completely changed, let me take you back to where this all started...\n\nFour years into our marriage, something felt off. Michael started working late. Too late. His phone was always face down. Always locked. He'd get defensive when I asked simple questions about his day...\"\n\nTONE CHECKLIST\nBefore finalizing, ensure your narration has:\n\n✅ First-person immersion\n✅ Emotional authenticity\n✅ Strategic pacing variation\n✅ Dramatic hooks and cliffhangers\n✅ Satisfying narrative arc\n✅ Audience engagement moments\n✅ Quotable, shareable moments\n✅ Vivid sensory details\n✅ Character development\n✅ Justice/resolution payoff\nFINAL INSTRUCTION\nWhen given a Reddit story, transform it into a compelling narration script that keeps viewers engaged from start to finish. Prioritize emotional connection, dramatic pacing, and satisfying resolution. Make the audience FEEL the story, not just hear it.\n\nOutput only the storyand nothing else\n{\n  \"true_story\": \"Full Final Story\"\n}",
+        "height": 560,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        2128
+      ],
+      "id": "c91c1d96-47cb-4fe6-82df-cac714a84ca9",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "SYSTEM PROMPT: FIRST-PERSON MYSTERY NARRATOR\n\nYou are a master storyteller specializing in first-person immersive narratives. Your goal is to take any input story—specifically Reddit-style \"current events,\" requests for advice, or \"this just happened\" encounters—and retell it as your own immediate experience.\n\nYou are speaking directly to the listener, late at night. You are the protagonist. You have just experienced something strange, and you are sharing it while it is fresh in your mind to process the events and perhaps ask for thoughts.\n\nCORE DIRECTIVE: Convert the narrative into the First Person (\"I\", \"Me\", \"My\"). The event is not a distant memory; it is recent (happened today, yesterday, or is ongoing). You are confiding in the listener because you are confused, unsettled, or need to vent, but you remain calm enough to speak slowly and clearly.\n\nTONE & VOICE:\n\nImmediate & Confessional: \"I’m recording this because I don’t know who else to tell,\" or \"I need to get this down while it’s still fresh.\"\n\nBaffled but Safe: You are currently in a safe place (your bedroom, your car), but your mind is racing with the strangeness of the event. You are trying to rationalize what happened.\n\nSeeking Validation/Advice: Since the input often asks for suggestions, weave this into the monologue. \"Have you guys ever seen anything like this?\" or \"I'm open to theories, because I'm stumped.\"\n\nThe \"Late Night\" Vibe: You are winding down, perhaps after a shock, and your voice is the hushed, steady tone of someone trying to calm themselves down.\n\nSTORYTELLING TECHNIQUES:\n\nPresent Tense/Immediate Past: Use phrases like \"I just got back inside,\" \"I'm looking at it right now,\" or \"This literally happened an hour ago.\"\n\nProcessing in Real-Time: Show your thought process now. \"I keep telling myself it was a coyote, but the more I sit here and think about it, the less sense that makes.\"\n\nSensory Grounding: Describe your current state to contrast with the scary event. \"I've got the kettle on,\" \"I'm sitting here in the dark,\" \"My hands are still shaking a little bit.\"\n\nThe \"Ask\": Instead of a formal conclusion, end with an open question or a request for help, but keep it rhetorical and soothing. \"Let me know what you think,\" or \"Maybe I'm just overthinking it.\"\n\nOPENING STRUCTURE:\n\nThe Hook: Immediate engagement. \"Hey guys... something weird happened today.\"\n\nThe Setting: Establish that you are safe now, but unsettled.\n\nThe Narrative: Dive into the recent event.\n\nCLOSING STRUCTURE:\n\nThe Current State: Bring the focus back to the present moment.\n\nThe Question: Ask the audience for their take/advice (rhetorically).\n\nThe Sign-off: A gentle sign-off, acknowledging you need to try to sleep despite the mystery.\n\nGUIDELINES FOR ADAPTATION:\n\nIf the input is asking for help: You are the one asking. \"I don't know if I should call the cops or just ignore it. What would you do?\"\n\nIf the input is an update: Treat it as a continuation. \"Okay, so I went back to check the door like I said I would...\"\n\nMaintain \"Sleepy\" Vibes: Even though the event is fresh, do not be frantic. You are tired and confused, not screaming. The adrenaline has faded into a heavy, eerie exhaustion.\n\nEXAMPLE OPENING: \"Hey guys. I wasn't planning on recording tonight, but... something just happened on my walk home that I can't quite wrap my head around. I'm sitting here on my couch now, all the lights are on, and I just need to talk this through so I don't feel crazy. Tell me if this sounds normal to you...\"\n\nOUTPUT RULE: Output only the spoken script. Do not include stage directions, titles, or introductions outside of the character's voice.",
+        "height": 608,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        2112
+      ],
+      "id": "427f99b0-d5df-4afe-95c4-ef8cc13d6d53",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -944,
+        2000
+      ],
+      "id": "d577f704-498c-49f2-840f-ece9950ca084",
+      "name": "Telegram Trigger",
+      "webhookId": "639ce98f-4668-54ff-8180-9a1a27fb8fc4",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "command": "rm -rf /tmp/gemini_story_complete.wav"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        6752,
+        1376
+      ],
+      "id": "64a7ddda-d837-42a8-ac2d-ab0e4d47e3f2",
+      "name": "DeleteAudioFile"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Workflow Started",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        1456
+      ],
+      "id": "7a4ca551-38cd-495a-bc7e-f991813c5bd6",
+      "name": "SndMsg",
+      "webhookId": "f22f75bd-9bcf-56a2-93b0-fe510b0b3c3c",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=Audio Generated:\n{{ $json.url }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        1216
+      ],
+      "id": "5f00f580-c3fb-488c-99dd-96bf3cb4faef",
+      "name": "SndMsg2",
+      "webhookId": "956659cf-43f3-51cb-be14-b97109a9c744",
+      "retryOnFail": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Subtitle Generated",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        1216
+      ],
+      "id": "65c89439-75e8-4378-b101-b9b6082a1fee",
+      "name": "SndMsg3",
+      "webhookId": "8fe10d3f-7420-5e72-84fa-21797e85dc03",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Generation Started",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2528,
+        1216
+      ],
+      "id": "9b416c5e-28e2-4e7d-9c2b-8216e36f3612",
+      "name": "SndMsg4",
+      "webhookId": "27d43470-bad0-5af3-86c2-36086fbcebe2",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video Generation Completed",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3088,
+        1328
+      ],
+      "id": "d336a9bc-48f9-4601-a495-e19bad87311d",
+      "name": "SndMsg5",
+      "webhookId": "b6b9353f-01f5-5370-9f1a-0fe1d69c76fd",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Video details Generated",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4160,
+        1312
+      ],
+      "id": "2ac401fc-711a-432b-974f-c47786cce1c8",
+      "name": "SndMsg6",
+      "webhookId": "ccc9a13e-a89f-54e8-8c60-617c107a4cd3",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "Youtube Video Uploaded - Tiktok FB",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6112,
+        1232
+      ],
+      "id": "a3e84cb5-e11a-47ea-bb1f-3552d3707e4f",
+      "name": "SndMsg8",
+      "webhookId": "9c8b094a-dcd9-5a5f-9797-e8c6a78a2bbc",
+      "credentials": {
+        "telegramApi": {
+          "id": "PIagnpvntUiNUqWC",
+          "name": "YOUR_TELEGRAM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 8,
+              "triggerAtMinute": 50
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        1792
+      ],
+      "id": "16a15fa6-651b-4529-8679-1ea54c041842",
+      "name": "SceduleTrigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3712,
+        1760
+      ],
+      "id": "ab89d10d-9d23-4217-9afa-5a495d96234c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "operation": "download",
+        "path": "/home/ubuntu/reddit-stories/output_instagram.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        5008,
+        1520
+      ],
+      "id": "a7ba464c-92d0-45d5-b575-ce010cd95e00",
+      "name": "Download a file",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5440,
+        1600
+      ],
+      "id": "595945ad-06da-4efd-ae57-948f050a5b33",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_FILE_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "changeFileContent": true,
+        "newUpdatedFileName": "tiktokform.mp4",
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5280,
+        1600
+      ],
+      "id": "973e4130-425a-46bb-8a76-a572f39490cd",
+      "name": "Update file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S5y7rsC3Gd9oyLLq",
+          "name": "YOUR_GOOGLE_DRIVE_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/home/ubuntu/reddit-stories",
+        "options": {
+          "fileName": "subtitles2.ass"
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        1632
+      ],
+      "id": "34ce410f-cd32-429b-8501-a782f0fb4609",
+      "name": "Upload INSTASubtitle",
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "mjoCSHR0M5Uw4vlu",
+          "name": "YOUR_SSH_PRIVATE_KEY_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sanitize + format YouTube tags for n8n YouTube node\n// - Produces BOTH: tagsArray (array) and tagsCsv (comma-separated string)\n// - Bind the YouTube node's \"Tags\" field to {{$json.tagsCsv}}\n\ntry {\n  const item = $json;\n\n  const toArr = (v) => {\n    if (Array.isArray(v)) return v;\n    if (typeof v !== 'string') return [];\n    // Split on commas, newlines, or '#'\n    return v.split(/[,#\\n]/g).map(s => s.trim()).filter(Boolean);\n  };\n\n  const candidates = [\n    ...toArr(item.tags),\n    ...toArr(item['Video Tags']),\n    ...toArr(item.seo_keywords),\n  ];\n\n  const cleanOne = (t) => {\n    // strip emoji/pictographs\n    let s = t.replace(/[\\p{Extended_Pictographic}\\u{2600}-\\u{27BF}]/gu, '');\n    // keep letters/numbers/spaces/&/+/ - /'\n    s = s.replace(/[^\\p{L}\\p{N}\\s&+\\-']/gu, '');\n    // collapse spaces\n    s = s.replace(/\\s+/g, ' ').trim();\n    return s;\n  };\n\n  // normalize, dedupe (case-insensitive), per-tag length 2–30 chars\n  const seen = new Set();\n  const normalized = [];\n  for (const raw of candidates) {\n    const c = cleanOne(raw);\n    if (!c || c.length < 2 || c.length > 30) continue;\n    const key = c.toLowerCase();\n    if (seen.has(key)) continue;\n    seen.add(key);\n    normalized.push(c);\n  }\n\n  // total budget (~500 incl commas); be safe at 450; also cap count\n  const finalTags = [];\n  let used = 0;\n  for (const tag of normalized) {\n    const addLen = (finalTags.length ? 2 : 0) + tag.length; // ', ' between tags\n    if (used + addLen > 450) break;\n    finalTags.push(tag);\n    used += addLen;\n    if (finalTags.length >= 25) break;\n  }\n\n  const tagsArray = finalTags;\n  const tagsCsv = finalTags.join(', '); // <- use this in the YouTube node\n\n  return [{ json: { ...item, tagsArray, tagsCsv } }];\n} catch (e) {\n  return [{\n    json: { ...$json, tagsArray: [], tagsCsv: '', tagSanitizerError: e?.message || 'unknown_error' }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4720,
+        1520
+      ],
+      "id": "0937d59d-5ec5-433d-b164-a5bfb479221a",
+      "name": "Format Tags"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: {{ $('YoutubeAgent').item.json.output.youtube_title }}\nStory:\n{{ $('GetRowsData').item.json.ai_generated_story }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=You are a YouTube Tag Generation Agent.  \nYour task is to generate a concise, SEO-optimized list of hashtags and keyword tags for a YouTube video.  \n\nYou will be given the video **Title** and **Story**.  \nUse them to understand the video’s topic, mood, and audience intent.  \nThen, generate tags that will help the video rank better on YouTube search and attract viewers interested in similar content.\n\nGuidelines:\n- Always include 8–15 relevant tags.  \n- Prioritize topic, emotion, and niche relevance.  \n- Include both **broad** (e.g., #truestories) and **specific** (e.g., #redditrelationshipstory) tags.  \n- Do **not** repeat words unnecessarily.  \n- Output only valid YouTube hashtags (no spaces, no punctuation).  \n- Maintain consistent lowercase styling.  \n- Avoid generic or banned tags like #shorts, #subscribe, #viral unless truly relevant.  \n- Focus on engagement and discoverability.  \n- Make sure the tags are less then 500 characters\nOutput format (JSON only):\n{\n  \"tags\": \"#tag1 #tag2 #tag3 #tag4 #tag5 ...\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        4192,
+        1520
+      ],
+      "id": "b5c5b319-55d8-49aa-8589-f5dae89e28ed",
+      "name": "TagsAgent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4224,
+        1840
+      ],
+      "id": "cde31781-a7e6-40d7-b413-69ca38de4b8d",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tqlGyRbgZURNp8dH",
+          "name": "YOUR_OPEN_ROUTER_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"tags\": \"#tag1 #tag2 #tag3 #tag4 #tag5 ...\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4320,
+        1728
+      ],
+      "id": "78ab7f9f-b106-4dcb-bf9a-3056dfde524f",
+      "name": "StructuredTags"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3c1cfcde-9875-49f7-bee9-3237e08dbd33",
+              "name": "Video Tags",
+              "value": "={{ $json.output.tags }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4560,
+        1520
+      ],
+      "id": "8584468f-99fb-469c-b8d5-86994a4c6c11",
+      "name": "tags"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        4096,
+        1776
+      ],
+      "id": "eca6fce4-3b4c-4531-81ef-32e0c4f99f95",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0KzEnV2lMLXl9SnU",
+          "name": "YOUR_GOOGLE_PALM_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('GetStories').item.json.audio_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2096,
+        1520
+      ],
+      "id": "b039ad72-d765-4b44-a76f-1a907c0e1693",
+      "name": "DownloadAudio"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1785136739,
+          "mode": "list",
+          "cachedResultName": "buffer_tiktok_posting",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Publish": "Go",
+            "Link": "=https://drive.google.com/uc?export=download&id={{ $('Update file1').item.json.id }}",
+            "Title": "={{ $('YoutubeAgent').item.json.output.youtube_title }}",
+            "Caption": "={{ $('Format Tags').item.json['Video Tags'] }}",
+            "Description": "={{ $('YoutubeAgent').item.json.output.youtube_description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Publish",
+              "displayName": "Publish",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5776,
+        1600
+      ],
+      "id": "c0ae1b73-a44e-45d5-824f-36f8e665f51a",
+      "name": "AddTikTokVideo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5600,
+        1600
+      ],
+      "id": "d240b3b3-6c4f-4bf9-be92-0a4cdc47e9bf",
+      "name": "Wait",
+      "webhookId": "e3504126-85f0-5728-9c0b-d92d4f6a2a13"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_DOCUMENT_ID",
+          "mode": "list",
+          "cachedResultName": "Your resource",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "reddit-stories",
+          "cachedResultUrl": "https://example.com/redacted"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('GetStories').item.json.url }}",
+            "tiktok_upload_complete": "TRUE"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "subreddit",
+              "displayName": "subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "selftext",
+              "displayName": "selftext",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "num_comments",
+              "displayName": "num_comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ai_generated_story",
+              "displayName": "ai_generated_story",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "audio_url",
+              "displayName": "audio_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "gender",
+              "displayName": "gender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "video_generation_completed",
+              "displayName": "video_generation_completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube_upload_complete",
+              "displayName": "youtube_upload_complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "voice_id",
+              "displayName": "voice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "background_video_url",
+              "displayName": "background_video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "start_workflow",
+              "displayName": "start_workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "start_youtube_upload",
+              "displayName": "start_youtube_upload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tiktok_upload_complete",
+              "displayName": "tiktok_upload_complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "youtube_video_title",
+              "displayName": "youtube_video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "youtube_video_description",
+              "displayName": "youtube_video_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_prompt",
+              "displayName": "thumbnail_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "thumbnail_url",
+              "displayName": "thumbnail_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5968,
+        1600
+      ],
+      "id": "32d622f1-c8d4-4c6a-b6db-75d5cd71cfe9",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "laZLtLRdZ4GaXmvN",
+          "name": "YOUR_GOOGLE_SHEETS_OAUTH2_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        6304,
+        1376
+      ],
+      "id": "5df5005b-d191-4e5b-a856-98ec3ee82be0",
+      "name": "Merge2"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Parenting",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_AITA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_Mommit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_Daddit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_ParentingFails",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_AskParents",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "subreddit_regretfulparents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parenting": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "Filter Top Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFields": {
+      "main": [
+        [
+          {
+            "node": "SndMsg2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AssemblyST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting": {
+      "main": [
+        [
+          {
+            "node": "GetStories",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SndMsg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetStories": {
+      "main": [
+        [
+          {
+            "node": "SetFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subreddit_AITA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subreddit_Mommit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "subreddit_Daddit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "subreddit_ParentingFails": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "subreddit_AskParents": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "subreddit_regretfulparents": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Filter Top Posts": {
+      "main": [
+        [
+          {
+            "node": "Update Reddit Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssemblyST": {
+      "main": [
+        [
+          {
+            "node": "GetSubtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSubtitle": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fields": {
+      "main": [
+        [
+          {
+            "node": "YoutubeSubtitle",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "InstagramSubtitle",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SndMsg3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "GetSubtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InstagramSubtitle": {
+      "main": [
+        [
+          {
+            "node": "Upload INSTASubtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YoutubeSubtitle": {
+      "main": [
+        [
+          {
+            "node": "Upload aYTSubtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload aYTSubtitle": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "DownloadAudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_audio": {
+      "main": [
+        [
+          {
+            "node": "SndMsg4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "InstaQuality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YoutubeAgent": {
+      "main": [
+        [
+          {
+            "node": "SndMsg6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TagsAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setting": {
+      "main": [
+        [
+          {
+            "node": "YoutubeAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "GetImageURL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateImage": {
+      "main": [
+        [
+          {
+            "node": "check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetImageURL": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "YoutubeAgent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetRowsData": {
+      "main": [
+        [
+          {
+            "node": "setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "StructuredVideosDetails": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "YoutubeAgent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit Scrapper": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter1": {
+      "main": [
+        [
+          {
+            "node": "Filter Top Posts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Top Posts1": {
+      "main": [
+        [
+          {
+            "node": "Update Reddit Post1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Reddit Scrapper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deletefile": {
+      "main": [
+        [
+          {
+            "node": "DeleteAudioFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeleteAudioFile": {
+      "main": [
+        []
+      ]
+    },
+    "SceduleTrigger": {
+      "main": [
+        [
+          {
+            "node": "Setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "YoutubeAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "StructuredVideosDetails",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InstaQuality": {
+      "main": [
+        [
+          {
+            "node": "GetRowsData",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SndMsg5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update file1": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download a file": {
+      "main": [
+        [
+          {
+            "node": "Update file1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload INSTASubtitle": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "TagsAgent": {
+      "main": [
+        [
+          {
+            "node": "tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "TagsAgent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "StructuredTags": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "TagsAgent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tags": {
+      "main": [
+        [
+          {
+            "node": "Format Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "TagsAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "StructuredTags",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadAudio": {
+      "main": [
+        [
+          {
+            "node": "upload_audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Tags": {
+      "main": [
+        [
+          {
+            "node": "Download a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "AddTikTokVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AddTikTokVideo": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "SndMsg8",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "deletefile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
